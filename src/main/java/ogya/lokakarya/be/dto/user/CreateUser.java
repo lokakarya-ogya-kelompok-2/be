@@ -7,7 +7,7 @@ import lombok.Data;
 import ogya.lokakarya.be.entity.User;
 
 @Data
-public class Create {
+public class CreateUser {
     private String username;
     @JsonProperty("full_name")
     private String fullName;
