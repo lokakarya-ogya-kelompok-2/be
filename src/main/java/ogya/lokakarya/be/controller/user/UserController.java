@@ -1,4 +1,4 @@
-package ogya.lokakarya.be.controller.uesr;
+package ogya.lokakarya.be.controller.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
