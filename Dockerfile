@@ -11,4 +11,4 @@ ENV PORT=${PORT}
 COPY --from=builder /app/app.jar .
 RUN useradd runtime
 USER runtime
-ENTRYPOINT [ "java", "-Dserver.port=${PORT}", "-Dspring-boot.run.profiles=prod", "-jar", "app.jar" ]
+ENTRYPOINT [ "java", "-Dserver.port=${PORT}", "-Dspring.profiles.active=prod", "-jar", "app.jar" ]
