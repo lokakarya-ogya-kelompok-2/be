@@ -33,7 +33,6 @@ public class UserServiceImpl implements UserService {
             roles = new HashSet<>(data.getRoles().size());
             data.getRoles().forEach(roleId -> {
                 Optional<Role> roleOpt = roleRepo.findById(roleId);
-                System.out.println("ROLE IS = " + roleOpt);
                 if (roleOpt.isEmpty()) {
                     throw new RuntimeException(String.format("Role with id %s could not be found!",
                             roleId.toString()));

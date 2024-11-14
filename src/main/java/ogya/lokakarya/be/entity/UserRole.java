@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -18,7 +19,7 @@ import lombok.Data;
 public class UserRole {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "id", columnDefinition = "BINARY(16)  DEFAULT (UUID_TO_BIN(UUID()))")
     private UUID id;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -28,4 +29,11 @@ public class UserRole {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "USER_ID")
     private User user;
+
+    @PrePersist
+    private void generateId() {
+        if (id == null) {
+            id = UUID.randomUUID();
+        }
+    }
 }
