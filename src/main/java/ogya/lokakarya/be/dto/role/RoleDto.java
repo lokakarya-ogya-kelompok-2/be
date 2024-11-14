@@ -3,7 +3,6 @@ package ogya.lokakarya.be.dto.role;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import ogya.lokakarya.be.entity.Role;
-
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.UUID;

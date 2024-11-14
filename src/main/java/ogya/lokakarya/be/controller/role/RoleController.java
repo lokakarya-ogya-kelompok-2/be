@@ -38,14 +38,14 @@ public class RoleController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RoleDto> updateRole
+    public ResponseEntity<RoleDto> updateRoleById
             (@PathVariable UUID id, @RequestBody @Valid CreateRole createRole) {
     RoleDto res= roleService.updateRoleById(id, createRole);
     return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> deleteRole(@PathVariable UUID id) {
+    public ResponseEntity<Boolean> deleteRoleById(@PathVariable UUID id) {
     boolean res= roleService.deleteRoleById(id);
     return new ResponseEntity<>(res, HttpStatus.OK);
     }

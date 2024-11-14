@@ -2,9 +2,7 @@ package ogya.lokakarya.be.service.impl;
 
 import ogya.lokakarya.be.dto.division.CreateDivision;
 import ogya.lokakarya.be.dto.division.DivisionDto;
-import ogya.lokakarya.be.dto.role.RoleDto;
 import ogya.lokakarya.be.entity.Division;
-import ogya.lokakarya.be.entity.Role;
 import ogya.lokakarya.be.repository.division.DivisionRepository;
 import ogya.lokakarya.be.service.DivisionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +57,7 @@ public class DivisionServiceimpl implements DivisionService {
                 division.setDivisionName(createDivision.getDivisionName());
             }
             DivisionDto divisionDto= convertToDto(division);
+            divisionRepository.save(division);
             return divisionDto;
         }
         return null;

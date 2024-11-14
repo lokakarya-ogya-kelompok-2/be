@@ -56,6 +56,7 @@ public class RoleServiceImpl implements RoleService {
         if(!createRole.getRoleName().isBlank()){
             role.setRoleName(createRole.getRoleName());
         }
+        roleRepository.save(role);
         RoleDto roleDto= convertToDto(role);
         return roleDto;
         }

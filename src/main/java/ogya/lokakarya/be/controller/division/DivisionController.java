@@ -3,15 +3,12 @@ package ogya.lokakarya.be.controller.division;
 import jakarta.validation.Valid;
 import ogya.lokakarya.be.dto.division.CreateDivision;
 import ogya.lokakarya.be.dto.division.DivisionDto;
-import ogya.lokakarya.be.dto.role.CreateRole;
-import ogya.lokakarya.be.dto.role.RoleDto;
 import ogya.lokakarya.be.entity.Division;
 import ogya.lokakarya.be.service.DivisionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -27,8 +24,8 @@ public class DivisionController {
         return new ResponseEntity<>(createdDivision, HttpStatus.CREATED);
     }
     @GetMapping
-    public ResponseEntity<List<DivisionDto>> getAllUser() {
-        System.out.println("Get All Role");
+    public ResponseEntity<List<DivisionDto>> getAllDivisions() {
+        System.out.println("Get All Division");
         List<DivisionDto> response = divisionService.getAllDivisions();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
