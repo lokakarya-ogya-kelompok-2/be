@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import ogya.lokakarya.be.dto.user.CreateUserDto;
 import ogya.lokakarya.be.dto.user.UserDto;
@@ -24,12 +25,14 @@ public class UserController {
     @Autowired
     private UserService userSvc;
 
+
     @PostMapping
     public ResponseEntity<UserDto> create(@RequestBody @Valid CreateUserDto data) {
         var createdUser = userSvc.create(data);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping
     public ResponseEntity<List<UserDto>> list() {
         var users = userSvc.list();

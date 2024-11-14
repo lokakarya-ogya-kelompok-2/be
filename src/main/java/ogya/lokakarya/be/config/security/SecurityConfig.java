@@ -10,17 +10,23 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import lombok.RequiredArgsConstructor;
+import ogya.lokakarya.be.config.security.jwt.filter.JwtValidationFilter;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
-    @Bean
-    SecurityFilterChain mySecurityConfig(HttpSecurity http) throws Exception {
 
+    private final JwtValidationFilter jwtValidationFilter;
+
+    @Bean
+    public SecurityFilterChain mySecurityConfig(HttpSecurity http) throws Exception {
+
+        // CORS configuration
         http.sessionManagement(sessionmangement -> sessionmangement
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(cors -> cors.configurationSource(request -> {
@@ -31,15 +37,18 @@ public class SecurityConfig {
                     cfg.setAllowedHeaders(Collections.singletonList("*"));
                     cfg.setExposedHeaders(Arrays.asList("Authorization"));
                     return cfg;
-                })).authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                }))
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/users/**").authenticated()
+                        .anyRequest().permitAll())
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/**")
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                .addFilterBefore(jwtValidationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     @Bean
-    PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
