@@ -41,7 +41,7 @@ public class UserDto {
     private UserDto updatedBy;
 
     public UserDto(User user, boolean withCreatedBy, boolean withUpdatedBy) {
-        setId(user.getId());
+        setId(getId());
         setUsername(user.getUsername());
         setFullName(user.getFullName());
         setPosition(user.getPosition());
@@ -51,14 +51,14 @@ public class UserDto {
         if (user.getCreatedAt() != null) {
             setCreatedAt(user.getCreatedAt());
         }
-        if (withCreatedBy) {
+        if (withCreatedBy && user.getCreatedBy() != null) {
             setCreatedBy(new UserDto(user.getCreatedBy(), false, false));
         }
         if (user.getUpdatedAt() != null) {
             setUpdatedAt(user.getUpdatedAt());
         }
 
-        if (withUpdatedBy) {
+        if (withUpdatedBy && user.getUpdatedBy() != null) {
             setUpdatedBy(new UserDto(user.getUpdatedBy(), false, false));
         }
     }

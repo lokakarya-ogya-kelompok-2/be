@@ -13,11 +13,11 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "TBL_APP_ROlE")
+@Table(name = "TBL_APP_ROLE")
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID", length = 36)
+    @Column(name = "ID")
     private UUID id;
 
     @Column(name = "ROLENAME", unique = true, nullable = false, length = 30)

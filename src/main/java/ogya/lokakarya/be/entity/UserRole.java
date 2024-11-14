@@ -18,7 +18,7 @@ import lombok.Data;
 public class UserRole {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Id
-    @Column(name = "id", length = 36, nullable = false)
+    @Column(name = "id", nullable = false)
     private UUID id;
 
     @ManyToOne(fetch = FetchType.EAGER)
