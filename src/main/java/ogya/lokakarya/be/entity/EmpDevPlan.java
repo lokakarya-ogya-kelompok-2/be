@@ -9,15 +9,23 @@ import java.util.UUID;
 
 @Entity
 @Data
-@Table(name="TBL_DEV_PLAN")
-public class Plan {
+@Table(name="TBL_EMP_DEV_PLAN")
+public class EmpDevPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name="ID", length=32)
     private UUID id;
 
-    @Column(name ="PLAN" , length = 100)
-    private String menuName;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "dev_plan_id")
+    private DevPlan devPlan;
+
+    @Column(name = "ASSESSMENT_YEAR", nullable = false, length = 4)
+    private Integer assessmentYear;
 
     @Column(name = "CREATED_AT", nullable = false)
     private Date createdAt = Date.valueOf(LocalDate.now());

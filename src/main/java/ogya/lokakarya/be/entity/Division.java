@@ -2,9 +2,11 @@ package ogya.lokakarya.be.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -30,4 +32,10 @@ public class Division {
 
     @Column(name = "UPDATED_BY")
     private UUID updatedBy;
+
+    @OneToMany(mappedBy = "division", fetch = FetchType.LAZY)
+    private List<AccessDivision> accessDivisions;
+
+    @ManyToMany(mappedBy = "divisions")
+    private Set<User> users = new HashSet<>();
 }

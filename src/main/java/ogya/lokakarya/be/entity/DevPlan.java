@@ -4,20 +4,19 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Data
-@Table(name="TBL_APP_MENU")
-public class Menu {
+@Table(name="TBL_DEV_PLAN")
+public class DevPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name="ID", length=32)
     private UUID id;
 
-    @Column(name ="MENU_NAME" , length = 30)
+    @Column(name ="PLAN" , length = 100)
     private String menuName;
 
     @Column(name = "CREATED_AT", nullable = false)
@@ -31,7 +30,7 @@ public class Menu {
 
     @Column(name = "UPDATED_BY")
     private UUID updatedBy;
-
-    @ManyToMany(mappedBy = "menu")
-    private Set<Role> roles = new HashSet<>();
+//
+//    @OneToMany(mappedBy = "dev_plan", fetch = FetchType.LAZY)
+//    private List<EmpDevPlan> empDevPlans;
 }

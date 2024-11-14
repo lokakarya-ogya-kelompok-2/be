@@ -2,9 +2,9 @@ package ogya.lokakarya.be.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -19,10 +19,12 @@ public class Achievement {
     @Column(name ="ACHIEVEMENT" , length = 100)
     private String achievement;
 
-    //    @Column(name ="GROUP_ID", nullable = false, length = 32)
-//    private UUID groupId;
+    @ManyToOne
+    @JoinColumn(name ="GROUP_ID")
+    private GroupAchievement groupAchievement;
 
-//    enabled
+    @Column(name = "ENABLED")
+    private Boolean enabled = false;
 
     @Column(name = "CREATED_AT", nullable = false)
     private Date createdAt = Date.valueOf(LocalDate.now());
@@ -35,4 +37,7 @@ public class Achievement {
 
     @Column(name = "UPDATED_BY")
     private UUID updatedBy;
+
+    @OneToMany(mappedBy = "achievement", fetch = FetchType.LAZY)
+    private List<EmpAchievementSkill> empAchievementSkills;
 }

@@ -28,7 +28,7 @@ public class AssessmentSummary {
     @Column(name = "YEAR", nullable = false)
     private Integer year;
 
-    @Column(name = "SCORE", nullable = false)
+    @Column(name = "SCORE", nullable = false, length = 3)
     private Integer score;
 
     @Column(name = "status", nullable = false)

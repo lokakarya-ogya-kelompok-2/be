@@ -2,9 +2,9 @@ package ogya.lokakarya.be.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -22,7 +22,8 @@ public class GroupAchievement {
     @Column(name ="PERCENTAGE", nullable = false, length = 3)
     private Integer percentage;
 
-//    enabled
+    @Column(name = "ENABLED")
+    private Boolean enabled = false;
 
     @Column(name = "CREATED_AT", nullable = false)
     private Date createdAt = Date.valueOf(LocalDate.now());
@@ -35,4 +36,7 @@ public class GroupAchievement {
 
     @Column(name = "UPDATED_BY")
     private UUID updatedBy;
+
+    @OneToMany(mappedBy = "achievement", fetch = FetchType.EAGER)
+    private List<Achievement> achievements;
 }
