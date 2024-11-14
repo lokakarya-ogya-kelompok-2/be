@@ -19,6 +19,9 @@ public class TechnicalSkill {
     @Column(name ="TECHNICAL_SKILL" , length = 100)
     private String technicalSkill;
 
+    @Column(name = "ENABLED")
+    private Boolean enabled = true;
+
     @Column(name = "CREATED_AT", nullable = false)
     private Date createdAt = Date.valueOf(LocalDate.now());
 

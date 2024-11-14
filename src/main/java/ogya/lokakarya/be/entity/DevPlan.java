@@ -19,6 +19,9 @@ public class DevPlan {
     @Column(name ="PLAN" , length = 100)
     private String menuName;
 
+    @Column(name = "ENABLED", length = 1)
+    private boolean enabled=true;
+
     @Column(name = "CREATED_AT", nullable = false)
     private Date createdAt = Date.valueOf(LocalDate.now());
 

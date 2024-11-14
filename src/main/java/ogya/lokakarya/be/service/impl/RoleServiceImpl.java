@@ -1,11 +1,10 @@
 package ogya.lokakarya.be.service.impl;
 
-import ogya.lokakarya.be.dto.Role.CreateRole;
-import ogya.lokakarya.be.dto.Role.RoleDto;
+import ogya.lokakarya.be.dto.role.CreateRole;
+import ogya.lokakarya.be.dto.role.RoleDto;
 import ogya.lokakarya.be.entity.Role;
 import ogya.lokakarya.be.repository.role.RoleRepository;
 import ogya.lokakarya.be.service.RoleService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

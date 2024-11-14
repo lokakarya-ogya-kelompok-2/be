@@ -24,7 +24,7 @@ public class Achievement {
     private GroupAchievement groupAchievement;
 
     @Column(name = "ENABLED")
-    private Boolean enabled = false;
+    private Boolean enabled = true;
 
     @Column(name = "CREATED_AT", nullable = false)
     private Date createdAt = Date.valueOf(LocalDate.now());

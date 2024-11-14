@@ -1,16 +1,14 @@
 package ogya.lokakarya.be.controller.role;
 
 import jakarta.validation.Valid;
-import ogya.lokakarya.be.dto.Role.CreateRole;
-import ogya.lokakarya.be.dto.Role.RoleDto;
+import ogya.lokakarya.be.dto.role.CreateRole;
+import ogya.lokakarya.be.dto.role.RoleDto;
 import ogya.lokakarya.be.entity.Role;
 import ogya.lokakarya.be.service.RoleService;
-import ogya.lokakarya.be.service.impl.RoleServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.UUID;
 

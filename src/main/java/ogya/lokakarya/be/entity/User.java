@@ -35,7 +35,7 @@ public class User {
     private Date joinDate;
 
     @Column(name = "ENABLED")
-    private Boolean enabled = false;
+    private Boolean enabled = true;
 
     @Column(name = "PASSWORD", nullable = false, length = 100)
     private String password;
