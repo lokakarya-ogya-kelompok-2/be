@@ -2,16 +2,11 @@ package ogya.lokakarya.be.entity;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
@@ -20,7 +15,7 @@ import lombok.Data;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID", length = 32)
+    @Column(name = "ID")
     private UUID id;
 
     @Column(name = "USERNAME", unique = true, nullable = false, length = 30)
@@ -39,7 +34,7 @@ public class User {
     private Date joinDate;
 
     @Column(name = "ENABLED")
-    private Boolean enabled = false;
+    private Boolean enabled = true;
 
     @Column(name = "PASSWORD", nullable = false, length = 100)
     private String password;
@@ -57,5 +52,27 @@ public class User {
     private UUID updatedBy;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<AssessmentSummary> assessments;
+    private List<AssessmentSummary> assessmentSummary;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<EmpAttitudeSkill> empAttitudeSkills;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<EmpAchievementSkill> empAchievementSkills;
+
+    @ManyToMany
+    @JoinTable(
+            name = "TBL_ACCESS_DIVISION",
+            joinColumns = @JoinColumn(name = "USER_ID"),
+            inverseJoinColumns = @JoinColumn(name = "DIVISION_ID")
+    )
+    private Set<Division> divisions = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "TBL_APP_USER_ROLE",
+            joinColumns = @JoinColumn(name = "USER_ID"),
+            inverseJoinColumns = @JoinColumn(name = "ROLE_ID")
+    )
+    private Set<Role> roles = new HashSet<>();
 }

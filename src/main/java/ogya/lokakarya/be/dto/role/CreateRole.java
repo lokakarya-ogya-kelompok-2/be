@@ -1,4 +1,4 @@
-package ogya.lokakarya.be.dto.Role;
+package ogya.lokakarya.be.dto.role;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

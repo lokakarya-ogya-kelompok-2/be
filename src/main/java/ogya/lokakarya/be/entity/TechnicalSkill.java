@@ -12,11 +12,14 @@ import java.util.UUID;
 public class TechnicalSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name="ID", length=32)
+    @Column(name="ID")
     private UUID id;
 
     @Column(name ="TECHNICAL_SKILL" , length = 100)
     private String technicalSkill;
+
+    @Column(name = "ENABLED")
+    private Boolean enabled = true;
 
     @Column(name = "CREATED_AT", nullable = false)
     private Date createdAt = Date.valueOf(LocalDate.now());
@@ -29,4 +32,7 @@ public class TechnicalSkill {
 
     @Column(name = "UPDATED_BY")
     private UUID updatedBy;
+
+//    @OneToMany(mappedBy = "technical_skill", fetch = FetchType.LAZY)
+//    private List<> empAchievementSkills;
 }

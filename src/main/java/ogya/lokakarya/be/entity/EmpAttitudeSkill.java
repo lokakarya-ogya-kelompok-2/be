@@ -8,22 +8,26 @@ import java.util.UUID;
 
 @Entity
 @Data
-@Table(name="TBL_ATTITUDE_SKILL")
-public class AttitudeSkill {
+@Table(name="TBL_EMP_ATTITUDE_SKILL")
+public class EmpAttitudeSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name="ID")
     private UUID id;
 
-    @Column(name ="ATTITUDE_SKILL", nullable = false , length = 100)
-    private String attitudeSkill;
+    @ManyToOne
+    @JoinColumn(name = "attitude_skill_id")
+    private AttitudeSkill attitudeSkill;
 
     @ManyToOne
-    @JoinColumn(name ="GROUP_ID")
-    private GroupAttitudeSkill groupAttitudeSkill;
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @Column(name = "ENABLED")
-    private Boolean enabled = true;
+    @Column(name = "SCORE", nullable = false, length = 3)
+    private Integer score;
+
+    @Column(name = "ASSESSMENT_YEAR", nullable = false, length = 4)
+    private Integer assessmentYear;
 
     @Column(name = "CREATED_AT", nullable = false)
     private Date createdAt = Date.valueOf(LocalDate.now());
@@ -36,8 +40,5 @@ public class AttitudeSkill {
 
     @Column(name = "UPDATED_BY")
     private UUID updatedBy;
-
-//    @OneToMany(mappedBy = "emp_attitude_skill", fetch = FetchType.EAGER)
-//    private List<AttitudeSkill> attitudeSkills;
-
 }
+
