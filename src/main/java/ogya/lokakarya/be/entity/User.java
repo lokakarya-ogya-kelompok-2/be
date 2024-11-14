@@ -1,9 +1,14 @@
 package ogya.lokakarya.be.entity;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,7 +26,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "TBL_APP_USER")
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ID")
@@ -73,4 +78,11 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<AssessmentSummary> assessments;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Collection<SimpleGrantedAuthority> userRoles = new ArrayList<>();
+        roles.forEach(role -> userRoles.add(new SimpleGrantedAuthority(role.getRoleName())));
+        return userRoles;
+    }
 }

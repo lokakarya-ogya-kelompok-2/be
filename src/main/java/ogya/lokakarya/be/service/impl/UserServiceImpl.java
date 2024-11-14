@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ogya.lokakarya.be.dto.user.CreateUserDto;
 import ogya.lokakarya.be.dto.user.UserDto;
@@ -25,6 +26,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private RoleRepository roleRepo;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public UserDto create(CreateUserDto data) {
         User userEntity = data.toEntity();
@@ -41,6 +45,7 @@ public class UserServiceImpl implements UserService {
             });
             userEntity.setRoles(roles);
         }
+        userEntity.setPassword(passwordEncoder.encode(data.getPassword()));
         userEntity = userRepo.save(userEntity);
         return new UserDto(userEntity, false, false);
     }
