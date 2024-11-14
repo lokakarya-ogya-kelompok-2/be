@@ -24,9 +24,7 @@ public class SecurityConfig {
     private final JwtValidationFilter jwtValidationFilter;
 
     @Bean
-    public SecurityFilterChain mySecurityConfig(HttpSecurity http) throws Exception {
-
-        // CORS configuration
+    SecurityFilterChain mySecurityConfig(HttpSecurity http) throws Exception {
         http.sessionManagement(sessionmangement -> sessionmangement
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(cors -> cors.configurationSource(request -> {
@@ -48,7 +46,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
