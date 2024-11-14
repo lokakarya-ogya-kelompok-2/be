@@ -4,15 +4,20 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
 @Data
 @Table(name = "TBL_APP_USER")
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ID")
@@ -30,26 +35,37 @@ public class User {
     @Column(name = "EMAIL_ADDRESS", unique = true, nullable = false, length = 60)
     private String emailAddress;
 
+    @Column(name = "EMPLOYEE_STATUS", nullable = false, length = 1)
+    private Integer employeeStatus;
+
     @Column(name = "JOIN_DATE", nullable = false)
     private Date joinDate;
 
-    @Column(name = "ENABLED")
+    @Column(name = "ENABLED", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean enabled = true;
 
     @Column(name = "PASSWORD", nullable = false, length = 100)
     private String password;
 
-    @Column(name = "CREATED_AT", nullable = false)
-    private Date createdAt = Date.valueOf(LocalDate.now());
+    @ManyToMany
+    @JoinTable(name = "TBL_APP_USER_ROLE", joinColumns = {@JoinColumn(name = "USER_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "ROLE_ID")})
+    private Set<Role> roles;
 
-    @Column(name = "CREATED_BY")
-    private UUID createdBy;
+    @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
+    private java.util.Date createdAt = new java.util.Date();
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "CREATED_BY")
+    private User createdBy;
 
     @Column(name = "UPDATED_AT")
-    private Date updatedAt;
+    @JoinColumn(name = "updated_at")
+    private java.util.Date updatedAt;
 
-    @Column(name = "UPDATED_BY")
-    private UUID updatedBy;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "UPDATED_BY")
+    private User updatedBy;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<AssessmentSummary> assessmentSummary;
@@ -67,12 +83,16 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "DIVISION_ID")
     )
     private Set<Division> divisions = new HashSet<>();
+  
+  @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Collection<SimpleGrantedAuthority> userRoles = new ArrayList<>();
+        roles.forEach(role -> userRoles.add(new SimpleGrantedAuthority(role.getRoleName())));
+        return userRoles;
+    }
 
-    @ManyToMany
-    @JoinTable(
-            name = "TBL_APP_USER_ROLE",
-            joinColumns = @JoinColumn(name = "USER_ID"),
-            inverseJoinColumns = @JoinColumn(name = "ROLE_ID")
-    )
-    private Set<Role> roles = new HashSet<>();
+    @Override
+    public String getUsername() {
+        return id.toString();
+    }
 }
