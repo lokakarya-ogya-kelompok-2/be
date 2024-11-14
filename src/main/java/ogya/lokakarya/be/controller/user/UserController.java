@@ -1,16 +1,20 @@
 package ogya.lokakarya.be.controller.user;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import ogya.lokakarya.be.dto.user.CreateUser;
+import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.service.UserService;
+
 
 @RequestMapping("/users")
 @RestController
@@ -23,4 +27,11 @@ public class UserController {
         var createdUser = userSvc.create(data);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
+
+    @GetMapping
+    public ResponseEntity<List<UserDto>> list() {
+        var users = userSvc.list();
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
 }
