@@ -2,6 +2,8 @@ package ogya.lokakarya.be.entity;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,5 +36,16 @@ public class Role {
 
     @Column(name = "UPDATED_BY")
     private UUID updatedBy;
+
+    @ManyToMany
+    @JoinTable(
+            name = "TBL_APP_ROLE_MENU",
+            joinColumns = @JoinColumn(name = "ROLE_ID"),
+            inverseJoinColumns = @JoinColumn(name = "MENU_ID")
+    )
+    private Set<RoleMenu> menus = new HashSet<>();
+
+    @ManyToMany(mappedBy = "roles")
+    private Set<User> users = new HashSet<>();
 
 }

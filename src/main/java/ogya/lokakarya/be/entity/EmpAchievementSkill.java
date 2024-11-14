@@ -2,22 +2,35 @@ package ogya.lokakarya.be.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
 @Data
-@Table(name="TBL_DEV_PLAN")
-public class Plan {
+@Table(name="TBL_EMP_ACHIEVEMENT_SKill")
+public class EmpAchievementSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name="ID", length=32)
+    @Column(name="ID")
     private UUID id;
 
-    @Column(name ="PLAN" , length = 100)
-    private String menuName;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @Column(name ="NOTES" , length = 100)
+    private String notes;
+
+    @ManyToOne
+    @JoinColumn(name = "achievement_id")
+    private Achievement achievement;
+
+    @Column(name = "SCORE", nullable = false, length = 3)
+    private Integer score;
+
+    @Column(name = "ASSESSMENT_YEAR", nullable = false, length = 4)
+    private Integer assessmentYear;
 
     @Column(name = "CREATED_AT", nullable = false)
     private Date createdAt = Date.valueOf(LocalDate.now());

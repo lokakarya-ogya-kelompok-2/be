@@ -2,7 +2,6 @@ package ogya.lokakarya.be.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -13,7 +12,7 @@ import java.util.UUID;
 public class GroupAttitudeSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name="ID", length=32)
+    @Column(name="ID")
     private UUID id;
 
     @Column(name ="GROUP_NAME" , length = 100)
@@ -22,7 +21,8 @@ public class GroupAttitudeSkill {
     @Column(name ="PERCENTAGE", nullable = false, length = 3)
     private Integer percentage;
 
-//    enabled
+    @Column(name = "ENABLED")
+    private Boolean enabled = true;
 
     @Column(name = "CREATED_AT", nullable = false)
     private Date createdAt = Date.valueOf(LocalDate.now());
@@ -35,4 +35,7 @@ public class GroupAttitudeSkill {
 
     @Column(name = "UPDATED_BY")
     private UUID updatedBy;
+
+//    @OneToMany(mappedBy = "attitude_skill", fetch = FetchType.EAGER)
+//    private List<AttitudeSkill> attitudeSkill;
 }

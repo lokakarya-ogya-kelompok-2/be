@@ -12,7 +12,7 @@ import java.util.UUID;
 public class Menu {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name="ID", length=32)
+    @Column(name="ID")
     private UUID id;
 
     @Column(name ="MENU_NAME" , length = 30)
@@ -29,4 +29,7 @@ public class Menu {
 
     @Column(name = "UPDATED_BY")
     private UUID updatedBy;
+
+//    @ManyToMany(mappedBy = "menu")
+//    private Set<Role> roles = new HashSet<>();
 }

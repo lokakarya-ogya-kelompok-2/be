@@ -8,22 +8,18 @@ import java.util.UUID;
 
 @Entity
 @Data
-@Table(name="TBL_ATTITUDE_SKILL")
-public class AttitudeSkill {
+@Table(name="TBL_DEV_PLAN")
+public class DevPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name="ID")
     private UUID id;
 
-    @Column(name ="ATTITUDE_SKILL", nullable = false , length = 100)
-    private String attitudeSkill;
+    @Column(name ="PLAN" , length = 100)
+    private String menuName;
 
-    @ManyToOne
-    @JoinColumn(name ="GROUP_ID")
-    private GroupAttitudeSkill groupAttitudeSkill;
-
-    @Column(name = "ENABLED")
-    private Boolean enabled = true;
+    @Column(name = "ENABLED", length = 1)
+    private boolean enabled=true;
 
     @Column(name = "CREATED_AT", nullable = false)
     private Date createdAt = Date.valueOf(LocalDate.now());
@@ -36,8 +32,7 @@ public class AttitudeSkill {
 
     @Column(name = "UPDATED_BY")
     private UUID updatedBy;
-
-//    @OneToMany(mappedBy = "emp_attitude_skill", fetch = FetchType.EAGER)
-//    private List<AttitudeSkill> attitudeSkills;
-
+//
+//    @OneToMany(mappedBy = "dev_plan", fetch = FetchType.LAZY)
+//    private List<EmpDevPlan> empDevPlans;
 }
