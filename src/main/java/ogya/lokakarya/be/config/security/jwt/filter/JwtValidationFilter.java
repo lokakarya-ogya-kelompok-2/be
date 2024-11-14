@@ -1,20 +1,18 @@
 package ogya.lokakarya.be.config.security.jwt.filter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,16 +26,13 @@ public class JwtValidationFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
-
-        System.out.println("MASOOOKKK");
+        System.out.println(authHeader + "HEADER");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             doFilter(request, response, filterChain);
             return;
@@ -45,16 +40,16 @@ public class JwtValidationFilter extends OncePerRequestFilter {
 
         try {
             final String jwt = authHeader.substring(7);
-            final String userEmail = jwtUtil.extractUsername(jwt);
+            final String userIdStr = jwtUtil.extractUserId(jwt);
 
-            if (userEmail != null
+            if (userIdStr != null
                     && SecurityContextHolder.getContext().getAuthentication() == null) {
-                List<GrantedAuthority> authorities = new ArrayList<>();
-                authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
                 if (jwtUtil.isTokenValid(jwt)) {
+                    Collection<GrantedAuthority> authorities = jwtUtil.extractRoles(jwt);
                     UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(userEmail, null, authorities);
+                            new UsernamePasswordAuthenticationToken(UUID.fromString(userIdStr),
+                                    null, authorities);
                     authToken
                             .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);

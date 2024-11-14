@@ -1,12 +1,17 @@
 package ogya.lokakarya.be.config.security.jwt;
 
 import java.security.Key;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
@@ -31,7 +36,11 @@ public class JwtUtil {
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         Date now = new Date();
+        String authoritiesStr = userDetails.getAuthorities().stream()
+                .map(authority -> "ROLE_" + authority.getAuthority())
+                .collect(Collectors.joining(","));
         return Jwts.builder().claims(extraClaims).subject(userDetails.getUsername()).issuedAt(now)
+                .claim("roles", authoritiesStr)
                 .expiration(new Date(now.getTime() + jwtExpirationMs)).signWith(jwtKey).compact();
     }
 
@@ -39,7 +48,7 @@ public class JwtUtil {
         return generateToken(new HashMap<>(), userDetails);
     }
 
-    public String extractUsername(String token) {
+    public String extractUserId(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -57,6 +66,13 @@ public class JwtUtil {
                 .getPayload();
     }
 
+    public Collection<GrantedAuthority> extractRoles(String token) {
+        return extractClaim(token, claims -> {
+            String authoritiesString = claims.get("roles", String.class);
+            return Arrays.stream(authoritiesString.split(",")).map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
+        });
+    }
 
     public boolean isTokenValid(String token) {
         return extractExpirationDate(token).after(new Date());

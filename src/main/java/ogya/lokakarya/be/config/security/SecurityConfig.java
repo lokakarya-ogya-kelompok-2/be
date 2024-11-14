@@ -38,7 +38,7 @@ public class SecurityConfig {
                     cfg.setExposedHeaders(Arrays.asList("Authorization"));
                     return cfg;
                 }))
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/users/**").authenticated()
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/users/**").hasRole("HR")
                         .anyRequest().permitAll())
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/**")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))

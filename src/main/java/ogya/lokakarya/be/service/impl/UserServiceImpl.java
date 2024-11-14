@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ogya.lokakarya.be.dto.user.CreateUserDto;
@@ -32,6 +34,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto create(CreateUserDto data) {
         User userEntity = data.toEntity();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UUID hrId = (UUID) auth.getPrincipal();
+        Optional<User> hrOpt = userRepo.findById(hrId);
+        if (hrOpt.isEmpty()) {
+            throw new RuntimeException("HR EMPTY");
+        }
+
+        userEntity.setCreatedBy(hrOpt.get());
         Set<Role> roles;
         if ((data.getRoles() != null) && !data.getRoles().isEmpty()) {
             roles = new HashSet<>(data.getRoles().size());
@@ -47,7 +57,8 @@ public class UserServiceImpl implements UserService {
         }
         userEntity.setPassword(passwordEncoder.encode(data.getPassword()));
         userEntity = userRepo.save(userEntity);
-        return new UserDto(userEntity, false, false);
+        System.out.println(new UserDto(hrOpt.get(), false, false) + " << AKUN HR");
+        return new UserDto(userEntity, true, false);
     }
 
     @Override

@@ -21,6 +21,7 @@ import ogya.lokakarya.be.service.UserService;
 
 @RequestMapping("/users")
 @RestController
+@SecurityRequirement(name = "bearerAuth")
 public class UserController {
     @Autowired
     private UserService userSvc;
@@ -32,7 +33,6 @@ public class UserController {
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
-    @SecurityRequirement(name = "bearerAuth")
     @GetMapping
     public ResponseEntity<List<UserDto>> list() {
         var users = userSvc.list();

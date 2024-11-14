@@ -85,4 +85,9 @@ public class User implements UserDetails {
         roles.forEach(role -> userRoles.add(new SimpleGrantedAuthority(role.getRoleName())));
         return userRoles;
     }
+
+    @Override
+    public String getUsername() {
+        return id.toString();
+    }
 }
