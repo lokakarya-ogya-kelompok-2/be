@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import ogya.lokakarya.be.dto.Role.RoleDto;
+import ogya.lokakarya.be.dto.role.RoleDto;
 import ogya.lokakarya.be.entity.User;
 
 @Data
@@ -67,7 +67,7 @@ public class UserDto {
             setUpdatedBy(new UserDto(user.getUpdatedBy(), false, false));
         }
 
-        Set<RoleDto> roles = new HashSet<>();
+        roles = new HashSet<>();
         user.getRoles().forEach(role -> roles.add(new RoleDto(role)));
         setRoles(roles);
     }

@@ -2,7 +2,6 @@ package ogya.lokakarya.be.config.security.jwt.filter;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -40,16 +39,15 @@ public class JwtValidationFilter extends OncePerRequestFilter {
 
         try {
             final String jwt = authHeader.substring(7);
-            final String userIdStr = jwtUtil.extractUserId(jwt);
+            final String username = jwtUtil.extractSubject(jwt);
 
-            if (userIdStr != null
+            if (username != null
                     && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 if (jwtUtil.isTokenValid(jwt)) {
                     Collection<GrantedAuthority> authorities = jwtUtil.extractRoles(jwt);
                     UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(UUID.fromString(userIdStr),
-                                    null, authorities);
+                            new UsernamePasswordAuthenticationToken(username, null, authorities);
                     authToken
                             .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);

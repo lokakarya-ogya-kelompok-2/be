@@ -48,7 +48,7 @@ public class JwtUtil {
         return generateToken(new HashMap<>(), userDetails);
     }
 
-    public String extractUserId(String token) {
+    public String extractSubject(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 

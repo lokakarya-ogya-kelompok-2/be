@@ -35,8 +35,8 @@ public class UserServiceImpl implements UserService {
     public UserDto create(CreateUserDto data) {
         User userEntity = data.toEntity();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        UUID hrId = (UUID) auth.getPrincipal();
-        Optional<User> hrOpt = userRepo.findById(hrId);
+        String hrUsername = (String) auth.getPrincipal();
+        Optional<User> hrOpt = userRepo.findByUsername(hrUsername);
         if (hrOpt.isEmpty()) {
             throw new RuntimeException("HR EMPTY");
         }
@@ -57,7 +57,6 @@ public class UserServiceImpl implements UserService {
         }
         userEntity.setPassword(passwordEncoder.encode(data.getPassword()));
         userEntity = userRepo.save(userEntity);
-        System.out.println(new UserDto(hrOpt.get(), false, false) + " << AKUN HR");
         return new UserDto(userEntity, true, false);
     }
 
@@ -75,7 +74,9 @@ public class UserServiceImpl implements UserService {
         if (userOpt.isEmpty()) {
             throw new RuntimeException("USER WITH GIVEN ID COULD NOT BE FOUND");
         }
-        return new UserDto(userOpt.get(), false, false);
+        User user = userOpt.get();
+        user.getRoles();
+        return new UserDto(user, true, true);
     }
 
 }
