@@ -13,7 +13,7 @@ import java.util.UUID;
 public class GroupAchievement {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name="ID", length=32)
+    @Column(name="ID")
     private UUID id;
 
     @Column(name ="GROUP_NAME" , length = 100)

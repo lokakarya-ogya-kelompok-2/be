@@ -13,7 +13,7 @@ import java.util.UUID;
 public class GroupAttitudeSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name="ID", length=32)
+    @Column(name="ID")
     private UUID id;
 
     @Column(name ="GROUP_NAME" , length = 100)
@@ -37,6 +37,6 @@ public class GroupAttitudeSkill {
     @Column(name = "UPDATED_BY")
     private UUID updatedBy;
 
-    @OneToMany(mappedBy = "attitude_skill", fetch = FetchType.EAGER)
-    private List<AttitudeSkill> attitudeSkill;
+//    @OneToMany(mappedBy = "attitude_skill", fetch = FetchType.EAGER)
+//    private List<AttitudeSkill> attitudeSkill;
 }

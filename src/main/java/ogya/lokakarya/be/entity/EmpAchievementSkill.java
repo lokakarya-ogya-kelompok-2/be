@@ -12,7 +12,7 @@ import java.util.UUID;
 public class EmpAchievementSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name="ID", length=32)
+    @Column(name="ID")
     private UUID id;
 
     @ManyToOne
