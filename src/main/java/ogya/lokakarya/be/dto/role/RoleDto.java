@@ -23,7 +23,7 @@ public class RoleDto {
     private String roleName;
 
     @JsonProperty("created_at")
-    private Date createdAt = new Date();
+    private Date createdAt;
 
     @JsonProperty("created_by")
     private UUID createdBy;

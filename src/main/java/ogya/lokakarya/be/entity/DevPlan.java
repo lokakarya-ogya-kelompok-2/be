@@ -16,7 +16,7 @@ public class DevPlan {
     private UUID id;
 
     @Column(name ="PLAN" , length = 100)
-    private String menuName;
+    private String plan;
 
     @Column(name = "ENABLED", length = 1)
     private boolean enabled=true;

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import ogya.lokakarya.be.entity.Menu;
 import java.util.Date;
-import java.time.LocalDate;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -20,7 +19,7 @@ public class MenuDto {
     private String menuName;
 
     @JsonProperty("created_at")
-    private Date createdAt = new Date();
+    private Date createdAt;
 
     @JsonProperty("created_by")
     private UUID createdBy;

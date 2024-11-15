@@ -27,7 +27,7 @@ public class AttitudeSkillDto {
     private Boolean enabled = true;
 
     @JsonProperty("created_at")
-    private Date createdAt = new Date();
+    private Date createdAt;
 
     @JsonProperty("created_by")
     private UUID createdBy;
