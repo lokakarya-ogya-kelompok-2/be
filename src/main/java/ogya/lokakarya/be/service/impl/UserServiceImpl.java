@@ -5,11 +5,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
+import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.user.CreateUserDto;
 import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.Role;
@@ -35,19 +34,16 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private SecurityUtil securityUtil;
+
     @Override
     @Transactional
     public UserDto create(CreateUserDto data) {
         User userEntity = data.toEntity();
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        UUID hrId = (UUID) auth.getPrincipal();
-        Optional<User> hrOpt = userRepo.findById(hrId);
-        if (hrOpt.isEmpty()) {
-            throw new RuntimeException("HR EMPTY");
-        }
 
-        User hrEntity = hrOpt.get();
-        userEntity.setCreatedBy(hrEntity);
+        User currentUserEntity = securityUtil.getCurrentUser();
+        userEntity.setCreatedBy(currentUserEntity);
         userEntity.setPassword(passwordEncoder.encode(data.getPassword()));
         userEntity = userRepo.save(userEntity);
 
@@ -65,7 +61,6 @@ public class UserServiceImpl implements UserService {
                 userRoleRepo.save(userRole);
                 userEntity.getUserRoles().add(userRole);
             }
-
         }
 
         return new UserDto(userEntity, true, false);
@@ -87,6 +82,39 @@ public class UserServiceImpl implements UserService {
         }
         User user = userOpt.get();
         return new UserDto(user, true, true);
+    }
+
+    @Transactional
+    @Override
+    public UserDto update(UUID id, CreateUserDto data) {
+        Optional<User> userOpt = userRepo.findById(id);
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("USER WITH GIVEN ID COULD NOT BE FOUND!");
+        }
+        User newData = data.toEntity();
+        User currentUser = securityUtil.getCurrentUser();
+        newData.setId(id);
+        newData.setUpdatedBy(currentUser);
+        newData = userRepo.save(newData);
+
+        userRoleRepo.deleteByUserId(id);
+        if ((data.getRoles() != null) && !data.getRoles().isEmpty()) {
+            newData.setUserRoles(new ArrayList<>());
+            for (UUID roleId : data.getRoles()) {
+                Optional<Role> roleOpt = roleRepo.findById(roleId);
+                if (roleOpt.isEmpty()) {
+                    throw new RuntimeException(String.format("Role with id %s could not be found!",
+                            roleId.toString()));
+                }
+                UserRole userRole = new UserRole();
+                userRole.setUser(newData);
+                userRole.setRole(roleOpt.get());
+                userRoleRepo.save(userRole);
+                newData.getUserRoles().add(userRole);
+            }
+        }
+
+        return new UserDto(newData, true, true);
     }
 
 }

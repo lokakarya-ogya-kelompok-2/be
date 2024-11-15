@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ogya.lokakarya.be.entity.UserRole;
 
 public interface UserRoleRepository extends JpaRepository<UserRole, UUID> {
-
+    void deleteByUserId(UUID userId);
 }

@@ -11,4 +11,6 @@ public interface UserService {
     List<UserDto> list();
 
     UserDto get(UUID id);
+
+    UserDto update(UUID id, CreateUserDto data);
 }

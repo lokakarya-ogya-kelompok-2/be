@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,11 +22,13 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
 @Data
+@DynamicUpdate
 @Table(name = "TBL_APP_USER")
 public class User implements UserDetails {
     @Id
@@ -104,5 +107,10 @@ public class User implements UserDetails {
 
     public String getUsernameRiilNoFake() {
         return username;
+    }
+
+    @PreUpdate
+    private void fillUpdatedAt() {
+        updatedAt = new java.util.Date();
     }
 }
