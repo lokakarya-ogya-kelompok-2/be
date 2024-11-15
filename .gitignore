@@ -5,7 +5,7 @@ target/
 !**/src/test/**/target/
 
 # Ignore Spring Boot application properties
-src/main/resources/application-dev.properties
+**/application-dev.properties
 
 
 ### STS ###
