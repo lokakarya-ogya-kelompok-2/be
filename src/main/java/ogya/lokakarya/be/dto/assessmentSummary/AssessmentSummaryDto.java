@@ -30,7 +30,7 @@ public class AssessmentSummaryDto {
     private Integer status;
 
     @JsonProperty("created_at")
-    private Date createdAt = new Date();
+    private Date createdAt;
 
     @JsonProperty("CREATED_BY")
     private UUID createdBy;

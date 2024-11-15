@@ -1,12 +1,9 @@
 package ogya.lokakarya.be.dto.groupAttitudeSkill;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
 import lombok.*;
 import ogya.lokakarya.be.entity.GroupAttitudeSkill;
-
 import java.util.Date;
-import java.time.LocalDate;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -28,7 +25,7 @@ public class GroupAttitudeSkillDto {
     private Boolean enabled = true;
 
     @JsonProperty("created_at")
-    private Date createdAt = new Date();
+    private Date createdAt;
 
     @JsonProperty("created_by")
     private UUID createdBy;
