@@ -1,7 +1,6 @@
 package ogya.lokakarya.be.entity;
 
-import java.sql.Date;
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 import jakarta.persistence.Column;
@@ -27,8 +26,8 @@ public class Role {
     @Column(name = "ROLENAME", unique = true, nullable = false, length = 30)
     private String roleName;
 
-    @Column(name = "CREATED_AT", nullable = false)
-    private Date createdAt = Date.valueOf(LocalDate.now());
+    @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
+    private Date createdAt = new Date();
 
     @Column(name = "CREATED_BY")
     private UUID createdBy;

@@ -57,10 +57,9 @@ public class User implements UserDetails {
     @Column(name = "PASSWORD", nullable = false, length = 100)
     private String password;
 
-    @ManyToMany
-    @JoinTable(name = "TBL_APP_USER_ROLE", joinColumns = {@JoinColumn(name = "USER_ID")},
-            inverseJoinColumns = {@JoinColumn(name = "ROLE_ID")})
-    private Set<Role> roles;
+    @OneToMany
+    @JoinColumn(name = "USER_ID")
+    private List<UserRole> roles;
 
     @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     private java.util.Date createdAt = new java.util.Date();
@@ -94,7 +93,17 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<SimpleGrantedAuthority> userRoles = new ArrayList<>();
-        roles.forEach(role -> userRoles.add(new SimpleGrantedAuthority(role.getRoleName())));
+        roles.forEach(
+                role -> userRoles.add(new SimpleGrantedAuthority(role.getRole().getRoleName())));
         return userRoles;
+    }
+
+    @Override
+    public String getUsername() {
+        return id.toString();
+    }
+
+    public String getUsernameRiilNoFake() {
+        return username;
     }
 }
