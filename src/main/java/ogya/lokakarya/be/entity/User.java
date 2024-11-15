@@ -57,9 +57,8 @@ public class User implements UserDetails {
     @Column(name = "PASSWORD", nullable = false, length = 100)
     private String password;
 
-    @OneToMany
-    @JoinColumn(name = "USER_ID")
-    private List<UserRole> roles;
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<UserRole> userRoles;
 
     @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     private java.util.Date createdAt = new java.util.Date();
@@ -92,10 +91,10 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<SimpleGrantedAuthority> userRoles = new ArrayList<>();
-        roles.forEach(
-                role -> userRoles.add(new SimpleGrantedAuthority(role.getRole().getRoleName())));
-        return userRoles;
+        Collection<SimpleGrantedAuthority> roles = new ArrayList<>();
+        userRoles.forEach(userRole -> roles
+                .add(new SimpleGrantedAuthority(userRole.getRole().getRoleName())));
+        return roles;
     }
 
     @Override

@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
         userEntity = userRepo.save(userEntity);
 
         if ((data.getRoles() != null) && !data.getRoles().isEmpty()) {
-            userEntity.setRoles(new ArrayList<>());
+            userEntity.setUserRoles(new ArrayList<>());
             for (UUID roleId : data.getRoles()) {
                 Optional<Role> roleOpt = roleRepo.findById(roleId);
                 if (roleOpt.isEmpty()) {
@@ -62,7 +62,8 @@ public class UserServiceImpl implements UserService {
                 UserRole userRole = new UserRole();
                 userRole.setUser(userEntity);
                 userRole.setRole(roleOpt.get());
-                userEntity.getRoles().add(userRole);
+                userRoleRepo.save(userRole);
+                userEntity.getUserRoles().add(userRole);
             }
 
         }
@@ -85,7 +86,6 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("USER WITH GIVEN ID COULD NOT BE FOUND");
         }
         User user = userOpt.get();
-        user.getRoles();
         return new UserDto(user, true, true);
     }
 

@@ -68,9 +68,8 @@ public class UserDto {
         }
 
         roles = new HashSet<>();
-        System.out.println(user.getRoles().size() + " ROLESSSS");
-        if (user.getRoles() != null) {
-            user.getRoles().forEach(userRole -> roles.add(new RoleDto(userRole.getRole())));
+        if (user.getUserRoles() != null) {
+            user.getUserRoles().forEach(userRole -> roles.add(new RoleDto(userRole.getRole())));
         }
         setRoles(roles);
     }
