@@ -2,7 +2,7 @@ package ogya.lokakarya.be.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.sql.Date;
+import java.util.Date;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -27,7 +27,7 @@ public class EmpDevPlan {
     private Integer assessmentYear;
 
     @Column(name = "CREATED_AT", nullable = false)
-    private Date createdAt = Date.valueOf(LocalDate.now());
+    private Date createdAt =new Date();
 
     @Column(name = "CREATED_BY")
     private UUID createdBy;

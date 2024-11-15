@@ -3,7 +3,7 @@ package ogya.lokakarya.be.dto.division;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import ogya.lokakarya.be.entity.Division;
-import java.sql.Date;
+import java.util.Date;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -20,7 +20,7 @@ public class DivisionDto {
     private String divisionName;
 
     @JsonProperty("created_add")
-    private Date createdAt = Date.valueOf(LocalDate.now());
+    private Date createdAt = new Date();
 
     @JsonProperty("created_by")
     private UUID createdBy;
