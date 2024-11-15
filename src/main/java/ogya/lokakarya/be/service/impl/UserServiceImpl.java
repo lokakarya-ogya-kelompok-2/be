@@ -1,20 +1,21 @@
 package ogya.lokakarya.be.service.impl;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.dto.user.CreateUserDto;
 import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.Role;
 import ogya.lokakarya.be.entity.User;
+import ogya.lokakarya.be.entity.UserRole;
+import ogya.lokakarya.be.repository.UserRoleRepository;
 import ogya.lokakarya.be.repository.role.RoleRepository;
 import ogya.lokakarya.be.repository.user.UserRepository;
 import ogya.lokakarya.be.service.UserService;
@@ -29,34 +30,43 @@ public class UserServiceImpl implements UserService {
     private RoleRepository roleRepo;
 
     @Autowired
+    private UserRoleRepository userRoleRepo;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
+    @Transactional
     public UserDto create(CreateUserDto data) {
         User userEntity = data.toEntity();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String hrUsername = (String) auth.getPrincipal();
-        Optional<User> hrOpt = userRepo.findByUsername(hrUsername);
+        UUID hrId = (UUID) auth.getPrincipal();
+        Optional<User> hrOpt = userRepo.findById(hrId);
         if (hrOpt.isEmpty()) {
             throw new RuntimeException("HR EMPTY");
         }
 
-        userEntity.setCreatedBy(hrOpt.get());
-        Set<Role> roles;
+        User hrEntity = hrOpt.get();
+        userEntity.setCreatedBy(hrEntity);
+        userEntity.setPassword(passwordEncoder.encode(data.getPassword()));
+        userEntity = userRepo.save(userEntity);
+
         if ((data.getRoles() != null) && !data.getRoles().isEmpty()) {
-            roles = new HashSet<>(data.getRoles().size());
-            data.getRoles().forEach(roleId -> {
+            userEntity.setRoles(new ArrayList<>());
+            for (UUID roleId : data.getRoles()) {
                 Optional<Role> roleOpt = roleRepo.findById(roleId);
                 if (roleOpt.isEmpty()) {
                     throw new RuntimeException(String.format("Role with id %s could not be found!",
                             roleId.toString()));
                 }
-                roles.add(roleOpt.get());
-            });
-            userEntity.setRoles(roles);
+                UserRole userRole = new UserRole();
+                userRole.setUser(userEntity);
+                userRole.setRole(roleOpt.get());
+                userEntity.getRoles().add(userRole);
+            }
+
         }
-        userEntity.setPassword(passwordEncoder.encode(data.getPassword()));
-        userEntity = userRepo.save(userEntity);
+
         return new UserDto(userEntity, true, false);
     }
 

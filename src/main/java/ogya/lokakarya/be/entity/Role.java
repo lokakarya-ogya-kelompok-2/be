@@ -1,7 +1,6 @@
 package ogya.lokakarya.be.entity;
 
 import java.util.Date;
-import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
 import jakarta.persistence.Column;

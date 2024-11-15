@@ -47,7 +47,7 @@ public class UserDto {
 
     public UserDto(User user, boolean withCreatedBy, boolean withUpdatedBy) {
         setId(user.getId());
-        setUsername(user.getUsername());
+        setUsername(user.getUsernameRiilNoFake());
         setFullName(user.getFullName());
         setPosition(user.getPosition());
         setEmailAddress(user.getEmailAddress());
@@ -68,7 +68,9 @@ public class UserDto {
         }
 
         roles = new HashSet<>();
-        user.getRoles().forEach(role -> roles.add(new RoleDto(role)));
+        if (user.getRoles() != null) {
+            user.getRoles().forEach(userRole -> roles.add(new RoleDto(userRole.getRole())));
+        }
         setRoles(roles);
     }
 }
