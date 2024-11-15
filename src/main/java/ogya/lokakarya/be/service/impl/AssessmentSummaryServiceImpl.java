@@ -1,11 +1,9 @@
 package ogya.lokakarya.be.service.impl;
 
-import ogya.lokakarya.be.dto.assessmentSummary.AssessmentSummaryDto;
-import ogya.lokakarya.be.dto.assessmentSummary.CreateAssessmentSummary;
-import ogya.lokakarya.be.dto.division.DivisionDto;
+import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
+import ogya.lokakarya.be.dto.assessmentsummary.CreateAssessmentSummary;
 import ogya.lokakarya.be.entity.AssessmentSummary;
-import ogya.lokakarya.be.entity.Division;
-import ogya.lokakarya.be.repository.assessmentSummary.AssessmentSummaryRepository;
+import ogya.lokakarya.be.repository.assessmentsummary.AssessmentSummaryRepository;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

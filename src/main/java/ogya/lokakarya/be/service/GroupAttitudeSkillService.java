@@ -1,8 +1,7 @@
 package ogya.lokakarya.be.service;
 
-import ogya.lokakarya.be.dto.division.CreateDivision;
-import ogya.lokakarya.be.dto.groupAttitudeSkill.CreateGroupAttitudeSkill;
-import ogya.lokakarya.be.dto.groupAttitudeSkill.GroupAttitudeSkillDto;
+import ogya.lokakarya.be.dto.groupattitudeskill.CreateGroupAttitudeSkill;
+import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillDto;
 import ogya.lokakarya.be.entity.GroupAttitudeSkill;
 
 import java.util.List;

@@ -1,11 +1,9 @@
 package ogya.lokakarya.be.service.impl;
 
-import ogya.lokakarya.be.dto.devPlan.CreateDevPlan;
-import ogya.lokakarya.be.dto.devPlan.DevPlanDto;
-import ogya.lokakarya.be.dto.division.DivisionDto;
+import ogya.lokakarya.be.dto.devplan.CreateDevPlan;
+import ogya.lokakarya.be.dto.devplan.DevPlanDto;
 import ogya.lokakarya.be.entity.DevPlan;
-import ogya.lokakarya.be.entity.Division;
-import ogya.lokakarya.be.repository.devPlan.DevPlanRepository;
+import ogya.lokakarya.be.repository.devplan.DevPlanRepository;
 import ogya.lokakarya.be.service.DevPlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
