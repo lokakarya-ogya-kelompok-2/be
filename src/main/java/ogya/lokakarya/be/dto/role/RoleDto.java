@@ -1,7 +1,6 @@
 package ogya.lokakarya.be.dto.role;
 
-import java.sql.Date;
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -24,7 +23,7 @@ public class RoleDto {
     private String roleName;
 
     @JsonProperty("created_at")
-    private Date createdAt = Date.valueOf(LocalDate.now());
+    private Date createdAt = new Date();
 
     @JsonProperty("created_by")
     private UUID createdBy;

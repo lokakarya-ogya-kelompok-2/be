@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import ogya.lokakarya.be.entity.AttitudeSkill;
 import ogya.lokakarya.be.entity.GroupAttitudeSkill;
-import java.sql.Date;
+import java.util.Date;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -27,7 +27,7 @@ public class AttitudeSkillDto {
     private Boolean enabled = true;
 
     @JsonProperty("created_at")
-    private Date createdAt = Date.valueOf(LocalDate.now());
+    private Date createdAt = new Date();
 
     @JsonProperty("created_by")
     private UUID createdBy;

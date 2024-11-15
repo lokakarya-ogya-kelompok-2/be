@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import ogya.lokakarya.be.entity.AssessmentSummary;
 import ogya.lokakarya.be.entity.User;
-import java.sql.Date;
+import java.util.Date;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -30,7 +30,7 @@ public class AssessmentSummaryDto {
     private Integer status;
 
     @JsonProperty("created_at")
-    private Date createdAt = Date.valueOf(LocalDate.now());
+    private Date createdAt = new Date();
 
     @JsonProperty("CREATED_BY")
     private UUID createdBy;
