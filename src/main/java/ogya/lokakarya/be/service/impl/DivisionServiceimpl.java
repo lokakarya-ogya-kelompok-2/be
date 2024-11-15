@@ -26,8 +26,8 @@ public class DivisionServiceimpl implements DivisionService {
     @Override
     public List<DivisionDto> getAllDivisions() {
         List<DivisionDto> listResult=new ArrayList<>();
-        List<Division> roleList=divisionRepository.findAll();
-        for(Division division : roleList) {
+        List<Division> divisionList=divisionRepository.findAll();
+        for(Division division : divisionList) {
             DivisionDto result= convertToDto(division);
             listResult.add(result);
         }
