@@ -1,8 +1,14 @@
 package ogya.lokakarya.be.service;
 
-import ogya.lokakarya.be.dto.user.CreateUser;
-import ogya.lokakarya.be.entity.User;
+import java.util.List;
+import java.util.UUID;
+import ogya.lokakarya.be.dto.user.CreateUserDto;
+import ogya.lokakarya.be.dto.user.UserDto;
 
 public interface UserService {
-    User create(CreateUser data);
+    UserDto create(CreateUserDto data);
+
+    List<UserDto> list();
+
+    UserDto get(UUID id);
 }

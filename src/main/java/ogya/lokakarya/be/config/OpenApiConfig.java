@@ -1,5 +1,6 @@
 package ogya.lokakarya.be.config;
 
+import java.util.List;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,8 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 
 @Configuration
 public class OpenApiConfig implements WebMvcConfigurer {
@@ -22,12 +25,16 @@ public class OpenApiConfig implements WebMvcConfigurer {
 
     @Bean
     OpenAPI openAPI() {
-        return new OpenAPI().components(new Components())
+        return new OpenAPI()
+                .components(new Components().addSecuritySchemes("bearerAuth",
+                        new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer")
+                                .bearerFormat("JWT")))
                 .info(new Info().title("OGYA REST API").description("REST API for something")
                         .version("1.0.0").termsOfService("ToS")
                         .license(new License().name("Apache License Version 2.0")
                                 .url("https:/apache.org/licenses/LICENSE-2.0"))
-                        .contact(new Contact().name("aku").email("aku@email.com")));
+                        .contact(new Contact().name("aku").email("aku@email.com")))
+                .servers(List.of(new Server().url("/")));
     }
 
     @Bean

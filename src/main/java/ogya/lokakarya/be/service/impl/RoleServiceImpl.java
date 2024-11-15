@@ -24,6 +24,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+
     public List<RoleDto> getAllRole() {
         List<RoleDto> listResult=new ArrayList<>();
         List<Role> roleList=roleRepository.findAll();
