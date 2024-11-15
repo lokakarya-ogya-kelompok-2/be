@@ -1,8 +1,8 @@
 package ogya.lokakarya.be.service;
 
 
-import ogya.lokakarya.be.dto.assessmentSummary.AssessmentSummaryDto;
-import ogya.lokakarya.be.dto.assessmentSummary.CreateAssessmentSummary;
+import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
+import ogya.lokakarya.be.dto.assessmentsummary.CreateAssessmentSummary;
 import ogya.lokakarya.be.entity.AssessmentSummary;
 
 import java.util.List;

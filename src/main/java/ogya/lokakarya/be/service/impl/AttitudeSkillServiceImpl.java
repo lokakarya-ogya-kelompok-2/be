@@ -1,12 +1,9 @@
 package ogya.lokakarya.be.service.impl;
 
-import ogya.lokakarya.be.dto.attitudeSkill.AttitudeSkillDto;
-import ogya.lokakarya.be.dto.attitudeSkill.CreateAttitudeSkill;
-import ogya.lokakarya.be.dto.division.CreateDivision;
-import ogya.lokakarya.be.dto.division.DivisionDto;
+import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillDto;
+import ogya.lokakarya.be.dto.attitudeskill.CreateAttitudeSkill;
 import ogya.lokakarya.be.entity.AttitudeSkill;
-import ogya.lokakarya.be.entity.Division;
-import ogya.lokakarya.be.repository.attitudeSkill.AttitudeSkillRepository;
+import ogya.lokakarya.be.repository.attitudeskill.AttitudeSkillRepository;
 import ogya.lokakarya.be.service.AttitudeSkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
