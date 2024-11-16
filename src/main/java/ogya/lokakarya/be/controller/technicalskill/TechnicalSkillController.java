@@ -1,7 +1,7 @@
 package ogya.lokakarya.be.controller.technicalskill;
 
 import jakarta.validation.Valid;
-import ogya.lokakarya.be.dto.technicalskill.CreateTechnicalSkill;
+import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillReq;
 import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillDto;
 import ogya.lokakarya.be.entity.TechnicalSkill;
 import ogya.lokakarya.be.service.TechnicalSkillService;
@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RequestMapping("/technical-skill")
+@RequestMapping("/technical-skills")
 @RestController
 public class TechnicalSkillController {
     @Autowired
     private TechnicalSkillService technicalSkillService;
 
     @PostMapping
-    public ResponseEntity<TechnicalSkill> create(@RequestBody @Valid CreateTechnicalSkill data) {
+    public ResponseEntity<TechnicalSkill> create(@RequestBody @Valid TechnicalSkillReq data) {
         var createdDivision= technicalSkillService.create(data);
         return new ResponseEntity<>(createdDivision, HttpStatus.CREATED);
     }
@@ -38,8 +38,8 @@ public class TechnicalSkillController {
 
     @PutMapping("/{id}")
     public ResponseEntity<TechnicalSkillDto> updatetechnicalSkillById
-            (@PathVariable UUID id, @RequestBody @Valid CreateTechnicalSkill createTechnicalSkill) {
-        TechnicalSkillDto res= technicalSkillService.updateTechnicalSkillById(id, createTechnicalSkill);
+            (@PathVariable UUID id, @RequestBody @Valid TechnicalSkillReq technicalSkillReq) {
+        TechnicalSkillDto res= technicalSkillService.updateTechnicalSkillById(id, technicalSkillReq);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
     @DeleteMapping("/{id}")

@@ -9,7 +9,7 @@ import ogya.lokakarya.be.entity.EmpSuggestion;
 @Builder
 @Data
 @ToString
-public class CreateEmpSuggestion {
+public class EmpSuggestionReq {
     @JsonProperty("suggestion")
     private String suggestion;
 

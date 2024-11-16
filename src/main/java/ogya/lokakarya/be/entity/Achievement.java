@@ -3,7 +3,6 @@ package ogya.lokakarya.be.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.Date;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,9 +18,9 @@ public class Achievement {
     @Column(name ="ACHIEVEMENT" , length = 100)
     private String achievement;
 
-    @ManyToOne
-    @JoinColumn(name ="GROUP_ID")
-    private GroupAchievement groupAchievement;
+//    @ManyToOne
+//    @JoinColumn(name ="GROUP_ID")
+//    private GroupAchievement groupAchievement;
 
     @Column(name = "ENABLED")
     private Boolean enabled = true;

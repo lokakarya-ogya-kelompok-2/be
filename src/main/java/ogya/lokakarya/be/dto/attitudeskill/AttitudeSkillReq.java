@@ -9,7 +9,7 @@ import ogya.lokakarya.be.entity.AttitudeSkill;
 @Builder
 @Data
 @ToString
-public class CreateAttitudeSkill {
+public class AttitudeSkillReq {
     @JsonProperty("attitude_skill")
     private String attitudeSkill;
 

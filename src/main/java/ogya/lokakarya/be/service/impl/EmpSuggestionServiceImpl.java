@@ -1,9 +1,7 @@
 package ogya.lokakarya.be.service.impl;
 
-import ogya.lokakarya.be.dto.division.DivisionDto;
-import ogya.lokakarya.be.dto.empsuggestion.CreateEmpSuggestion;
+import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionReq;
 import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionDto;
-import ogya.lokakarya.be.entity.Division;
 import ogya.lokakarya.be.entity.EmpSuggestion;
 import ogya.lokakarya.be.repository.empsuggestion.EmpSuggestionRepository;
 import ogya.lokakarya.be.service.EmpSuggestionService;
@@ -22,7 +20,7 @@ public class EmpSuggestionServiceImpl implements EmpSuggestionService {
     EmpSuggestionRepository empSuggestionRepository;
 
     @Override
-    public EmpSuggestion create(CreateEmpSuggestion data) {
+    public EmpSuggestion create(EmpSuggestionReq data) {
         return empSuggestionRepository.save(data.toEntity());
     }
 
@@ -57,13 +55,13 @@ public class EmpSuggestionServiceImpl implements EmpSuggestionService {
     }
 
     @Override
-    public EmpSuggestionDto updateEmpSuggestionById(UUID id, CreateEmpSuggestion createEmpSuggestion) {
+    public EmpSuggestionDto updateEmpSuggestionById(UUID id, EmpSuggestionReq empSuggestionReq) {
         Optional<EmpSuggestion> listData= empSuggestionRepository.findById(id);
         if(listData.isPresent()){
             EmpSuggestion empSuggestion= listData.get();
-            if(!createEmpSuggestion.getSuggestion().isBlank()){
-                empSuggestion.setSuggestion(createEmpSuggestion.getSuggestion());
-                empSuggestion.setAssessmentYear(createEmpSuggestion.getAssessmentYear());
+            if(!empSuggestionReq.getSuggestion().isBlank()){
+                empSuggestion.setSuggestion(empSuggestionReq.getSuggestion());
+                empSuggestion.setAssessmentYear(empSuggestionReq.getAssessmentYear());
             }
             EmpSuggestionDto empSuggestionDto= convertToDto(empSuggestion);
             empSuggestionRepository.save(empSuggestion);

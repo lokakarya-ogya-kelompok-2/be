@@ -1,7 +1,7 @@
 package ogya.lokakarya.be.controller.devplan;
 
 import jakarta.validation.Valid;
-import ogya.lokakarya.be.dto.devplan.CreateDevPlan;
+import ogya.lokakarya.be.dto.devplan.DevPlanReq;
 import ogya.lokakarya.be.dto.devplan.DevPlanDto;
 import ogya.lokakarya.be.entity.DevPlan;
 import ogya.lokakarya.be.service.DevPlanService;
@@ -12,14 +12,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RequestMapping("/dev-plan")
+@RequestMapping("/dev-plans")
 @RestController
 public class DevPlanController {
     @Autowired
     private DevPlanService devPlanService;
 
     @PostMapping
-    public ResponseEntity<DevPlan> create(@RequestBody @Valid CreateDevPlan data) {
+    public ResponseEntity<DevPlan> create(@RequestBody @Valid DevPlanReq data) {
         var createdDevPlan= devPlanService.create(data);
         return new ResponseEntity<>(createdDevPlan, HttpStatus.CREATED);
     }
@@ -37,8 +37,8 @@ public class DevPlanController {
 
     @PutMapping("/{id}")
     public ResponseEntity<DevPlanDto> updateDivisionById
-            (@PathVariable UUID id, @RequestBody @Valid CreateDevPlan createDevPlan) {
-        DevPlanDto res= devPlanService.updateDevPlanById(id, createDevPlan);
+            (@PathVariable UUID id, @RequestBody @Valid DevPlanReq devPlanReq) {
+        DevPlanDto res= devPlanService.updateDevPlanById(id, devPlanReq);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
     @DeleteMapping("/{id}")

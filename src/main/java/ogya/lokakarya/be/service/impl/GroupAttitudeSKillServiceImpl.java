@@ -1,6 +1,6 @@
 package ogya.lokakarya.be.service.impl;
 
-import ogya.lokakarya.be.dto.groupattitudeskill.CreateGroupAttitudeSkill;
+import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillReq;
 import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillDto;
 import ogya.lokakarya.be.entity.GroupAttitudeSkill;
 import ogya.lokakarya.be.repository.groupattitudeskill.GroupAttitudeSkillRepository;
@@ -20,7 +20,7 @@ public class GroupAttitudeSKillServiceImpl implements GroupAttitudeSkillService 
     private GroupAttitudeSkillRepository groupAttitudeSkillRepository;
 
     @Override
-    public GroupAttitudeSkill create(CreateGroupAttitudeSkill data) {
+    public GroupAttitudeSkill create(GroupAttitudeSkillReq data) {
         return groupAttitudeSkillRepository.save(data.toEntity());
     }
 
@@ -50,12 +50,12 @@ public class GroupAttitudeSKillServiceImpl implements GroupAttitudeSkillService 
     }
 
     @Override
-    public GroupAttitudeSkillDto updateGroupAttitudeSkillById(UUID id, CreateGroupAttitudeSkill createGroupAttitudeSkill) {
+    public GroupAttitudeSkillDto updateGroupAttitudeSkillById(UUID id, GroupAttitudeSkillReq groupAttitudeSkillReq) {
         Optional<GroupAttitudeSkill> listData= groupAttitudeSkillRepository.findById(id);
         if(listData.isPresent()){
             GroupAttitudeSkill groupAttitudeSkill= listData.get();
-            if(!createGroupAttitudeSkill.getGroupName().isBlank()){
-                groupAttitudeSkill.setGroupName(createGroupAttitudeSkill.getGroupName());
+            if(!groupAttitudeSkillReq.getGroupName().isBlank()){
+                groupAttitudeSkill.setGroupName(groupAttitudeSkillReq.getGroupName());
             }
             GroupAttitudeSkillDto groupAttitudeSkillDto= convertToDto(groupAttitudeSkill);
             groupAttitudeSkillRepository.save(groupAttitudeSkill);

@@ -1,7 +1,7 @@
 package ogya.lokakarya.be.controller.role;
 
 import jakarta.validation.Valid;
-import ogya.lokakarya.be.dto.role.CreateRole;
+import ogya.lokakarya.be.dto.role.RoleReq;
 import ogya.lokakarya.be.dto.role.RoleDto;
 import ogya.lokakarya.be.entity.Role;
 import ogya.lokakarya.be.service.RoleService;
@@ -19,7 +19,7 @@ public class RoleController {
     private RoleService roleService;
 
     @PostMapping
-    public ResponseEntity<Role> create(@RequestBody @Valid CreateRole data) {
+    public ResponseEntity<Role> create(@RequestBody @Valid RoleReq data) {
         var createdRole = roleService.create(data);
         return new ResponseEntity<>(createdRole, HttpStatus.CREATED);
     }
@@ -39,7 +39,7 @@ public class RoleController {
 
     @PutMapping("/{id}")
     public ResponseEntity<RoleDto> updateRoleById
-            (@PathVariable UUID id, @RequestBody @Valid CreateRole createRole) {
+            (@PathVariable UUID id, @RequestBody @Valid RoleReq createRole) {
     RoleDto res= roleService.updateRoleById(id, createRole);
     return new ResponseEntity<>(res, HttpStatus.OK);
     }

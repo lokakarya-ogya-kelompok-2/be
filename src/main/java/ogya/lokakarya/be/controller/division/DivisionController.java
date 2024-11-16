@@ -1,7 +1,7 @@
 package ogya.lokakarya.be.controller.division;
 
 import jakarta.validation.Valid;
-import ogya.lokakarya.be.dto.division.CreateDivision;
+import ogya.lokakarya.be.dto.division.DivisionReq;
 import ogya.lokakarya.be.dto.division.DivisionDto;
 import ogya.lokakarya.be.entity.Division;
 import ogya.lokakarya.be.service.DivisionService;
@@ -12,14 +12,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RequestMapping("/division")
+@RequestMapping("/divisions")
 @RestController
 public class DivisionController {
     @Autowired
     DivisionService divisionService;
 
     @PostMapping
-    public ResponseEntity<Division> create(@RequestBody @Valid CreateDivision data) {
+    public ResponseEntity<Division> create(@RequestBody @Valid DivisionReq data) {
         var createdDivision= divisionService.create(data);
         return new ResponseEntity<>(createdDivision, HttpStatus.CREATED);
     }
@@ -37,8 +37,8 @@ public class DivisionController {
 
     @PutMapping("/{id}")
     public ResponseEntity<DivisionDto> updateDivisionById
-            (@PathVariable UUID id, @RequestBody @Valid CreateDivision createDivision) {
-        DivisionDto res= divisionService.updateDivisionById(id, createDivision);
+            (@PathVariable UUID id, @RequestBody @Valid DivisionReq divisionReq) {
+        DivisionDto res= divisionService.updateDivisionById(id, divisionReq);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
     @DeleteMapping("/{id}")

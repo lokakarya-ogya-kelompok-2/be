@@ -9,7 +9,7 @@ import ogya.lokakarya.be.entity.AssessmentSummary;
 @Builder
 @Data
 @ToString
-public class CreateAssessmentSummary {
+public class AssessmentSummaryReq {
     @JsonProperty("year")
     private Integer year;
 

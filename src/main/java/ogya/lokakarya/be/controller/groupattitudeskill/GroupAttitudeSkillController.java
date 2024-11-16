@@ -1,7 +1,7 @@
-package ogya.lokakarya.be.controller.groupattitudeskillcontroller;
+package ogya.lokakarya.be.controller.groupattitudeskill;
 
 import jakarta.validation.Valid;
-import ogya.lokakarya.be.dto.groupattitudeskill.CreateGroupAttitudeSkill;
+import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillReq;
 import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillDto;
 import ogya.lokakarya.be.entity.GroupAttitudeSkill;
 import ogya.lokakarya.be.service.GroupAttitudeSkillService;
@@ -12,14 +12,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RequestMapping("/group-attitude-skill")
+@RequestMapping("/group-attitude-skills")
 @RestController
 public class GroupAttitudeSkillController {
     @Autowired
     GroupAttitudeSkillService groupAttitudeSkillService;
 
     @PostMapping
-    public ResponseEntity<GroupAttitudeSkill> create(@RequestBody @Valid CreateGroupAttitudeSkill data) {
+    public ResponseEntity<GroupAttitudeSkill> create(@RequestBody @Valid GroupAttitudeSkillReq data) {
         var createdGroupAttitudeSill= groupAttitudeSkillService.create(data);
         return new ResponseEntity<>(createdGroupAttitudeSill, HttpStatus.CREATED);
     }
@@ -37,8 +37,8 @@ public class GroupAttitudeSkillController {
 
     @PutMapping("/{id}")
     public ResponseEntity<GroupAttitudeSkillDto> updateDivisionById
-            (@PathVariable UUID id, @RequestBody @Valid CreateGroupAttitudeSkill createGroupAttitudeSkill) {
-        GroupAttitudeSkillDto res= groupAttitudeSkillService.updateGroupAttitudeSkillById(id, createGroupAttitudeSkill);
+            (@PathVariable UUID id, @RequestBody @Valid GroupAttitudeSkillReq groupAttitudeSkillReq) {
+        GroupAttitudeSkillDto res= groupAttitudeSkillService.updateGroupAttitudeSkillById(id, groupAttitudeSkillReq);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
     @DeleteMapping("/{id}")

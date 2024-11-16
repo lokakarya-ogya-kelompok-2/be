@@ -9,7 +9,7 @@ import ogya.lokakarya.be.entity.GroupAttitudeSkill;
 @Builder
 @Data
 @ToString
-public class CreateGroupAttitudeSkill {
+public class GroupAttitudeSkillReq {
     @JsonProperty("group_name")
     private String groupName;
 

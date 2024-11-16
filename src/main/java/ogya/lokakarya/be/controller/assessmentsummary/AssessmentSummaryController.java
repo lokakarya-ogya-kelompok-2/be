@@ -2,7 +2,7 @@ package ogya.lokakarya.be.controller.assessmentsummary;
 
 import jakarta.validation.Valid;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
-import ogya.lokakarya.be.dto.assessmentsummary.CreateAssessmentSummary;
+import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryReq;
 import ogya.lokakarya.be.entity.AssessmentSummary;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RequestMapping("/assessment-summary")
+@RequestMapping("/assessment-summaries")
 @RestController
 public class AssessmentSummaryController {
     @Autowired
@@ -20,7 +20,7 @@ public class AssessmentSummaryController {
 
     @PostMapping
     public ResponseEntity<AssessmentSummary> createAssessmentSummary
-            (@RequestBody @Valid CreateAssessmentSummary data) {
+            (@RequestBody @Valid AssessmentSummaryReq data) {
         var createAssessmentSummary= assessmentSummaryService.create(data);
         return new ResponseEntity<>(createAssessmentSummary, HttpStatus.CREATED);
     }
@@ -37,8 +37,8 @@ public class AssessmentSummaryController {
     }
     @PutMapping("/{id}")
     public ResponseEntity<AssessmentSummaryDto> updateAssessmentSummaryById
-            (@PathVariable UUID id, @RequestBody @Valid CreateAssessmentSummary createAssessmentSummary) {
-        AssessmentSummaryDto res= assessmentSummaryService.updateAssessmentSummaryById(id, createAssessmentSummary);
+            (@PathVariable UUID id, @RequestBody @Valid AssessmentSummaryReq assessmentSummaryReq) {
+        AssessmentSummaryDto res= assessmentSummaryService.updateAssessmentSummaryById(id, assessmentSummaryReq);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
     @DeleteMapping("/{id}")

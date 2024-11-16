@@ -1,6 +1,6 @@
 package ogya.lokakarya.be.service.impl;
 
-import ogya.lokakarya.be.dto.menu.CreateMenu;
+import ogya.lokakarya.be.dto.menu.MenuReq;
 import ogya.lokakarya.be.dto.menu.MenuDto;
 import ogya.lokakarya.be.entity.Menu;
 import ogya.lokakarya.be.repository.menu.MenuRepository;
@@ -19,7 +19,7 @@ public class MenuServiceImpl implements MenuService {
     private MenuRepository menuRepository;
 
     @Override
-    public Menu create(CreateMenu data) {
+    public Menu create(MenuReq data) {
         return menuRepository.save(data.toEntity());
     }
 
@@ -49,12 +49,12 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public MenuDto updateMenuById(UUID id, CreateMenu createMenu) {
+    public MenuDto updateMenuById(UUID id, MenuReq menuReq) {
         Optional<Menu> listData= menuRepository.findById(id);
         if(listData.isPresent()){
             Menu menu= listData.get();
-            if(!createMenu.getMenuName().isBlank()){
-                menu.setMenuName(createMenu.getMenuName());
+            if(!menuReq.getMenuName().isBlank()){
+                menu.setMenuName(menuReq.getMenuName());
             }
             MenuDto menuDto= convertToDto(menu);
             menuRepository.save(menu);

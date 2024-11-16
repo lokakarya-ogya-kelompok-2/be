@@ -9,7 +9,7 @@ import ogya.lokakarya.be.entity.Division;
 @Builder
 @Data
 @ToString
-public class CreateDivision {
+public class DivisionReq {
     @JsonProperty("division_name")
     private String divisionName;
 

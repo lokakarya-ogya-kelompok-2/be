@@ -5,7 +5,7 @@ import lombok.Data;
 import ogya.lokakarya.be.entity.Role;
 
 @Data
-public class CreateRole {
+public class RoleReq {
     @JsonProperty("role_name")
     private String roleName;
 

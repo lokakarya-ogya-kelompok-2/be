@@ -9,7 +9,7 @@ import ogya.lokakarya.be.entity.TechnicalSkill;
 @Builder
 @Data
 @ToString
-public class CreateTechnicalSkill {
+public class TechnicalSkillReq {
 
     @JsonProperty("technical_skill")
     private String technicalSKill;

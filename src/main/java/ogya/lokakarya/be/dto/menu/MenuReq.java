@@ -9,7 +9,7 @@ import ogya.lokakarya.be.entity.Menu;
 @Builder
 @Data
 @ToString
-public class CreateMenu {
+public class MenuReq {
     @JsonProperty("menu_name" )
     private String menuName;
 

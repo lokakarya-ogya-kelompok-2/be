@@ -9,7 +9,7 @@ import ogya.lokakarya.be.entity.DevPlan;
 @Builder
 @Data
 @ToString
-public class CreateDevPlan {
+public class DevPlanReq {
     @JsonProperty("plan")
     private String plan;
 
@@ -20,7 +20,6 @@ public class CreateDevPlan {
         DevPlan devPlan = new DevPlan();
         devPlan.setPlan(plan);
         devPlan.setEnabled(enabled);
-
         return devPlan;
     }
 }
