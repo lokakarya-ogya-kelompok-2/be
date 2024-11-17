@@ -46,5 +46,4 @@ public class DivisionController {
         boolean res= divisionService.deleteDivisionById(id);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
-
 }

@@ -5,6 +5,8 @@ import ogya.lokakarya.be.dto.achievement.AchievementReq;
 import ogya.lokakarya.be.entity.Achievement;
 import ogya.lokakarya.be.repository.achievement.AchievementRepository;
 import ogya.lokakarya.be.service.AchievementService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,10 +19,14 @@ import java.util.UUID;
 public class AchievementServiceImpl implements AchievementService {
     @Autowired
     AchievementRepository achievementRepository;
+    @Autowired
+    private static final Logger LOG = LoggerFactory.getLogger(AchievementServiceImpl.class);
 
     @Override
     public Achievement create(AchievementReq data) {
+        LOG.info("Start service: create achievement");
         System.out.println(data);
+        LOG.info("End service: create achievement");
         return achievementRepository.save(data.toEntity());
     }
 
