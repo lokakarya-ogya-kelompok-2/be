@@ -94,7 +94,8 @@ public class OpenApiConfig implements WebMvcConfigurer {
     GroupedOpenApi auth() {
         return GroupedOpenApi.builder().group("auth").pathsToMatch("/auth/**").build();
     }
-
-
-
+    @Bean
+    GroupedOpenApi AllAchievements() {
+        return GroupedOpenApi.builder().group("Achievements").pathsToMatch("/achievements/**").build();
+    }
 }

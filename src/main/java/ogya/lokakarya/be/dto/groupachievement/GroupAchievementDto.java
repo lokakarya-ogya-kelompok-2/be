@@ -3,7 +3,6 @@ package ogya.lokakarya.be.dto.groupachievement;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import ogya.lokakarya.be.entity.GroupAchievement;
-
 import java.util.Date;
 import java.util.UUID;
 

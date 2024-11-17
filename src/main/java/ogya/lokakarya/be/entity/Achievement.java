@@ -18,9 +18,9 @@ public class Achievement {
     @Column(name ="ACHIEVEMENT" , length = 100)
     private String achievement;
 
-//    @ManyToOne
-//    @JoinColumn(name ="GROUP_ID")
-//    private GroupAchievement groupAchievement;
+    @ManyToOne
+    @JoinColumn(name ="GROUP_ID")
+    private GroupAchievement groupAchievement;
 
     @Column(name = "ENABLED")
     private Boolean enabled = true;

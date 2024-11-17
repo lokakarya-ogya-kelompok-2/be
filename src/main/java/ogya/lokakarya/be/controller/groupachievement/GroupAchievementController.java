@@ -27,6 +27,7 @@ public class GroupAchievementController {
     public ResponseEntity<List<GroupAchievementDto>> getAllGroupAchievements() {
         System.out.println("Get All Group Achievement");
         List<GroupAchievementDto> response = groupAchievementService.getAllGroupAchievements();
+        System.out.println(response);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @GetMapping("/{id}")
