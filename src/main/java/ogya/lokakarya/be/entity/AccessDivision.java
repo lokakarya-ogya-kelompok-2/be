@@ -1,16 +1,25 @@
 package ogya.lokakarya.be.entity;
 
-import jakarta.persistence.*;
-import lombok.Data;
 import java.util.UUID;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import lombok.Data;
 
 @Entity
 @Data
-@Table(name="TBL_ACCESS_DIVISION")
+@Table(name = "TBL_ACCESS_DIVISION",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"USER_ID", "DIVISION_ID"})})
 public class AccessDivision {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name="ID", length=32)
+    @Column(name = "ID")
     private UUID id;
 
     @ManyToOne
@@ -18,6 +27,6 @@ public class AccessDivision {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name= "DIVISION_ID")
+    @JoinColumn(name = "DIVISION_ID")
     private Division division;
 }
