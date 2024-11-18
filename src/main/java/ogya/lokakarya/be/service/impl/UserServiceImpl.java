@@ -11,9 +11,11 @@ import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.dto.user.UserReq;
+import ogya.lokakarya.be.entity.Division;
 import ogya.lokakarya.be.entity.Role;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.entity.UserRole;
+import ogya.lokakarya.be.repository.DivisionRepository;
 import ogya.lokakarya.be.repository.RoleRepository;
 import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.repository.UserRoleRepository;
@@ -32,6 +34,9 @@ public class UserServiceImpl implements UserService {
     private UserRoleRepository userRoleRepo;
 
     @Autowired
+    private DivisionRepository divisionRepo;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -45,6 +50,16 @@ public class UserServiceImpl implements UserService {
         User currentUserEntity = securityUtil.getCurrentUser();
         userEntity.setCreatedBy(currentUserEntity);
         userEntity.setPassword(passwordEncoder.encode(data.getPassword()));
+
+        if (data.getDivisionId() != null) {
+            Optional<Division> divisionOpt = divisionRepo.findById(data.getDivisionId());
+            if (divisionOpt.isEmpty()) {
+                throw new RuntimeException(String.format("Division with id %s could not be found!",
+                        data.getDivisionId().toString()));
+            }
+            userEntity.setDivision(divisionOpt.get());
+        }
+
         userEntity = userRepo.save(userEntity);
 
         if ((data.getRoles() != null) && !data.getRoles().isEmpty()) {
@@ -113,6 +128,8 @@ public class UserServiceImpl implements UserService {
                 newData.getUserRoles().add(userRole);
             }
         }
+
+
 
         return new UserDto(newData, true, true, true);
     }

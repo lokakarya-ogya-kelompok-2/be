@@ -3,9 +3,7 @@ package ogya.lokakarya.be.entity;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,8 +16,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PreUpdate;
@@ -90,10 +86,14 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<EmpSuggestion> empSuggestions;
 
-    @ManyToMany
-    @JoinTable(name = "TBL_ACCESS_DIVISION", joinColumns = @JoinColumn(name = "USER_ID"),
-            inverseJoinColumns = @JoinColumn(name = "DIVISION_ID"))
-    private Set<Division> divisions = new HashSet<>();
+    // @ManyToMany
+    // @JoinTable(name = "TBL_ACCESS_DIVISION", joinColumns = @JoinColumn(name = "USER_ID"),
+    // inverseJoinColumns = @JoinColumn(name = "DIVISION_ID"))
+    // private Set<Division> divisions = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "DIVISION_ID", nullable = false)
+    private Division division;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

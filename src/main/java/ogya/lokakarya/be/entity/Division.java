@@ -25,7 +25,7 @@ public class Division {
     @Column(name = "DIVISION_NAME", length = 50)
     private String divisionName;
 
-    @Column(name = "CREATED_AT", nullable = false)
+    @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     private Date createdAt = new Date();
 
     @Column(name = "CREATED_BY")
