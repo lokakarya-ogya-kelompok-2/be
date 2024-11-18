@@ -1,9 +1,9 @@
 package ogya.lokakarya.be.service.impl;
 
-import ogya.lokakarya.be.dto.division.CreateDivision;
+import ogya.lokakarya.be.dto.division.DivisionReq;
 import ogya.lokakarya.be.dto.division.DivisionDto;
 import ogya.lokakarya.be.entity.Division;
-import ogya.lokakarya.be.repository.division.DivisionRepository;
+import ogya.lokakarya.be.repository.DivisionRepository;
 import ogya.lokakarya.be.service.DivisionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,15 +19,15 @@ public class DivisionServiceimpl implements DivisionService {
     private DivisionRepository divisionRepository;
 
     @Override
-    public Division create(CreateDivision data){
+    public Division create(DivisionReq data){
         return divisionRepository.save(data.toEntity());
     }
 
     @Override
     public List<DivisionDto> getAllDivisions() {
         List<DivisionDto> listResult=new ArrayList<>();
-        List<Division> roleList=divisionRepository.findAll();
-        for(Division division : roleList) {
+        List<Division> divisionList=divisionRepository.findAll();
+        for(Division division : divisionList) {
             DivisionDto result= convertToDto(division);
             listResult.add(result);
         }
@@ -49,12 +49,12 @@ public class DivisionServiceimpl implements DivisionService {
     }
 
     @Override
-    public DivisionDto updateDivisionById(UUID id, CreateDivision createDivision) {
+    public DivisionDto updateDivisionById(UUID id, DivisionReq divisionReq) {
         Optional<Division> listData= divisionRepository.findById(id);
         if(listData.isPresent()){
             Division division= listData.get();
-            if(!createDivision.getDivisionName().isBlank()){
-                division.setDivisionName(createDivision.getDivisionName());
+            if(!divisionReq.getDivisionName().isBlank()){
+                division.setDivisionName(divisionReq.getDivisionName());
             }
             DivisionDto divisionDto= convertToDto(division);
             divisionRepository.save(division);

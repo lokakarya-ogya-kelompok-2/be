@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+    <!-- Define Properties AKA Variables -->
+    <property name="LOG_DIR" value="logs"/>
+    <property name="MAX_FILE_SIZE" value="100MB"/>
+    <property name="MAX_HISTORY" value="30"/>
+    <property name="TOTAL_CAPACITY" value="10GB"/>
+    <property name="MAX_LINES" value="100000"/>
+
+    <!-- Console appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Rolling file appender for archiving -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/current-log.txt</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- Archive location and file pattern -->
+            <fileNamePattern>${LOG_DIR}/%d{yyyy-MM-dd}/%d{yyyy-MM-dd}Archived%i.txt</fileNamePattern>
+            <!-- Maximum file size before a new file is created -->
+            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+            <!-- Keep at most 30 days of logs -->
+            <maxHistory>${MAX_HISTORY}</maxHistory>
+            <!-- Limit the total size of all log files -->
+            <totalSizeCap>${TOTAL_CAPACITY}</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Root logger configuration -->
+    <root level="info">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>

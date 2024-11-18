@@ -87,6 +87,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<EmpAchievementSkill> empAchievementSkills;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<EmpSuggestion> empSuggestions;
+
     @ManyToMany
     @JoinTable(name = "TBL_ACCESS_DIVISION", joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "DIVISION_ID"))

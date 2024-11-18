@@ -22,7 +22,7 @@ public class TechnicalSkillDto {
     private boolean enabled=true;
 
     @JsonProperty("created_at")
-    private Date createdAt = new Date();
+    private Date createdAt;
 
     @JsonProperty("created_by")
     private UUID createdBy;

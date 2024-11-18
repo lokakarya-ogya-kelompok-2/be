@@ -1,9 +1,9 @@
 package ogya.lokakarya.be.service.impl;
 
-import ogya.lokakarya.be.dto.role.CreateRole;
+import ogya.lokakarya.be.dto.role.RoleReq;
 import ogya.lokakarya.be.dto.role.RoleDto;
 import ogya.lokakarya.be.entity.Role;
-import ogya.lokakarya.be.repository.role.RoleRepository;
+import ogya.lokakarya.be.repository.RoleRepository;
 import ogya.lokakarya.be.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public class RoleServiceImpl implements RoleService {
     private RoleRepository roleRepository;
 
     @Override
-    public Role create(CreateRole data) {
+    public Role create(RoleReq data) {
         return roleRepository.save(data.toEntity());
     }
 
@@ -50,7 +50,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public RoleDto updateRoleById(UUID id, CreateRole createRole) {
+    public RoleDto updateRoleById(UUID id, RoleReq createRole) {
         Optional<Role> listData= roleRepository.findById(id);
         if(listData.isPresent()){
         Role role= listData.get();

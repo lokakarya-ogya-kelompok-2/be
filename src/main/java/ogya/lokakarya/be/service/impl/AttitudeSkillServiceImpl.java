@@ -1,9 +1,9 @@
 package ogya.lokakarya.be.service.impl;
 
 import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillDto;
-import ogya.lokakarya.be.dto.attitudeskill.CreateAttitudeSkill;
+import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillReq;
 import ogya.lokakarya.be.entity.AttitudeSkill;
-import ogya.lokakarya.be.repository.attitudeskill.AttitudeSkillRepository;
+import ogya.lokakarya.be.repository.AttitudeSkillRepository;
 import ogya.lokakarya.be.service.AttitudeSkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
     private AttitudeSkillRepository attitudeSkillRepository;
 
     @Override
-    public AttitudeSkill create(CreateAttitudeSkill data) {
+    public AttitudeSkill create(AttitudeSkillReq data) {
         return attitudeSkillRepository.save(data.toEntity());
     }
 
@@ -50,13 +50,13 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
     }
 
     @Override
-    public AttitudeSkillDto updateAttitudeSkillById(UUID id, CreateAttitudeSkill createAttitudeSkill) {
+    public AttitudeSkillDto updateAttitudeSkillById(UUID id, AttitudeSkillReq attitudeSkillReq) {
         Optional<AttitudeSkill> listData= attitudeSkillRepository.findById(id);
         if(listData.isPresent()){
             AttitudeSkill attitudeSkill= listData.get();
-            if(!createAttitudeSkill.getAttitudeSkill().isBlank()){
-                attitudeSkill.setAttitudeSkill(createAttitudeSkill.getAttitudeSkill());
-                attitudeSkill.setEnabled(createAttitudeSkill.getEnabled());
+            if(!attitudeSkillReq.getAttitudeSkill().isBlank()){
+                attitudeSkill.setAttitudeSkill(attitudeSkillReq.getAttitudeSkill());
+                attitudeSkill.setEnabled(attitudeSkillReq.getEnabled());
             }
             AttitudeSkillDto attitudeSkillDto= convertToDto(attitudeSkill);
             attitudeSkillRepository.save(attitudeSkill);

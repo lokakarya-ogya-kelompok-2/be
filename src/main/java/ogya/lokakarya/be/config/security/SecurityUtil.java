@@ -7,7 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import ogya.lokakarya.be.entity.User;
-import ogya.lokakarya.be.repository.user.UserRepository;
+import ogya.lokakarya.be.repository.UserRepository;
 
 @Component
 public class SecurityUtil {

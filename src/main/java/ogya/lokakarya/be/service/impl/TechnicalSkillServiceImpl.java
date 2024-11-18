@@ -1,9 +1,9 @@
 package ogya.lokakarya.be.service.impl;
 
-import ogya.lokakarya.be.dto.technicalskill.CreateTechnicalSkill;
+import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillReq;
 import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillDto;
 import ogya.lokakarya.be.entity.TechnicalSkill;
-import ogya.lokakarya.be.repository.technicalskill.TechnicalSkillRepository;
+import ogya.lokakarya.be.repository.TechnicalSkillRepository;
 import ogya.lokakarya.be.service.TechnicalSkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class TechnicalSkillServiceImpl implements TechnicalSkillService {
     private TechnicalSkillRepository technicalSkillRepository;
 
     @Override
-    public TechnicalSkill create(CreateTechnicalSkill data) {
+    public TechnicalSkill create(TechnicalSkillReq data) {
         return technicalSkillRepository.save(data.toEntity());
     }
 
@@ -50,12 +50,12 @@ public class TechnicalSkillServiceImpl implements TechnicalSkillService {
     }
 
     @Override
-    public TechnicalSkillDto updateTechnicalSkillById(UUID id, CreateTechnicalSkill createTechnicalSkill) {
+    public TechnicalSkillDto updateTechnicalSkillById(UUID id, TechnicalSkillReq technicalSkillReq) {
         Optional<TechnicalSkill> listData= technicalSkillRepository.findById(id);
         if(listData.isPresent()){
             TechnicalSkill technicalSkill= listData.get();
-            if(!createTechnicalSkill.getTechnicalSKill().isBlank()){
-                technicalSkill.setTechnicalSkill(createTechnicalSkill.getTechnicalSKill());
+            if(!technicalSkillReq.getTechnicalSKill().isBlank()){
+                technicalSkill.setTechnicalSkill(technicalSkillReq.getTechnicalSKill());
             }
             technicalSkillRepository.save(technicalSkill);
             TechnicalSkillDto technicalSkillDto= convertToDto(technicalSkill);

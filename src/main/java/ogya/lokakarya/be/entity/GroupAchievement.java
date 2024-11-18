@@ -3,7 +3,6 @@ package ogya.lokakarya.be.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.Date;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,6 +36,6 @@ public class GroupAchievement {
     @Column(name = "UPDATED_BY")
     private UUID updatedBy;
 
-    @OneToMany(mappedBy = "achievement", fetch = FetchType.EAGER)
-    private List<Achievement> achievements;
+//    @OneToMany(mappedBy = "achievement", fetch = FetchType.EAGER)
+//    private List<Achievement> achievements;
 }

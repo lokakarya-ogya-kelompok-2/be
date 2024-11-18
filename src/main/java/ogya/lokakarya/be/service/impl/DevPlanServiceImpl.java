@@ -1,9 +1,9 @@
 package ogya.lokakarya.be.service.impl;
 
-import ogya.lokakarya.be.dto.devplan.CreateDevPlan;
+import ogya.lokakarya.be.dto.devplan.DevPlanReq;
 import ogya.lokakarya.be.dto.devplan.DevPlanDto;
 import ogya.lokakarya.be.entity.DevPlan;
-import ogya.lokakarya.be.repository.devplan.DevPlanRepository;
+import ogya.lokakarya.be.repository.DevPlanRepository;
 import ogya.lokakarya.be.service.DevPlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +20,8 @@ public class DevPlanServiceImpl implements DevPlanService {
     private DevPlanRepository devPlanRepository;
 
     @Override
-    public DevPlan create(CreateDevPlan data) {
+    public DevPlan create(DevPlanReq data) {
         return devPlanRepository.save(data.toEntity());
-
     }
 
     @Override
@@ -51,13 +50,13 @@ public class DevPlanServiceImpl implements DevPlanService {
     }
 
     @Override
-    public DevPlanDto updateDevPlanById(UUID id, CreateDevPlan createDevPlan) {
+    public DevPlanDto updateDevPlanById(UUID id, DevPlanReq devPlanReq) {
         Optional<DevPlan> listData= devPlanRepository.findById(id);
         if(listData.isPresent()){
             DevPlan devPlan= listData.get();
-            if(!createDevPlan.getPlan().isBlank()){
-                devPlan.setPlan(createDevPlan.getPlan());
-//                devPlan.setEnabled(createDevPlan.geE;
+            if(!devPlanReq.getPlan().isBlank()){
+                devPlan.setPlan(devPlanReq.getPlan());
+//                devPlan.setEnabled(devPlanReq.geE;
             }
             DevPlanDto devPlanDto= convertToDto(devPlan);
             devPlanRepository.save(devPlan);

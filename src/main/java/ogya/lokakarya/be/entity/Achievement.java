@@ -3,7 +3,6 @@ package ogya.lokakarya.be.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.Date;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 

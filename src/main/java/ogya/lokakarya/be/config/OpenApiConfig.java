@@ -41,4 +41,73 @@ public class OpenApiConfig implements WebMvcConfigurer {
     GroupedOpenApi allApis() {
         return GroupedOpenApi.builder().group("*").pathsToMatch("/**").build();
     }
+
+    @Bean
+    GroupedOpenApi allUsers() {
+        return GroupedOpenApi.builder().group("Users").pathsToMatch("/users/**").build();
+    }
+
+    @Bean
+    GroupedOpenApi allTechnicalSkills() {
+        return GroupedOpenApi.builder().group("Technical Skills").pathsToMatch("/technical-skills/**").build();
+    }
+
+    @Bean
+    GroupedOpenApi allRoles() {
+        return GroupedOpenApi.builder().group("Roles").pathsToMatch("/roles/**").build();
+    }
+
+    @Bean
+    GroupedOpenApi allMenus() {
+        return GroupedOpenApi.builder().group("Menus").pathsToMatch("/menus/**").build();
+    }
+
+    @Bean
+    GroupedOpenApi allGroupAttitudeSkills() {
+        return GroupedOpenApi.builder().group("Group Attitude Skills").pathsToMatch("/group-attitude-skills/**").build();
+    }
+    @Bean
+    GroupedOpenApi allGroupAchievements() {
+        return GroupedOpenApi.builder().group("Group Achievements").pathsToMatch("/group-achievements/**").build();
+    }
+    @Bean
+    GroupedOpenApi allEmpSuggestions() {
+        return GroupedOpenApi.builder().group("Emp Suggestions").pathsToMatch("/emp-suggestions/**").build();
+    }
+    @Bean
+    GroupedOpenApi allDivisions() {
+        return GroupedOpenApi.builder().group("Divisions").pathsToMatch("/dividions/**").build();
+    }
+    @Bean
+    GroupedOpenApi allDevPlans() {
+        return GroupedOpenApi.builder().group("Dev Plans").pathsToMatch("/dev-plans/**").build();
+    }
+    @Bean
+    GroupedOpenApi allAttitudeSkills() {
+        return GroupedOpenApi.builder().group("Attitude Skills").pathsToMatch("/attitude-skills/**").build();
+    }
+    @Bean
+    GroupedOpenApi allAssessmentSummaries() {
+        return GroupedOpenApi.builder().group("Assessment Summaries").pathsToMatch("/assessment-summaries/**").build();
+    }
+    @Bean
+    GroupedOpenApi auth() {
+        return GroupedOpenApi.builder().group("auth").pathsToMatch("/auth/**").build();
+    }
+    @Bean
+    GroupedOpenApi AllAchievements() {
+        return GroupedOpenApi.builder().group("Achievements").pathsToMatch("/achievements/**").build();
+    }
+    @Bean
+    GroupedOpenApi AllAchievementSkills() {
+        return GroupedOpenApi.builder().group("Emp Achievement Skills").pathsToMatch("/emp-achievement-skills/**").build();
+    }
+    @Bean
+    GroupedOpenApi AllEmpAttitudeSkills() {
+        return GroupedOpenApi.builder().group("Emp Attitude Skills").pathsToMatch("/emp-attitude-skills/**").build();
+    }
+    @Bean
+    GroupedOpenApi AllEmpDevPlans() {
+        return GroupedOpenApi.builder().group("Emp Dev Plans").pathsToMatch("/emp_dev_plans/**").build();
+    }
 }

@@ -3,7 +3,6 @@ package ogya.lokakarya.be.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.Date;
-import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -12,7 +11,7 @@ import java.util.UUID;
 public class EmpDevPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name="ID", length=32)
+    @Column(name="ID")
     private UUID id;
 
     @ManyToOne

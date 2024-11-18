@@ -1,9 +1,9 @@
 package ogya.lokakarya.be.service.impl;
 
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
-import ogya.lokakarya.be.dto.assessmentsummary.CreateAssessmentSummary;
+import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryReq;
 import ogya.lokakarya.be.entity.AssessmentSummary;
-import ogya.lokakarya.be.repository.assessmentsummary.AssessmentSummaryRepository;
+import ogya.lokakarya.be.repository.AssessmentSummaryRepository;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     private AssessmentSummaryRepository assessmentSummaryRepository;
 
     @Override
-    public AssessmentSummary create(CreateAssessmentSummary data) {
+    public AssessmentSummary create(AssessmentSummaryReq data) {
         return assessmentSummaryRepository.save(data.toEntity());
     }
 
@@ -49,14 +49,14 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     }
 
     @Override
-    public AssessmentSummaryDto updateAssessmentSummaryById(UUID id, CreateAssessmentSummary createAssessmentSummary) {
+    public AssessmentSummaryDto updateAssessmentSummaryById(UUID id, AssessmentSummaryReq assessmentSummaryReq) {
         Optional<AssessmentSummary> listData= assessmentSummaryRepository.findById(id);
         if(listData.isPresent()){
             AssessmentSummary assessmentSummary= listData.get();
             if(assessmentSummary.getId().equals(id)){
-                assessmentSummary.setYear(createAssessmentSummary.getYear());
-                assessmentSummary.setScore(createAssessmentSummary.getScore());
-                assessmentSummary.setStatus(createAssessmentSummary.getStatus());
+                assessmentSummary.setYear(assessmentSummaryReq.getYear());
+                assessmentSummary.setScore(assessmentSummaryReq.getScore());
+                assessmentSummary.setStatus(assessmentSummaryReq.getStatus());
             }
             AssessmentSummaryDto assessmentSummaryDto= convertToDto(assessmentSummary);
             assessmentSummaryRepository.save(assessmentSummary);
