@@ -3,7 +3,7 @@ package ogya.lokakarya.be.service.impl;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillDto;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillReq;
 import ogya.lokakarya.be.entity.EmpAchievementSkill;
-import ogya.lokakarya.be.repository.achievementskill.AchievementSkillRepository;
+import ogya.lokakarya.be.repository.AchievementSkillRepository;
 import ogya.lokakarya.be.service.AchievementSkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

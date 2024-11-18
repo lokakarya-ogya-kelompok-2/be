@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import ogya.lokakarya.be.config.security.jwt.JwtUtil;
 import ogya.lokakarya.be.dto.auth.LoginDto;
 import ogya.lokakarya.be.entity.User;
-import ogya.lokakarya.be.repository.user.UserRepository;
+import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.service.AuthService;
 
 @Service

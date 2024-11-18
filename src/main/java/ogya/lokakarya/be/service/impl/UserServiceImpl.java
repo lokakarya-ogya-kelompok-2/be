@@ -15,8 +15,8 @@ import ogya.lokakarya.be.entity.Role;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.entity.UserRole;
 import ogya.lokakarya.be.repository.UserRoleRepository;
-import ogya.lokakarya.be.repository.role.RoleRepository;
-import ogya.lokakarya.be.repository.user.UserRepository;
+import ogya.lokakarya.be.repository.RoleRepository;
+import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.service.UserService;
 
 @Service

@@ -1,12 +1,9 @@
 package ogya.lokakarya.be.service.impl;
 
-import ogya.lokakarya.be.dto.division.DivisionDto;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillDto;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillReq;
-import ogya.lokakarya.be.entity.Division;
-import ogya.lokakarya.be.entity.EmpAchievementSkill;
 import ogya.lokakarya.be.entity.EmpAttitudeSkill;
-import ogya.lokakarya.be.repository.empattitudeskill.EmpAttitudeSkillRepository;
+import ogya.lokakarya.be.repository.EmpAttitudeSkillRepository;
 import ogya.lokakarya.be.service.EmpAttitudeSkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

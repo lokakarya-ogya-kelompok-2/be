@@ -3,7 +3,7 @@ package ogya.lokakarya.be.service.impl;
 import ogya.lokakarya.be.dto.devplan.DevPlanReq;
 import ogya.lokakarya.be.dto.devplan.DevPlanDto;
 import ogya.lokakarya.be.entity.DevPlan;
-import ogya.lokakarya.be.repository.devplan.DevPlanRepository;
+import ogya.lokakarya.be.repository.DevPlanRepository;
 import ogya.lokakarya.be.service.DevPlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

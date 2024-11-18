@@ -3,7 +3,7 @@ package ogya.lokakarya.be.service.impl;
 import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillReq;
 import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillDto;
 import ogya.lokakarya.be.entity.TechnicalSkill;
-import ogya.lokakarya.be.repository.technicalskill.TechnicalSkillRepository;
+import ogya.lokakarya.be.repository.TechnicalSkillRepository;
 import ogya.lokakarya.be.service.TechnicalSkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

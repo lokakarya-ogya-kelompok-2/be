@@ -3,7 +3,7 @@ package ogya.lokakarya.be.service.impl;
 import ogya.lokakarya.be.dto.division.DivisionReq;
 import ogya.lokakarya.be.dto.division.DivisionDto;
 import ogya.lokakarya.be.entity.Division;
-import ogya.lokakarya.be.repository.division.DivisionRepository;
+import ogya.lokakarya.be.repository.DivisionRepository;
 import ogya.lokakarya.be.service.DivisionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

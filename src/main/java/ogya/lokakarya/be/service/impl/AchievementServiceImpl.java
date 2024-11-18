@@ -3,7 +3,7 @@ package ogya.lokakarya.be.service.impl;
 import ogya.lokakarya.be.dto.achievement.AchievementDto;
 import ogya.lokakarya.be.dto.achievement.AchievementReq;
 import ogya.lokakarya.be.entity.Achievement;
-import ogya.lokakarya.be.repository.achievement.AchievementRepository;
+import ogya.lokakarya.be.repository.AchievementRepository;
 import ogya.lokakarya.be.service.AchievementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

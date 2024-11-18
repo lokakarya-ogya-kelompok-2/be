@@ -3,7 +3,7 @@ package ogya.lokakarya.be.service.impl;
 import ogya.lokakarya.be.dto.groupachievement.GroupAchievementDto;
 import ogya.lokakarya.be.dto.groupachievement.GroupAchievementReq;
 import ogya.lokakarya.be.entity.GroupAchievement;
-import ogya.lokakarya.be.repository.groupachievement.GroupAchievementRepository;
+import ogya.lokakarya.be.repository.GroupAchievementRepository;
 import ogya.lokakarya.be.service.GroupAchievementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

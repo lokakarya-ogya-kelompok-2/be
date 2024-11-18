@@ -3,7 +3,7 @@ package ogya.lokakarya.be.service.impl;
 import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionReq;
 import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionDto;
 import ogya.lokakarya.be.entity.EmpSuggestion;
-import ogya.lokakarya.be.repository.empsuggestion.EmpSuggestionRepository;
+import ogya.lokakarya.be.repository.EmpSuggestionRepository;
 import ogya.lokakarya.be.service.EmpSuggestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

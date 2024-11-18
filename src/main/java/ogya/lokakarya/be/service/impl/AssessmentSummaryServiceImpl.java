@@ -3,7 +3,7 @@ package ogya.lokakarya.be.service.impl;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryReq;
 import ogya.lokakarya.be.entity.AssessmentSummary;
-import ogya.lokakarya.be.repository.assessmentsummary.AssessmentSummaryRepository;
+import ogya.lokakarya.be.repository.AssessmentSummaryRepository;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

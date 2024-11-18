@@ -3,7 +3,7 @@ package ogya.lokakarya.be.service.impl;
 import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillReq;
 import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillDto;
 import ogya.lokakarya.be.entity.GroupAttitudeSkill;
-import ogya.lokakarya.be.repository.groupattitudeskill.GroupAttitudeSkillRepository;
+import ogya.lokakarya.be.repository.GroupAttitudeSkillRepository;
 import ogya.lokakarya.be.service.GroupAttitudeSkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
