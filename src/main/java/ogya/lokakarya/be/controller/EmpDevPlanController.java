@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RequestMapping("/emp_dev_plans")
+@RequestMapping("/emp-dev-plans")
 @RestController
 public class EmpDevPlanController {
     @Autowired
