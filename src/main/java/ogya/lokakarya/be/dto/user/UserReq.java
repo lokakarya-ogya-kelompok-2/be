@@ -9,16 +9,22 @@ import lombok.Data;
 import ogya.lokakarya.be.entity.User;
 
 @Data
-public class CreateUserDto {
+public class UserReq {
     private String username;
+
     @JsonProperty("full_name")
     private String fullName;
+
     private String position;
+
     @JsonProperty("employee_status")
     private Integer employeeStatus;
+
     private String email;
+
     @JsonProperty("join_date")
     private LocalDate joinDate;
+
     private String password;
 
     private Set<UUID> roles;

@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import ogya.lokakarya.be.dto.user.CreateUserDto;
 import ogya.lokakarya.be.dto.user.UserDto;
+import ogya.lokakarya.be.dto.user.UserReq;
 import ogya.lokakarya.be.service.UserService;
 
 
@@ -29,7 +29,7 @@ public class UserController {
 
 
     @PostMapping
-    public ResponseEntity<UserDto> create(@RequestBody @Valid CreateUserDto data) {
+    public ResponseEntity<UserDto> create(@RequestBody @Valid UserReq data) {
         var createdUser = userSvc.create(data);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> update(@PathVariable UUID id, @RequestBody CreateUserDto data) {
+    public ResponseEntity<UserDto> update(@PathVariable UUID id, @RequestBody UserReq data) {
         var updatedUser = userSvc.update(id, data);
 
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
