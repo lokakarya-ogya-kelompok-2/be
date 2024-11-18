@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.AssessmentSummary;
 
 import java.util.Date;
@@ -20,8 +21,8 @@ public class AssessmentSummaryDto {
     @JsonProperty("id")
     private UUID id;
 
-//    @JsonProperty("user_id")
-//    private User user;
+    @JsonProperty("user_id")
+    private UserDto user;
 
     @JsonProperty("year")
     private Integer year;
@@ -46,7 +47,7 @@ public class AssessmentSummaryDto {
 
     public AssessmentSummaryDto(AssessmentSummary assessmentSummary) {
         setId(assessmentSummary.getId());
-//        setUser(assessmentSummary.getUser());
+        setUser(new UserDto(assessmentSummary.getUser(), false, false));
         setYear(assessmentSummary.getYear());
         setScore(assessmentSummary.getScore());
         setStatus(assessmentSummary.getStatus());

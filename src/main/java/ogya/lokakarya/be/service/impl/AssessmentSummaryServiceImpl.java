@@ -27,7 +27,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     private View error;
 
     @Override
-    public AssessmentSummary create(AssessmentSummaryReq data) {
+    public AssessmentSummaryDto create(AssessmentSummaryReq data) {
         Optional<User> findUser= userRepository.findById(data.getUserId());
         if(findUser.isEmpty()) {
             throw new RuntimeException(String.format("user id could not be found!",
@@ -35,7 +35,8 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         }
         AssessmentSummary dataEntity = data.toEntity();
         dataEntity.setUser(findUser.get());
-        return assessmentSummaryRepository.save(dataEntity);
+        AssessmentSummary createData= assessmentSummaryRepository.save(dataEntity);
+        return new AssessmentSummaryDto(createData);
     }
 
     @Override
