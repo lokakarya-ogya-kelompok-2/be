@@ -1,9 +1,13 @@
 package ogya.lokakarya.be.dto.assessmentsummary;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import ogya.lokakarya.be.entity.AssessmentSummary;
-import ogya.lokakarya.be.entity.User;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -16,8 +20,8 @@ public class AssessmentSummaryDto {
     @JsonProperty("id")
     private UUID id;
 
-    @JsonProperty("user_id")
-    private User user;
+//    @JsonProperty("user_id")
+//    private User user;
 
     @JsonProperty("year")
     private Integer year;
@@ -42,7 +46,7 @@ public class AssessmentSummaryDto {
 
     public AssessmentSummaryDto(AssessmentSummary assessmentSummary) {
         setId(assessmentSummary.getId());
-        setUser(assessmentSummary.getUser());
+//        setUser(assessmentSummary.getUser());
         setYear(assessmentSummary.getYear());
         setScore(assessmentSummary.getScore());
         setStatus(assessmentSummary.getStatus());

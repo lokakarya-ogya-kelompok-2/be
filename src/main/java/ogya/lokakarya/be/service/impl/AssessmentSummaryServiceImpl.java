@@ -3,11 +3,15 @@ package ogya.lokakarya.be.service.impl;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryReq;
 import ogya.lokakarya.be.entity.AssessmentSummary;
+import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.repository.AssessmentSummaryRepository;
+import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.View;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,10 +21,21 @@ import java.util.UUID;
 public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     @Autowired
     private AssessmentSummaryRepository assessmentSummaryRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private View error;
 
     @Override
     public AssessmentSummary create(AssessmentSummaryReq data) {
-        return assessmentSummaryRepository.save(data.toEntity());
+        Optional<User> findUser= userRepository.findById(data.getUserId());
+        if(findUser.isEmpty()) {
+            throw new RuntimeException(String.format("user id could not be found!",
+                    data.getUserId().toString()));
+        }
+        AssessmentSummary dataEntity = data.toEntity();
+        dataEntity.setUser(findUser.get());
+        return assessmentSummaryRepository.save(dataEntity);
     }
 
     @Override
