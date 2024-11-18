@@ -9,14 +9,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.config.security.SecurityUtil;
-import ogya.lokakarya.be.dto.user.CreateUserDto;
 import ogya.lokakarya.be.dto.user.UserDto;
+import ogya.lokakarya.be.dto.user.UserReq;
 import ogya.lokakarya.be.entity.Role;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.entity.UserRole;
-import ogya.lokakarya.be.repository.UserRoleRepository;
 import ogya.lokakarya.be.repository.RoleRepository;
 import ogya.lokakarya.be.repository.UserRepository;
+import ogya.lokakarya.be.repository.UserRoleRepository;
 import ogya.lokakarya.be.service.UserService;
 
 @Service
@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto create(CreateUserDto data) {
+    public UserDto create(UserReq data) {
         User userEntity = data.toEntity();
 
         User currentUserEntity = securityUtil.getCurrentUser();
@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDto update(UUID id, CreateUserDto data) {
+    public UserDto update(UUID id, UserReq data) {
         Optional<User> userOpt = userRepo.findById(id);
         if (userOpt.isEmpty()) {
             throw new RuntimeException("USER WITH GIVEN ID COULD NOT BE FOUND!");
