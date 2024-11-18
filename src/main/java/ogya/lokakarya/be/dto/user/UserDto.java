@@ -53,6 +53,7 @@ public class UserDto {
         setEmailAddress(user.getEmailAddress());
         setJoinDate(user.getJoinDate().toLocalDate());
         setEnabled(user.getEnabled());
+        setPassword(user.getPassword());
         if (user.getCreatedAt() != null) {
             setCreatedAt(user.getCreatedAt());
         }
