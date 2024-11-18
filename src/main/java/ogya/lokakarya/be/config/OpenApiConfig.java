@@ -108,6 +108,10 @@ public class OpenApiConfig implements WebMvcConfigurer {
     }
     @Bean
     GroupedOpenApi AllEmpDevPlans() {
-        return GroupedOpenApi.builder().group("Emp Dev Plans").pathsToMatch("/emp_dev_plans/**").build();
+        return GroupedOpenApi.builder().group("Emp Dev Plans").pathsToMatch("/emp-dev-plans/**").build();
+    }
+    @Bean
+    GroupedOpenApi AllEmpTechnicalSkills() {
+        return GroupedOpenApi.builder().group("Emp Technical Skills").pathsToMatch("/emp-technical-skills/**").build();
     }
 }
