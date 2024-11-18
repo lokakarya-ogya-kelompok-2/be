@@ -63,14 +63,14 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        return new UserDto(userEntity, true, false);
+        return new UserDto(userEntity, true, false, true);
     }
 
     @Override
     public List<UserDto> list() {
         List<User> userEntities = userRepo.findAll();
         List<UserDto> users = new ArrayList<>(userEntities.size());
-        userEntities.forEach(user -> users.add(new UserDto(user, true, true)));
+        userEntities.forEach(user -> users.add(new UserDto(user, true, true, true)));
         return users;
     }
 
@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("USER WITH GIVEN ID COULD NOT BE FOUND");
         }
         User user = userOpt.get();
-        return new UserDto(user, true, true);
+        return new UserDto(user, true, true, true);
     }
 
     @Transactional
@@ -114,7 +114,7 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        return new UserDto(newData, true, true);
+        return new UserDto(newData, true, true, true);
     }
 
 }
