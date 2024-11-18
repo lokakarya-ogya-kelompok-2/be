@@ -1,23 +1,28 @@
 package ogya.lokakarya.be.entity;
 
-import jakarta.persistence.*;
-import lombok.Data;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
 @Data
-@Table(name="TBL_DIVISION")
+@Table(name = "TBL_DIVISION")
 public class Division {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name="ID")
+    @Column(name = "ID")
     private UUID id;
 
-    @Column(name ="DIVISION_NAME" , length = 50)
+    @Column(name = "DIVISION_NAME", length = 50)
     private String divisionName;
 
     @Column(name = "CREATED_AT", nullable = false)
@@ -35,6 +40,6 @@ public class Division {
     @OneToMany(mappedBy = "division", fetch = FetchType.LAZY)
     private List<AccessDivision> accessDivisions;
 
-    @ManyToMany(mappedBy = "divisions")
-    private Set<User> users = new HashSet<>();
+    // @ManyToMany(mappedBy = "divisions")
+    // private Set<User> users = new HashSet<>();
 }
