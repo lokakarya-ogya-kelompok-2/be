@@ -4,12 +4,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import ogya.lokakarya.be.entity.AssessmentSummary;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Data
 @ToString
 public class AssessmentSummaryReq {
+    @JsonProperty("user_id")
+    private UUID userId;
+
     @JsonProperty("year")
     private Integer year;
 
