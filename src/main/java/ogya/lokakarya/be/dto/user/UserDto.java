@@ -45,7 +45,7 @@ public class UserDto {
 
     private Set<RoleDto> roles;
 
-    public UserDto(User user, boolean withCreatedBy, boolean withUpdatedBy) {
+    public UserDto(User user, boolean withCreatedBy, boolean withUpdatedBy, boolean includeRoles) {
         setId(user.getId());
         setUsername(user.getUsernameRiilNoFake());
         setFullName(user.getFullName());
@@ -57,19 +57,21 @@ public class UserDto {
             setCreatedAt(user.getCreatedAt());
         }
         if (withCreatedBy && user.getCreatedBy() != null) {
-            setCreatedBy(new UserDto(user.getCreatedBy(), false, false));
+            setCreatedBy(new UserDto(user.getCreatedBy(), false, false, false));
         }
         if (user.getUpdatedAt() != null) {
             setUpdatedAt(user.getUpdatedAt());
         }
 
         if (withUpdatedBy && user.getUpdatedBy() != null) {
-            setUpdatedBy(new UserDto(user.getUpdatedBy(), false, false));
+            setUpdatedBy(new UserDto(user.getUpdatedBy(), false, false, false));
         }
 
-        roles = new HashSet<>();
-        if (user.getUserRoles() != null) {
-            user.getUserRoles().forEach(userRole -> roles.add(new RoleDto(userRole.getRole())));
+        if (includeRoles) {
+            roles = new HashSet<>();
+            if (user.getUserRoles() != null) {
+                user.getUserRoles().forEach(userRole -> roles.add(new RoleDto(userRole.getRole())));
+            }
         }
         setRoles(roles);
     }
