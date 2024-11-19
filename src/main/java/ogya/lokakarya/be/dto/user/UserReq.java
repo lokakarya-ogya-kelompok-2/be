@@ -25,6 +25,9 @@ public class UserReq {
     @JsonProperty("join_date")
     private LocalDate joinDate;
 
+    @JsonProperty("division_id")
+    private UUID divisionId;
+
     private String password;
 
     private Set<UUID> roles;
