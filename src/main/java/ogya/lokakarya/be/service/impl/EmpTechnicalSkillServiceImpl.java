@@ -1,11 +1,13 @@
 package ogya.lokakarya.be.service.impl;
 
-import ogya.lokakarya.be.dto.division.DivisionDto;
 import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillDto;
 import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillReq;
-import ogya.lokakarya.be.entity.Division;
 import ogya.lokakarya.be.entity.EmpTechnicalSkill;
+import ogya.lokakarya.be.entity.TechnicalSkill;
+import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.repository.EmpTechnicalSkillRepository;
+import ogya.lokakarya.be.repository.TechnicalSkillRepository;
+import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.service.EmpTechnicalSkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +22,29 @@ import java.util.UUID;
 public class EmpTechnicalSkillServiceImpl implements EmpTechnicalSkillService {
     @Autowired
     private EmpTechnicalSkillRepository empTechnicalSkillRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private TechnicalSkillRepository technicalSkillRepository;
 
     @Override
-    public EmpTechnicalSkill create(EmpTechnicalSkillReq data) {
-        return empTechnicalSkillRepository.save(data.toEntity());
+    public EmpTechnicalSkillDto create(EmpTechnicalSkillReq data) {
+        Optional<User> findUser= userRepository.findById(data.getUserId());
+        Optional<TechnicalSkill> findTechnicalSkill= technicalSkillRepository.findById(data.getTechnicalSkillId());
+        System.out.println(" ID: " + data.getUserId());
+        if(findUser.isEmpty()) {
+            throw new RuntimeException(String.format("user id could not be found!",
+                    data.getUserId().toString()));
+        }
+        if(findTechnicalSkill.isEmpty()) {
+            throw new RuntimeException(String.format("technical skill id could not be found!",
+                    data.getTechnicalSkillId().toString()));
+        }
+        EmpTechnicalSkill dataEntity= data.toEntity();
+        dataEntity.setUser(findUser.get());
+        dataEntity.setTechnicalSkill(findTechnicalSkill.get());
+        EmpTechnicalSkill createdData= empTechnicalSkillRepository.save(dataEntity);
+        return new EmpTechnicalSkillDto(createdData);
     }
 
     @Override
@@ -41,7 +62,6 @@ public class EmpTechnicalSkillServiceImpl implements EmpTechnicalSkillService {
         Optional<EmpTechnicalSkill> listData;
         try{
             listData=empTechnicalSkillRepository.findById(id);
-            System.out.println(listData);
         }catch(Exception e){
             e.printStackTrace();
             throw e;
@@ -56,8 +76,12 @@ public class EmpTechnicalSkillServiceImpl implements EmpTechnicalSkillService {
         if(listData.isPresent()){
             EmpTechnicalSkill empTechnicalSkill= listData.get();
             if(empTechnicalSkillReq.getScore() !=null){
-                empTechnicalSkill.setScore(empTechnicalSkillReq.getScore());
-                empTechnicalSkill.setAssessmentYear(empTechnicalSkillReq.getAssessmentYear());
+                Optional<User> findUser= userRepository.findById(empTechnicalSkillReq.getUserId());
+                if(findUser.isPresent()){
+                    empTechnicalSkill.setUser(findUser.get());
+                    empTechnicalSkill.setScore(empTechnicalSkillReq.getScore());
+                    empTechnicalSkill.setAssessmentYear(empTechnicalSkillReq.getAssessmentYear());
+                }
             }
             EmpTechnicalSkillDto empTechnicalSkillDto= convertToDto(empTechnicalSkill);
             empTechnicalSkillRepository.save(empTechnicalSkill);

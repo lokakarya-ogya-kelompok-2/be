@@ -1,8 +1,15 @@
 package ogya.lokakarya.be.dto.emptechnicalskill;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillDto;
+import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.EmpTechnicalSkill;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -15,11 +22,11 @@ public class EmpTechnicalSkillDto {
     @JsonProperty("id")
     private UUID id;
 
-//    @JsonProperty("user_id")
-//    private User user;
-//
-//    @JsonProperty("technical_skill_id")
-//    private TechnicalSkill technicalSkill;
+    @JsonProperty("user_id")
+    private UserDto user;
+
+    @JsonProperty("technical_skill_id")
+    private TechnicalSkillDto technicalSkill;
 
     @JsonProperty("score")
     private Integer score;
@@ -28,7 +35,7 @@ public class EmpTechnicalSkillDto {
     private Integer assessmentYear;
 
     @JsonProperty("created_at")
-    private Date createdAt = new Date();
+    private Date createdAt;
 
     @JsonProperty("created_by")
     private UUID createdBy;
@@ -41,6 +48,12 @@ public class EmpTechnicalSkillDto {
 
     public EmpTechnicalSkillDto (EmpTechnicalSkill empTechnicalSkill) {
         setId(empTechnicalSkill.getId());
+        if(empTechnicalSkill.getUser() != null) {
+            setUser(new UserDto(empTechnicalSkill.getUser(), false, false, false));
+        }
+        if(empTechnicalSkill.getTechnicalSkill() != null) {
+            setTechnicalSkill(new TechnicalSkillDto(empTechnicalSkill.getTechnicalSkill()));
+        }
         setScore(empTechnicalSkill.getScore());
         setAssessmentYear(empTechnicalSkill.getAssessmentYear());
         setCreatedAt(empTechnicalSkill.getCreatedAt());
