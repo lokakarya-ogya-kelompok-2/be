@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
-import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,7 +23,6 @@ import lombok.Data;
 
 @Entity
 @Data
-@DynamicUpdate
 @Table(name = "TBL_APP_USER")
 public class User implements UserDetails {
     @Id
@@ -85,11 +83,6 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<EmpSuggestion> empSuggestions;
-
-    // @ManyToMany
-    // @JoinTable(name = "TBL_ACCESS_DIVISION", joinColumns = @JoinColumn(name = "USER_ID"),
-    // inverseJoinColumns = @JoinColumn(name = "DIVISION_ID"))
-    // private Set<Division> divisions = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "DIVISION_ID", nullable = false)
