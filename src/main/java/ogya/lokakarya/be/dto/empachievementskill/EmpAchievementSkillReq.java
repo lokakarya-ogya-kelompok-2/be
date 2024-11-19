@@ -1,5 +1,6 @@
 package ogya.lokakarya.be.dto.empachievementskill;
 
+import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -12,8 +13,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ogya.lokakarya.be.entity.EmpAchievementSkill;
-
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
