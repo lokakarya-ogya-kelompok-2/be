@@ -1,6 +1,11 @@
 package ogya.lokakarya.be.dto.achievement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,12 +21,18 @@ import java.util.UUID;
 @Data
 @ToString
 public class AchievementReq {
+    @NotBlank(message = "Achievement cannot be blank")
+    @Size(max = 100, message = "Achievement cannot exceed 100 characters")
     @JsonProperty("achievement")
     private String achievement;
 
+    @NotNull(message = "Group ID cannot be null")
     @JsonProperty("group_id")
     private UUID groupAchievement;
 
+    @NotNull(message = "Enabled status cannot be null")
+    @Min(value = 0, message = "Enabled status must be 0 (disabled) or 1 (enabled)")
+    @Max(value = 1, message = "Enabled status must be 0 (disabled) or 1 (enabled)")
     @JsonProperty("enabled")
     private Boolean enabled;
 
