@@ -1,8 +1,14 @@
 package ogya.lokakarya.be.dto.achievement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import ogya.lokakarya.be.entity.Achievement;
+
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,8 +19,8 @@ public class AchievementReq {
     @JsonProperty("achievement")
     private String achievement;
 
-//    @JsonProperty("group_id")
-//    private GroupAchievement groupAchievement;
+    @JsonProperty("group_id")
+    private UUID groupAchievement;
 
     @JsonProperty("enabled")
     private Boolean enabled;

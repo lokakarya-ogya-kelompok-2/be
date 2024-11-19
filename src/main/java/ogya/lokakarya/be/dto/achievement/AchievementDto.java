@@ -1,10 +1,13 @@
 package ogya.lokakarya.be.dto.achievement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import ogya.lokakarya.be.dto.groupachievement.GroupAchievementDto;
 import ogya.lokakarya.be.entity.Achievement;
-import ogya.lokakarya.be.entity.GroupAchievement;
 
 import java.util.Date;
 import java.util.UUID;
@@ -22,7 +25,7 @@ public class AchievementDto {
     private String achievement;
 
     @JsonProperty("group_id")
-    private GroupAchievement groupAchievement;
+    private GroupAchievementDto groupAchievement;
 
     @JsonProperty("enabled")
     private Boolean enabled = true;
@@ -42,6 +45,9 @@ public class AchievementDto {
     public AchievementDto(Achievement achievement) {
         setId(achievement.getId());
         setAchievement(achievement.getAchievement());
+        if(achievement.getGroupAchievement() != null){
+            setGroupAchievement(new GroupAchievementDto(achievement.getGroupAchievement()));
+        }
         setEnabled(achievement.getEnabled());
         setCreatedAt(achievement.getCreatedAt());
         setCreatedBy(achievement.getCreatedBy());
