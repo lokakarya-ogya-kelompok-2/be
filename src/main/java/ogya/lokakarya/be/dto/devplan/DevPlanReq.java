@@ -24,7 +24,7 @@ public class DevPlanReq {
 
     @NotNull(message = "Enabled status cannot be null")
     @JsonProperty("enabled")
-    private boolean enabled=true;
+    private Boolean enabled;
 
     public DevPlan toEntity(){
         DevPlan devPlan = new DevPlan();
