@@ -1,13 +1,14 @@
 package ogya.lokakarya.be.dto.empdevplan;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.*;
-import ogya.lokakarya.be.entity.DevPlan;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import ogya.lokakarya.be.dto.devplan.DevPlanDto;
+import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.EmpDevPlan;
-import ogya.lokakarya.be.entity.User;
 
 import java.util.Date;
 import java.util.UUID;
@@ -21,11 +22,11 @@ public class EmpDevPlanDto {
     @JsonProperty("id")
     private UUID id;
 
-//    @JsonProperty("user_id")
-//    private User user;
-//
-//    @JsonProperty("dev_plan_id")
-//    private DevPlan devPlan;
+    @JsonProperty("user_id")
+    private UserDto user;
+
+    @JsonProperty("dev_plan_id")
+    private DevPlanDto devPlan;
 
     @JsonProperty("assessment_year")
     private Integer assessmentYear;
@@ -44,6 +45,12 @@ public class EmpDevPlanDto {
 
     public EmpDevPlanDto(EmpDevPlan empDevPlan) {
         setId(empDevPlan.getId());
+        if(empDevPlan.getUser() != null) {
+            setUser(new UserDto(empDevPlan.getUser(), false, false, false));
+        }
+        if (empDevPlan.getDevPlan() != null) {
+            setDevPlan(new DevPlanDto(empDevPlan.getDevPlan()));
+        }
         setAssessmentYear(empDevPlan.getAssessmentYear());
         setCreatedAt(empDevPlan.getCreatedAt());
         setCreatedBy(empDevPlan.getCreatedBy());

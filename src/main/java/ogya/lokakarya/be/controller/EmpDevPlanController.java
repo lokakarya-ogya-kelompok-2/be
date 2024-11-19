@@ -3,12 +3,18 @@ package ogya.lokakarya.be.controller;
 import jakarta.validation.Valid;
 import ogya.lokakarya.be.dto.empdevplan.EmpDevPlanDto;
 import ogya.lokakarya.be.dto.empdevplan.EmpDevPlanReq;
-import ogya.lokakarya.be.entity.EmpDevPlan;
 import ogya.lokakarya.be.service.EmpDevPlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,7 +26,7 @@ public class EmpDevPlanController {
     private EmpDevPlanService empDevPlanService;
 
     @PostMapping
-    public ResponseEntity<EmpDevPlan> create(@RequestBody @Valid EmpDevPlanReq data) {
+    public ResponseEntity<EmpDevPlanDto> create(@RequestBody @Valid EmpDevPlanReq data) {
         var createdEmpDevPlan= empDevPlanService.create(data);
         return new ResponseEntity<>(createdEmpDevPlan, HttpStatus.CREATED);
     }
