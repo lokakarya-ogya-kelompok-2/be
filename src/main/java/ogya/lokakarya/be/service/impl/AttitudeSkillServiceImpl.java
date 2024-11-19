@@ -3,7 +3,9 @@ package ogya.lokakarya.be.service.impl;
 import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillDto;
 import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillReq;
 import ogya.lokakarya.be.entity.AttitudeSkill;
+import ogya.lokakarya.be.entity.GroupAttitudeSkill;
 import ogya.lokakarya.be.repository.AttitudeSkillRepository;
+import ogya.lokakarya.be.repository.GroupAttitudeSkillRepository;
 import ogya.lokakarya.be.service.AttitudeSkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +20,20 @@ import java.util.UUID;
 public class AttitudeSkillServiceImpl implements AttitudeSkillService {
     @Autowired
     private AttitudeSkillRepository attitudeSkillRepository;
+    @Autowired
+    private GroupAttitudeSkillRepository groupAttitudeSkillRepository;
 
     @Override
-    public AttitudeSkill create(AttitudeSkillReq data) {
-        return attitudeSkillRepository.save(data.toEntity());
-    }
+    public AttitudeSkillDto create(AttitudeSkillReq data) {
+        Optional<GroupAttitudeSkill> findGroupAttitudeSKill= groupAttitudeSkillRepository.findById(data.getGroupAttitudeSkill());
+        if(findGroupAttitudeSKill.isEmpty()) {
+            throw new RuntimeException(String.format("Group attitude skill not found"));
+        }
+        AttitudeSkill dataEntity= data.toEntity();
+        dataEntity.setGroupAttitudeSkill(findGroupAttitudeSKill.get());
+        AttitudeSkill createdData= attitudeSkillRepository.save(dataEntity);
+        return new AttitudeSkillDto(createdData);
+    };
 
     @Override
     public List<AttitudeSkillDto> getAllAttitudeSkills() {

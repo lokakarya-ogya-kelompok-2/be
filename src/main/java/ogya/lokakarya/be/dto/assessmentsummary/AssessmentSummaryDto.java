@@ -47,7 +47,9 @@ public class AssessmentSummaryDto {
 
     public AssessmentSummaryDto(AssessmentSummary assessmentSummary) {
         setId(assessmentSummary.getId());
-        setUser(new UserDto(assessmentSummary.getUser(), false, false));
+        if (assessmentSummary.getUser() != null) {
+        setUser(new UserDto(assessmentSummary.getUser(), false, false, false));
+        }
         setYear(assessmentSummary.getYear());
         setScore(assessmentSummary.getScore());
         setStatus(assessmentSummary.getStatus());

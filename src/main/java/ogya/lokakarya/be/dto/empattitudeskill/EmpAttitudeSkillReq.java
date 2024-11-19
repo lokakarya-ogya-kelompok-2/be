@@ -1,8 +1,14 @@
 package ogya.lokakarya.be.dto.empattitudeskill;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import ogya.lokakarya.be.entity.EmpAttitudeSkill;
+
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -10,6 +16,12 @@ import ogya.lokakarya.be.entity.EmpAttitudeSkill;
 @Data
 @ToString
 public class EmpAttitudeSkillReq {
+    @JsonProperty("user_id")
+    private UUID userId;
+
+    @JsonProperty("attitude_skill_id")
+    private UUID attitudeSkillId;
+
     @JsonProperty("score")
     private Integer score;
 

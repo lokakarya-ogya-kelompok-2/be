@@ -1,9 +1,11 @@
 package ogya.lokakarya.be.service.impl;
 
-import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionReq;
 import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionDto;
+import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionReq;
 import ogya.lokakarya.be.entity.EmpSuggestion;
+import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.repository.EmpSuggestionRepository;
+import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.service.EmpSuggestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +20,20 @@ import java.util.UUID;
 public class EmpSuggestionServiceImpl implements EmpSuggestionService {
     @Autowired
     EmpSuggestionRepository empSuggestionRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
-    public EmpSuggestion create(EmpSuggestionReq data) {
-        return empSuggestionRepository.save(data.toEntity());
+    public EmpSuggestionDto create(EmpSuggestionReq data) {
+        Optional<User> findUser= userRepository.findById(data.getUser());
+        if(findUser.isEmpty()) {
+            throw new RuntimeException(String.format("User not found",
+                    data.getUser().toString()));
+        }
+        EmpSuggestion dataEmpSuggestion = data.toEntity();
+        dataEmpSuggestion.setUser(findUser.get());
+        EmpSuggestion createdEmpSuggestion = empSuggestionRepository.save(dataEmpSuggestion);
+        return new EmpSuggestionDto(createdEmpSuggestion);
     }
 
     @Override

@@ -1,9 +1,14 @@
 package ogya.lokakarya.be.dto.attitudeskill;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillDto;
 import ogya.lokakarya.be.entity.AttitudeSkill;
-import ogya.lokakarya.be.entity.GroupAttitudeSkill;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -20,7 +25,7 @@ public class AttitudeSkillDto {
     private String attitudeSkill;
 
     @JsonProperty("group_id")
-    private GroupAttitudeSkill groupAttitudeSkill;
+    private GroupAttitudeSkillDto groupAttitudeSkill;
 
     @JsonProperty("enabled")
     private Boolean enabled = true;
@@ -39,7 +44,14 @@ public class AttitudeSkillDto {
 
     public AttitudeSkillDto (AttitudeSkill attitudeSkill) {
         setId(attitudeSkill.getId());
+        if(attitudeSkill.getGroupAttitudeSkill() != null) {
+            setGroupAttitudeSkill(new GroupAttitudeSkillDto(attitudeSkill.getGroupAttitudeSkill()));
+        }
         setAttitudeSkill(attitudeSkill.getAttitudeSkill());
-        setGroupAttitudeSkill(attitudeSkill.getGroupAttitudeSkill());
+        setEnabled(attitudeSkill.getEnabled());
+        setCreatedAt(attitudeSkill.getCreatedAt());
+        setCreatedBy(attitudeSkill.getCreatedBy());
+        setUpdatedAt(attitudeSkill.getUpdatedAt());
+        setUpdatedBy(attitudeSkill.getUpdatedBy());
     }
 }
