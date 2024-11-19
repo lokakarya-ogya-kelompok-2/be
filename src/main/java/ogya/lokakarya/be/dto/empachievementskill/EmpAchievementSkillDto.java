@@ -1,8 +1,15 @@
 package ogya.lokakarya.be.dto.empachievementskill;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import ogya.lokakarya.be.dto.achievement.AchievementDto;
+import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.EmpAchievementSkill;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -15,16 +22,14 @@ public class EmpAchievementSkillDto {
     @JsonProperty("id")
     private UUID id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @JsonProperty("user_id")
+    private UserDto user;
 
     @JsonProperty("notes")
     private String notes;
 
-//    @ManyToOne
-//    @JoinColumn(name = "achievement_id")
-//    private Achievement achievement;
+    @JsonProperty("achievement_id")
+    private AchievementDto achievement;
 
     @JsonProperty("score")
     private Integer score;
@@ -46,6 +51,12 @@ public class EmpAchievementSkillDto {
 
     public EmpAchievementSkillDto(EmpAchievementSkill achievementSkill) {
         setId(achievementSkill.getId());
+        if(achievementSkill.getUser() != null) {
+            setUser(new UserDto(achievementSkill.getUser(), false, false, false));
+        }
+        if(achievementSkill.getAchievement() != null) {
+            setAchievement(new AchievementDto(achievementSkill.getAchievement()));
+        }
         setNotes(achievementSkill.getNotes());
         setScore(achievementSkill.getScore());
         setAssessmentYear(achievementSkill.getAssessmentYear());
