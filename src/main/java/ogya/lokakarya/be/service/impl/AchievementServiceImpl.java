@@ -3,13 +3,16 @@ package ogya.lokakarya.be.service.impl;
 import ogya.lokakarya.be.dto.achievement.AchievementDto;
 import ogya.lokakarya.be.dto.achievement.AchievementReq;
 import ogya.lokakarya.be.entity.Achievement;
+import ogya.lokakarya.be.entity.GroupAchievement;
 import ogya.lokakarya.be.repository.AchievementRepository;
+import ogya.lokakarya.be.repository.GroupAchievementRepository;
 import ogya.lokakarya.be.service.AchievementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,13 +24,22 @@ public class AchievementServiceImpl implements AchievementService {
     AchievementRepository achievementRepository;
     @Autowired
     private static final Logger LOG = LoggerFactory.getLogger(AchievementServiceImpl.class);
+    @Autowired
+    private GroupAchievementRepository groupAchievementRepository;
 
     @Override
-    public Achievement create(AchievementReq data) {
+    public AchievementDto create(AchievementReq data) {
         LOG.info("Start service: create achievement");
-        System.out.println(data);
+//        System.out.println(data);
+        Optional<GroupAchievement> findGroupAchievement= groupAchievementRepository.findById(data.getGroupAchievement());
+        if(findGroupAchievement.isEmpty()) {
+            throw new RuntimeException("GroupAchievement not found");
+        }
+        Achievement dataEntity= data.toEntity();
+        dataEntity.setGroupAchievement(findGroupAchievement.get());
+        Achievement createdData=  achievementRepository.save(dataEntity);
         LOG.info("End service: create achievement");
-        return achievementRepository.save(data.toEntity());
+        return new AchievementDto(createdData);
     }
 
     @Override
@@ -46,7 +58,6 @@ public class AchievementServiceImpl implements AchievementService {
         Optional<Achievement> listData;
         try{
             listData = achievementRepository.findById(id);
-            System.out.println(listData);
         }catch(Exception e){
             e.printStackTrace();
             throw e;
@@ -61,8 +72,12 @@ public class AchievementServiceImpl implements AchievementService {
         if(listData.isPresent()) {
             Achievement achievement= listData.get();
             if(!achievement.getAchievement().isBlank()){
-                achievement.setAchievement(achievementReq.getAchievement());
-                achievement.setEnabled(achievementReq.getEnabled());
+                Optional<GroupAchievement> findGroupAchievement= groupAchievementRepository.findById(achievementReq.getGroupAchievement());
+                if(findGroupAchievement.isPresent()) {
+                    achievement.setGroupAchievement(findGroupAchievement.get());
+                    achievement.setAchievement(achievementReq.getAchievement());
+                    achievement.setEnabled(achievementReq.getEnabled());
+                }
             }
             AchievementDto achievementDto= convertToDto(achievement);
             achievementRepository.save(achievement);

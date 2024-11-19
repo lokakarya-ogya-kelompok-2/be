@@ -1,8 +1,14 @@
 package ogya.lokakarya.be.dto.empachievementskill;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import ogya.lokakarya.be.entity.EmpAchievementSkill;
+
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -10,6 +16,12 @@ import ogya.lokakarya.be.entity.EmpAchievementSkill;
 @Data
 @ToString
 public class EmpAchievementSkillReq {
+    @JsonProperty("user_id")
+    private UUID userId;
+
+    @JsonProperty("achievement_id")
+    private UUID achievementId;
+
     @JsonProperty("notes")
     private String notes;
 

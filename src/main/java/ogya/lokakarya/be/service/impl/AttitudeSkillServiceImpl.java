@@ -66,8 +66,12 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
         if(listData.isPresent()){
             AttitudeSkill attitudeSkill= listData.get();
             if(!attitudeSkillReq.getAttitudeSkill().isBlank()){
-                attitudeSkill.setAttitudeSkill(attitudeSkillReq.getAttitudeSkill());
-                attitudeSkill.setEnabled(attitudeSkillReq.getEnabled());
+                Optional<GroupAttitudeSkill> findGroupAttitudeSKill= groupAttitudeSkillRepository.findById(attitudeSkillReq.getGroupAttitudeSkill());
+                if(findGroupAttitudeSKill.isPresent()) {
+                    attitudeSkill.setGroupAttitudeSkill(findGroupAttitudeSKill.get());
+                    attitudeSkill.setAttitudeSkill(attitudeSkillReq.getAttitudeSkill());
+                    attitudeSkill.setEnabled(attitudeSkillReq.getEnabled());
+                }
             }
             AttitudeSkillDto attitudeSkillDto= convertToDto(attitudeSkill);
             attitudeSkillRepository.save(attitudeSkill);
