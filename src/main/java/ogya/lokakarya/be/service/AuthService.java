@@ -1,7 +1,6 @@
 package ogya.lokakarya.be.service;
 
-import ogya.lokakarya.be.dto.auth.LoginDto;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface AuthService {
-    String login(LoginDto data);
+public interface AuthService extends UserDetailsService {
 }

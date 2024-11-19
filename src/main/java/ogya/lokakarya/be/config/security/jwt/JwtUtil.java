@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
@@ -34,18 +33,11 @@ public class JwtUtil {
         jwtKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        Date now = new Date();
-        String authoritiesStr = userDetails.getAuthorities().stream()
-                .map(authority -> "ROLE_" + authority.getAuthority())
-                .collect(Collectors.joining(","));
-        return Jwts.builder().claims(extraClaims).subject(userDetails.getUsername()).issuedAt(now)
-                .claim("roles", authoritiesStr)
-                .expiration(new Date(now.getTime() + jwtExpirationMs)).signWith(jwtKey).compact();
-    }
-
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        final Date now = new Date();
+        return Jwts.builder().claims(new HashMap<>()).subject(userDetails.getUsername())
+                .issuedAt(now).expiration(new Date(now.getTime() + jwtExpirationMs))
+                .signWith(jwtKey).compact();
     }
 
     public String extractSubject(String token) {

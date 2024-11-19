@@ -50,7 +50,7 @@ public class UserDto {
 
     public UserDto(User user, boolean withCreatedBy, boolean withUpdatedBy, boolean includeRoles) {
         setId(user.getId());
-        setUsername(user.getUsernameRiilNoFake());
+        setUsername(user.getUsername());
         setFullName(user.getFullName());
         setPosition(user.getPosition());
         setEmailAddress(user.getEmailAddress());

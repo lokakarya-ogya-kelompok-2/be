@@ -1,7 +1,5 @@
 package ogya.lokakarya.be.config.security;
 
-import java.util.Optional;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,11 +14,12 @@ public class SecurityUtil {
 
     public User getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        UUID currUserId = (UUID) auth.getPrincipal();
-        Optional<User> userOpt = userRepo.findById(currUserId);
-        if (userOpt.isEmpty()) {
-            throw new RuntimeException("Current User Couldn't be found!");
-        }
-        return userOpt.get();
+        // String username = (String) auth.getPrincipal();
+        // Optional<User> userOpt = userRepo.findByUsername(username);
+        // if (userOpt.isEmpty()) {
+        // throw new RuntimeException("Current User Couldn't be found!");
+        // }
+        // return userOpt.get();
+        return (User) auth.getPrincipal();
     }
 }
