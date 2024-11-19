@@ -32,7 +32,7 @@ public class GroupAttitudeSkillReq {
 
     @NotNull(message = "Enabled status must be provided")
     @JsonProperty("enabled")
-    private Boolean enabled = true;
+    private Boolean enabled;
 
     public GroupAttitudeSkill toEntity(){
         GroupAttitudeSkill groupAttitudeSkill = new GroupAttitudeSkill();

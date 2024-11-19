@@ -24,7 +24,7 @@ public class TechnicalSkillReq {
 
     @NotNull(message = "Enabled status cannot be null")
     @JsonProperty("enabled")
-    private boolean enabled=true;
+    private Boolean enabled;
 
     public TechnicalSkill toEntity() {
         TechnicalSkill technicalSkill = new TechnicalSkill();
