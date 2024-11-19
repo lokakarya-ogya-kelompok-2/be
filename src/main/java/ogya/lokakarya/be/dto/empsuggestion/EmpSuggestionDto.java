@@ -1,8 +1,14 @@
 package ogya.lokakarya.be.dto.empsuggestion;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.EmpSuggestion;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -15,8 +21,8 @@ public class EmpSuggestionDto {
     @JsonProperty("id")
     private UUID id;
 
-//    @JsonProperty("user_id")
-//    private User user;
+    @JsonProperty("user_id")
+    private UserDto user;
 
     @JsonProperty("suggestion")
     private String suggestion;
@@ -38,6 +44,7 @@ public class EmpSuggestionDto {
 
     public EmpSuggestionDto(EmpSuggestion empSuggestion) {
         setId(empSuggestion.getId());
+        setUser(new UserDto(empSuggestion.getUser(), false, false, false));
         setSuggestion(empSuggestion.getSuggestion());
         setAssessmentYear(empSuggestion.getAssessmentYear());
         setCreatedAt(empSuggestion.getCreatedAt());

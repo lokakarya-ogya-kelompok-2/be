@@ -1,7 +1,7 @@
 package ogya.lokakarya.be.service.impl;
 
-import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillReq;
 import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillDto;
+import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillReq;
 import ogya.lokakarya.be.entity.TechnicalSkill;
 import ogya.lokakarya.be.repository.TechnicalSkillRepository;
 import ogya.lokakarya.be.service.TechnicalSkillService;
@@ -20,8 +20,9 @@ public class TechnicalSkillServiceImpl implements TechnicalSkillService {
     private TechnicalSkillRepository technicalSkillRepository;
 
     @Override
-    public TechnicalSkill create(TechnicalSkillReq data) {
-        return technicalSkillRepository.save(data.toEntity());
+    public TechnicalSkillDto create(TechnicalSkillReq data) {
+        TechnicalSkill createdtechnicalSkill = technicalSkillRepository.save(data.toEntity());
+        return new TechnicalSkillDto(createdtechnicalSkill);
     }
 
     @Override
