@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> update(@PathVariable UUID id, @RequestBody UserReq data) {
+    public ResponseEntity<UserDto> update(@PathVariable UUID id, @RequestBody @Valid UserReq data) {
         var updatedUser = userSvc.update(id, data);
 
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);

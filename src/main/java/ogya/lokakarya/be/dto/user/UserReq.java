@@ -5,31 +5,50 @@ import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import ogya.lokakarya.be.entity.User;
 
 @Data
 public class UserReq {
+    @NotEmpty
     private String username;
 
+    @NotEmpty
     @JsonProperty("full_name")
     private String fullName;
 
+    @NotEmpty
     private String position;
 
+    @NotNull
+    @Min(value = 0)
+    @Max(value = 1)
     @JsonProperty("employee_status")
     private Integer employeeStatus;
 
+    @NotEmpty
+    @Email
     private String email;
 
+    @NotNull
     @JsonProperty("join_date")
     private LocalDate joinDate;
 
+    @NotNull
     @JsonProperty("division_id")
     private UUID divisionId;
 
+    @NotEmpty
+    @Size(min = 8, max = 32)
     private String password;
 
+    @NotNull
     private Set<UUID> roles;
 
     public User toEntity() {
