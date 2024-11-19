@@ -1,5 +1,6 @@
 package ogya.lokakarya.be.dto.empattitudeskill;
 
+import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -10,8 +11,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ogya.lokakarya.be.entity.EmpAttitudeSkill;
-
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -39,7 +38,7 @@ public class EmpAttitudeSkillReq {
     @JsonProperty("assessment_year")
     private Integer assessmentYear;
 
-    public EmpAttitudeSkill toEntity(){
+    public EmpAttitudeSkill toEntity() {
         EmpAttitudeSkill empAttitudeSkill = new EmpAttitudeSkill();
         empAttitudeSkill.setScore(score);
         empAttitudeSkill.setAssessmentYear(assessmentYear);
