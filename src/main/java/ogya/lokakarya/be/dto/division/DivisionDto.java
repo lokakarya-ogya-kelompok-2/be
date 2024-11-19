@@ -1,8 +1,13 @@
 package ogya.lokakarya.be.dto.division;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import ogya.lokakarya.be.entity.Division;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -18,7 +23,7 @@ public class DivisionDto {
     @JsonProperty("division_name")
     private String divisionName;
 
-    @JsonProperty("created_add")
+    @JsonProperty("created_at")
     private Date createdAt;
 
     @JsonProperty("created_by")
