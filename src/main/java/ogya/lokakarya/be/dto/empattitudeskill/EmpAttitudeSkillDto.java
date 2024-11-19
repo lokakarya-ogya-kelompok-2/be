@@ -1,8 +1,13 @@
 package ogya.lokakarya.be.dto.empattitudeskill;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
-import ogya.lokakarya.be.entity.EmpAchievementSkill;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillDto;
+import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.EmpAttitudeSkill;
 
 import java.util.Date;
@@ -17,11 +22,11 @@ public class EmpAttitudeSkillDto {
     @JsonProperty("id")
     private UUID id;
 
-//    @JsonProperty("attitude_skill_id")
-//    private AttitudeSkill attitudeSkill;
-//
-//    @JsonProperty("user_id")
-//    private User user;
+    @JsonProperty("attitude_skill_id")
+    private AttitudeSkillDto attitudeSkill;
+
+    @JsonProperty("user_id")
+    private UserDto user;
 
     @JsonProperty("score")
     private Integer score;
@@ -43,6 +48,12 @@ public class EmpAttitudeSkillDto {
 
     public EmpAttitudeSkillDto (EmpAttitudeSkill empAttitudeSkill) {
         setId(empAttitudeSkill.getId());
+        if(empAttitudeSkill.getUser() != null) {
+            setUser(new UserDto(empAttitudeSkill.getUser(), false, false, false ));
+        }
+        if(empAttitudeSkill.getAttitudeSkill() != null) {
+            setAttitudeSkill(new AttitudeSkillDto(empAttitudeSkill.getAttitudeSkill()));
+        }
         setScore(empAttitudeSkill.getScore());
         setAssessmentYear(empAttitudeSkill.getAssessmentYear());
         setCreatedAt(empAttitudeSkill.getCreatedAt());

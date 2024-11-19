@@ -1,9 +1,14 @@
 package ogya.lokakarya.be.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillDto;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillReq;
+import ogya.lokakarya.be.entity.AttitudeSkill;
 import ogya.lokakarya.be.entity.EmpAttitudeSkill;
+import ogya.lokakarya.be.entity.User;
+import ogya.lokakarya.be.repository.AttitudeSkillRepository;
 import ogya.lokakarya.be.repository.EmpAttitudeSkillRepository;
+import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.service.EmpAttitudeSkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +23,29 @@ import java.util.UUID;
 public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
     @Autowired
     private EmpAttitudeSkillRepository empAttitudeSkillRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private AttitudeSkillRepository attitudeSkillRepository;
+
 
     @Override
-    public EmpAttitudeSkill create(EmpAttitudeSkillReq data) {
-        return empAttitudeSkillRepository.save(data.toEntity());
+    public EmpAttitudeSkillDto create(EmpAttitudeSkillReq data) {
+        Optional<AttitudeSkill> findAttitudeSkill = attitudeSkillRepository.findById(data.getAttitudeSkillId());
+        Optional<User> findUser= userRepository.findById(data.getUserId());
+        if(findUser.isEmpty()){
+            throw new EntityNotFoundException(String.format("User not found",
+                    data.getUserId().toString()));
+        }
+        if(findAttitudeSkill.isEmpty()){
+            throw new EntityNotFoundException(String.format("Attitude Skill not found",
+                    data.getAttitudeSkillId().toString()));
+        }
+        EmpAttitudeSkill dataEntity = data.toEntity();
+        dataEntity.setUser(findUser.get());
+        dataEntity.setAttitudeSkill(findAttitudeSkill.get());
+        EmpAttitudeSkill createData = empAttitudeSkillRepository.save(dataEntity);
+        return new EmpAttitudeSkillDto(createData);
     }
 
     @Override
@@ -40,13 +64,13 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
         Optional<EmpAttitudeSkill> listData;
         try{
             listData=empAttitudeSkillRepository.findById(id);
-            System.out.println(listData);
         }catch(Exception e){
             e.printStackTrace();
             throw e;
         }
         EmpAttitudeSkill data= listData.get();
-        return convertToDto(data);
+//        return convertToDto(data);
+        return new EmpAttitudeSkillDto(data);
     }
 
     @Override

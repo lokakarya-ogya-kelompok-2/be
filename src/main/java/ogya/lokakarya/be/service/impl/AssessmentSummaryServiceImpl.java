@@ -55,13 +55,14 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         Optional<AssessmentSummary> listData;
         try{
             listData=assessmentSummaryRepository.findById(id);
-            System.out.println(listData);
+//            System.out.println(listData);
         }catch(Exception e){
             e.printStackTrace();
             throw e;
         }
         AssessmentSummary data= listData.get();
-        return convertToDto(data);
+//        return convertToDto(data);
+        return new AssessmentSummaryDto(data);
     }
 
     @Override
