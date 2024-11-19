@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import ogya.lokakarya.be.dto.division.DivisionDto;
 import ogya.lokakarya.be.dto.role.RoleDto;
 import ogya.lokakarya.be.entity.User;
 
@@ -45,6 +46,8 @@ public class UserDto {
 
     private Set<RoleDto> roles;
 
+    private DivisionDto division;
+
     public UserDto(User user, boolean withCreatedBy, boolean withUpdatedBy, boolean includeRoles) {
         setId(user.getId());
         setUsername(user.getUsernameRiilNoFake());
@@ -53,6 +56,7 @@ public class UserDto {
         setEmailAddress(user.getEmailAddress());
         setJoinDate(user.getJoinDate().toLocalDate());
         setEnabled(user.getEnabled());
+        setPassword(user.getPassword());
         if (user.getCreatedAt() != null) {
             setCreatedAt(user.getCreatedAt());
         }
@@ -72,7 +76,11 @@ public class UserDto {
             if (user.getUserRoles() != null) {
                 user.getUserRoles().forEach(userRole -> roles.add(new RoleDto(userRole.getRole())));
             }
+            setRoles(roles);
         }
-        setRoles(roles);
+
+        if (user.getDivision() != null) {
+            setDivision(new DivisionDto(user.getDivision()));
+        }
     }
 }

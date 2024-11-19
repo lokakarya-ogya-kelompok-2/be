@@ -1,5 +1,6 @@
 package ogya.lokakarya.be.service.impl;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -7,6 +8,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.user.UserDto;
@@ -23,6 +25,9 @@ import ogya.lokakarya.be.service.UserService;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Autowired
     private UserRepository userRepo;
@@ -106,15 +111,54 @@ public class UserServiceImpl implements UserService {
         if (userOpt.isEmpty()) {
             throw new RuntimeException("USER WITH GIVEN ID COULD NOT BE FOUND!");
         }
-        User newData = data.toEntity();
+        User user = userOpt.get();
         User currentUser = securityUtil.getCurrentUser();
-        newData.setId(id);
-        newData.setUpdatedBy(currentUser);
-        newData = userRepo.save(newData);
+        if (data.getUsername() != null) {
+            user.setUsername(data.getUsername());
+        }
+        if (data.getFullName() != null) {
+            user.setFullName(data.getFullName());
+        }
+        if (data.getPosition() != null) {
+            user.setPosition(data.getPosition());
+        }
+        if (data.getEmployeeStatus() != null) {
+            user.setEmployeeStatus(data.getEmployeeStatus());
+        }
+        if (data.getEmail() != null) {
+            user.setEmailAddress(data.getEmail());
+        }
+        if (data.getJoinDate() != null) {
+            user.setJoinDate(Date.valueOf(data.getJoinDate()));
+        }
+        if (data.getPassword() != null) {
+            System.out.println(passwordEncoder.matches(data.getPassword(), user.getPassword())
+                    + " REQ AND ENTITY");
+            String encodedPassword = passwordEncoder.encode(data.getPassword());
+            System.out.println(passwordEncoder.matches(data.getPassword(), encodedPassword)
+                    + " REQ AND REQ ENCODED");
+            System.out.println(
+                    encodedPassword + "<< FROM REQ || FROM ENTITY >>" + user.getPassword());
+            user.setPassword(encodedPassword);
+        }
+
+        if (data.getDivisionId() != null) {
+            Optional<Division> divisionOpt = divisionRepo.findById(data.getDivisionId());
+            if (divisionOpt.isEmpty()) {
+                throw new RuntimeException("DIVISION WITH GIVEN ID COULD NOT BE FOUND!");
+            }
+            user.setDivision(divisionOpt.get());
+        }
+
+        user.setUpdatedBy(currentUser);
+
+        user = userRepo.save(user);
 
         userRoleRepo.deleteByUserId(id);
+        entityManager.flush();
+
         if ((data.getRoles() != null) && !data.getRoles().isEmpty()) {
-            newData.setUserRoles(new ArrayList<>());
+            user.setUserRoles(new ArrayList<>());
             for (UUID roleId : data.getRoles()) {
                 Optional<Role> roleOpt = roleRepo.findById(roleId);
                 if (roleOpt.isEmpty()) {
@@ -122,14 +166,13 @@ public class UserServiceImpl implements UserService {
                             roleId.toString()));
                 }
                 UserRole userRole = new UserRole();
-                userRole.setUser(newData);
+                userRole.setUser(user);
                 userRole.setRole(roleOpt.get());
                 userRoleRepo.save(userRole);
-                newData.getUserRoles().add(userRole);
+                user.getUserRoles().add(userRole);
             }
         }
 
-        return new UserDto(newData, true, true, true);
+        return new UserDto(user, true, true, true);
     }
-
 }
