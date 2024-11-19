@@ -32,7 +32,7 @@ public class GroupAchievementReq {
 
     @NotNull(message = "Enabled status cannot be null")
     @JsonProperty("enabled")
-    private Boolean enabled = true;
+    private Boolean enabled;
 
     public GroupAchievement toEntity(){
         GroupAchievement groupAchievement = new GroupAchievement();

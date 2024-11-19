@@ -30,7 +30,7 @@ public class AttitudeSkillReq {
 
     @NotNull(message = "Enabled status must be provided")
     @JsonProperty("enabled")
-    private Boolean enabled = true;
+    private Boolean enabled;
 
     public AttitudeSkill toEntity(){
         AttitudeSkill attitudeSkilll = new AttitudeSkill();
