@@ -1,7 +1,10 @@
 -- division
-INSERT INTO tbl_division (id, division_name) 
-VALUES (UUID(), 'Human Resource (HR)')
-ON DUPLICATE KEY UPDATE division_name = division_name;
+INSERT IGNORE INTO tbl_division (id, division_name)
+SELECT UUID(), 'Human Resource (HR)'
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1 FROM tbl_division WHERE division_name = 'Human Resource (HR)'
+);
 
 -- roles
 INSERT IGNORE INTO
