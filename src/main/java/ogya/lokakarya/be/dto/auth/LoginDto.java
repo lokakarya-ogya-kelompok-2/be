@@ -11,6 +11,7 @@ import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.Payload;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data
@@ -20,6 +21,8 @@ public class LoginDto {
     @JsonProperty("email")
     private String email;
 
+    @Pattern(regexp = "^[a-zA-Z0-9._]+$",
+            message = "Username can only contain alphanumeric characters, underscores, and dots")
     @JsonProperty("username")
     private String username;
 
@@ -36,10 +39,10 @@ class EmailOrUsernameValidator implements ConstraintValidator<EmailOrUsername, L
 
     @Override
     public boolean isValid(LoginDto loginDto, ConstraintValidatorContext context) {
-        return (loginDto.getEmail() != null && !loginDto.getEmail().isEmpty())
+        return ((loginDto.getEmail() != null && !loginDto.getEmail().isEmpty())
+                && (loginDto.getUsername() == null || loginDto.getUsername().isEmpty())
                 || (loginDto.getUsername() != null && !loginDto.getUsername().isEmpty())
-                || (loginDto.getUsername() == null && loginDto.getEmail() != null)
-                || (loginDto.getUsername() != null && loginDto.getEmail() == null);
+                        && (loginDto.getEmail() == null || loginDto.getEmail().isEmpty()));
     }
 }
 
@@ -48,7 +51,9 @@ class EmailOrUsernameValidator implements ConstraintValidator<EmailOrUsername, L
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @interface EmailOrUsername {
-    String message() default "Either email or username must be provided";
+    String message()
+
+    default "Either one of email or username must be provided";
 
     Class<?>[] groups() default {};
 
