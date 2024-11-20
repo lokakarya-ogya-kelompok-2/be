@@ -49,6 +49,7 @@ public class UserReq {
     private String password;
 
     @NotNull
+    @Size(min = 1, message = "can't be empty")
     private Set<UUID> roles;
 
     public User toEntity() {
