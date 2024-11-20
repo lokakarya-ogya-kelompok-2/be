@@ -1,5 +1,6 @@
 package ogya.lokakarya.be.dto.empsuggestion;
 
+import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -12,8 +13,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ogya.lokakarya.be.entity.EmpSuggestion;
-
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -36,7 +35,7 @@ public class EmpSuggestionReq {
     @JsonProperty("assessment_year")
     private Integer assessmentYear;
 
-    public EmpSuggestion toEntity(){
+    public EmpSuggestion toEntity() {
         EmpSuggestion empSuggestion = new EmpSuggestion();
         empSuggestion.setSuggestion(suggestion);
         empSuggestion.setAssessmentYear(assessmentYear);

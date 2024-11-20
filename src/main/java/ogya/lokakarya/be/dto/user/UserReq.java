@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import ogya.lokakarya.be.entity.User;
@@ -17,6 +18,8 @@ import ogya.lokakarya.be.entity.User;
 @Data
 public class UserReq {
     @NotEmpty
+    @Pattern(regexp = "^[a-zA-Z0-9._]+$",
+            message = "Username can only contain alphanumeric characters, underscores, and dots")
     private String username;
 
     @NotEmpty

@@ -1,5 +1,6 @@
 package ogya.lokakarya.be.dto.attitudeskill;
 
+import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,8 +11,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ogya.lokakarya.be.entity.AttitudeSkill;
-
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,11 +31,11 @@ public class AttitudeSkillReq {
     @JsonProperty("enabled")
     private Boolean enabled;
 
-    public AttitudeSkill toEntity(){
+    public AttitudeSkill toEntity() {
         AttitudeSkill attitudeSkilll = new AttitudeSkill();
         attitudeSkilll.setAttitudeSkill(attitudeSkill);
         attitudeSkilll.setEnabled(enabled);
-//        attitudeSkilll.setGroupAttitudeSkill(groupAttitudeSkill);
+        // attitudeSkilll.setGroupAttitudeSkill(groupAttitudeSkill);
         return attitudeSkilll;
     }
 }
