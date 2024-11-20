@@ -17,6 +17,7 @@ import ogya.lokakarya.be.entity.Division;
 import ogya.lokakarya.be.entity.Role;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.entity.UserRole;
+import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.DivisionRepository;
 import ogya.lokakarya.be.repository.RoleRepository;
 import ogya.lokakarya.be.repository.UserRepository;
@@ -98,7 +99,7 @@ public class UserServiceImpl implements UserService {
     public UserDto get(UUID id) {
         Optional<User> userOpt = userRepo.findById(id);
         if (userOpt.isEmpty()) {
-            throw new RuntimeException("USER WITH GIVEN ID COULD NOT BE FOUND");
+            throw ResponseException.userNotFound("Get User By ID", id);
         }
         User user = userOpt.get();
         return new UserDto(user, true, true, true);
