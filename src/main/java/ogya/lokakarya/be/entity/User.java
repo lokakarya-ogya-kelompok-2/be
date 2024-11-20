@@ -20,18 +20,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.Data;
-import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @Data
@@ -72,7 +60,7 @@ public class User implements UserDetails {
     @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     private java.util.Date createdAt = new java.util.Date();
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CREATED_BY")
     private User createdBy;
 
@@ -80,7 +68,7 @@ public class User implements UserDetails {
     @JoinColumn(name = "updated_at")
     private java.util.Date updatedAt;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "UPDATED_BY")
     private User updatedBy;
 
@@ -96,7 +84,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<EmpSuggestion> empSuggestions;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DIVISION_ID", nullable = false)
     private Division division;
 
@@ -104,18 +92,10 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<SimpleGrantedAuthority> roles = new ArrayList<>();
         userRoles.forEach(userRole -> roles
-                .add(new SimpleGrantedAuthority(userRole.getRole().getRoleName())));
+                .add(new SimpleGrantedAuthority("ROLE_" + userRole.getRole().getRoleName())));
         return roles;
     }
 
-    @Override
-    public String getUsername() {
-        return id.toString();
-    }
-
-    public String getUsernameRiilNoFake() {
-        return username;
-    }
 
     @PreUpdate
     private void fillUpdatedAt() {
