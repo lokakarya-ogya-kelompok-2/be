@@ -30,17 +30,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody @Valid LoginDto data) {
-        String findBy = data.getEmail() == null ? data.getUsername() : data.getEmail();
-
         try {
-            authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(findBy, data.getPassword()));
+            authManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    data.getEmailOrUsername(), data.getPassword()));
         } catch (BadCredentialsException e) {
-            return new ResponseEntity<>(String.format("invalid %s/password",
-                    data.getEmail() == null ? "username" : "email"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("invalid (email/username)/password", HttpStatus.FORBIDDEN);
         }
 
-        UserDetails userDetails = authSvc.loadUserByUsername(findBy);
+        UserDetails userDetails = authSvc.loadUserByUsername(data.getEmailOrUsername());
         final String token = jwtUtil.generateToken(userDetails);
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
