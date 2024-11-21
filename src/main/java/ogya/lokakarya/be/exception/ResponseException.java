@@ -31,4 +31,5 @@ public class ResponseException extends RuntimeException {
     public static ResponseException roleNotFound(UUID id) {
         return notFoundResponse("User", id);
     }
+
 }
