@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.Role;
 
 @AllArgsConstructor
@@ -26,21 +27,25 @@ public class RoleDto {
     private Date createdAt;
 
     @JsonProperty("created_by")
-    private UUID createdBy;
+    private UserDto createdBy;
 
     @JsonProperty("updated_at")
     private Date updatedAt;
 
     @JsonProperty("updated_by")
-    private UUID updatedBy;
+    private UserDto updatedBy;
 
-    public RoleDto(Role role) {
+    public RoleDto(Role role, boolean withCreatedBy, boolean withUpdatedBy) {
         setId(role.getId());
         setRoleName(role.getRoleName());
         setCreatedAt(role.getCreatedAt());
-        setCreatedBy(role.getCreatedBy());
+        if (withCreatedBy && role.getCreatedBy() != null) {
+            setCreatedBy(new UserDto(role.getCreatedBy(), false, false, false));
+        }
         setUpdatedAt(role.getUpdatedAt());
-        setUpdatedBy(role.getUpdatedBy());
+        if (withUpdatedBy && role.getUpdatedBy() != null) {
+            setUpdatedBy(new UserDto(role.getUpdatedBy(), false, false, false));
+        }
     }
 
 }

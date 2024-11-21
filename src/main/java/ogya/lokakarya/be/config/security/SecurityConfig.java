@@ -41,7 +41,8 @@ public class SecurityConfig {
                     return cfg;
                 }))
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/users/**").hasRole("HR")
-                        .anyRequest().permitAll())
+                        .requestMatchers("/roles/**").hasRole("HR").requestMatchers("/divisions/**")
+                        .hasRole("HR").anyRequest().permitAll())
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/**")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .addFilterBefore(jwtValidationFilter, UsernamePasswordAuthenticationFilter.class)

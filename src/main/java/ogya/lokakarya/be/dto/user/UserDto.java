@@ -74,13 +74,14 @@ public class UserDto {
         if (includeRoles) {
             roles = new HashSet<>();
             if (user.getUserRoles() != null) {
-                user.getUserRoles().forEach(userRole -> roles.add(new RoleDto(userRole.getRole())));
+                user.getUserRoles().forEach(
+                        userRole -> roles.add(new RoleDto(userRole.getRole(), false, false)));
             }
             setRoles(roles);
         }
 
         if (user.getDivision() != null) {
-            setDivision(new DivisionDto(user.getDivision()));
+            setDivision(new DivisionDto(user.getDivision(), false, false));
         }
     }
 }

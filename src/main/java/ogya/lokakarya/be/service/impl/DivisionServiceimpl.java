@@ -7,22 +7,30 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.division.DivisionDto;
 import ogya.lokakarya.be.dto.division.DivisionReq;
 import ogya.lokakarya.be.entity.Division;
+import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.repository.DivisionRepository;
 import ogya.lokakarya.be.service.DivisionService;
 
 @Service
 public class DivisionServiceimpl implements DivisionService {
+
+    @Autowired
+    private SecurityUtil securityUtil;
+
     @Autowired
     private DivisionRepository divisionRepository;
 
     @Override
     public DivisionDto create(DivisionReq data) {
         Division divisionEntity = data.toEntity();
+        User currentUser = securityUtil.getCurrentUser();
+        divisionEntity.setCreatedBy(currentUser);
         divisionEntity = divisionRepository.save(divisionEntity);
-        return new DivisionDto(divisionEntity);
+        return new DivisionDto(divisionEntity, true, false);
     }
 
     @Override
@@ -78,7 +86,7 @@ public class DivisionServiceimpl implements DivisionService {
 
 
     private DivisionDto convertToDto(Division data) {
-        DivisionDto result = new DivisionDto(data);
+        DivisionDto result = new DivisionDto(data, true, true);
         return result;
     }
 }
