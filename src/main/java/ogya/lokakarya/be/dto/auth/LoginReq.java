@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data
-public class LoginDto {
+public class LoginReq {
     @JsonProperty("email_or_username")
     @Pattern(regexp = "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}|[a-zA-Z0-9._]+)$",
             message = "Please enter a valid email address or username (alphanumeric characters, dots and underscores only)")

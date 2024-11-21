@@ -1,9 +1,7 @@
 package ogya.lokakarya.be.controller;
 
-import jakarta.validation.Valid;
-import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillDto;
-import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillReq;
-import ogya.lokakarya.be.service.AttitudeSkillService;
+import java.util.List;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +13,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.UUID;
+import jakarta.validation.Valid;
+import ogya.lokakarya.be.dto.ResponseDto;
+import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillDto;
+import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillReq;
+import ogya.lokakarya.be.service.AttitudeSkillService;
 
 @RequestMapping("/attitude-skills")
 @RestController
@@ -26,31 +26,45 @@ public class AttitudeSkillController {
     AttitudeSkillService attitudeSkillService;
 
     @PostMapping
-    public ResponseEntity<AttitudeSkillDto> create(@RequestBody @Valid AttitudeSkillReq data) {
-        var createdAttitudeSkill= attitudeSkillService.create(data);
-        return new ResponseEntity<>(createdAttitudeSkill, HttpStatus.CREATED);
+    public ResponseEntity<ResponseDto<AttitudeSkillDto>> create(
+            @RequestBody @Valid AttitudeSkillReq data) {
+        var createdAttitudeSkill = attitudeSkillService.create(data);
+        return ResponseDto.<AttitudeSkillDto>builder().success(true).content(createdAttitudeSkill)
+                .message("Create attitude skill successful!").build()
+                .toResponse(HttpStatus.CREATED);
     }
+
     @GetMapping
-    public ResponseEntity<List<AttitudeSkillDto>> getAllAttitudeSKills() {
-        System.out.println("Get All Attitude Skill");
-        List<AttitudeSkillDto> response = attitudeSkillService.getAllAttitudeSkills();
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<ResponseDto<List<AttitudeSkillDto>>> getAllAttitudeSKills() {
+        List<AttitudeSkillDto> attitudeSkills = attitudeSkillService.getAllAttitudeSkills();
+        return ResponseDto.<List<AttitudeSkillDto>>builder().success(true).content(attitudeSkills)
+                .message("List all attitude skill successful!").build().toResponse(HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AttitudeSkillDto> getAttitudeSkillById(@PathVariable UUID id) {
-        AttitudeSkillDto response = attitudeSkillService.getAttitudeSkillById(id);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<ResponseDto<AttitudeSkillDto>> getAttitudeSkillById(
+            @PathVariable UUID id) {
+        AttitudeSkillDto attitudeSkill = attitudeSkillService.getAttitudeSkillById(id);
+        return ResponseDto.<AttitudeSkillDto>builder().success(true).content(attitudeSkill)
+                .message(String.format("Get attitude skill with id %s successful!", id)).build()
+                .toResponse(HttpStatus.OK);
     }
+
     @PutMapping("/{id}")
-    public ResponseEntity<AttitudeSkillDto> updateDivisionById
-            (@PathVariable UUID id, @RequestBody @Valid AttitudeSkillReq attitudeSkillReq) {
-        AttitudeSkillDto res= attitudeSkillService.updateAttitudeSkillById(id, attitudeSkillReq);
-        return new ResponseEntity<>(res, HttpStatus.OK);
+    public ResponseEntity<ResponseDto<AttitudeSkillDto>> updateDivisionById(@PathVariable UUID id,
+            @RequestBody @Valid AttitudeSkillReq attitudeSkillReq) {
+        AttitudeSkillDto updatedAttitudeSkill =
+                attitudeSkillService.updateAttitudeSkillById(id, attitudeSkillReq);
+        return ResponseDto.<AttitudeSkillDto>builder().success(true).content(updatedAttitudeSkill)
+                .message(String.format("Update attitude skill with id %s successful!", id)).build()
+                .toResponse(HttpStatus.OK);
     }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> deleteAttitudeSkillById(@PathVariable UUID id) {
-        boolean res= attitudeSkillService.deleteAttitudeSkillById(id);
-        return new ResponseEntity<>(res, HttpStatus.OK);
+    public ResponseEntity<ResponseDto<Void>> deleteAttitudeSkillById(@PathVariable UUID id) {
+        attitudeSkillService.deleteAttitudeSkillById(id);
+        return ResponseDto.<Void>builder().success(true)
+                .message(String.format("Delete attitude skill with id %s successful!", id)).build()
+                .toResponse(HttpStatus.OK);
     }
 }
