@@ -1,13 +1,14 @@
 package ogya.lokakarya.be.service.impl;
 
-import ogya.lokakarya.be.dto.role.RoleReq;
 import ogya.lokakarya.be.dto.role.RoleDto;
+import ogya.lokakarya.be.dto.role.RoleReq;
 import ogya.lokakarya.be.entity.Role;
 import ogya.lokakarya.be.repository.RoleRepository;
 import ogya.lokakarya.be.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,8 +20,8 @@ public class RoleServiceImpl implements RoleService {
     private RoleRepository roleRepository;
 
     @Override
-    public Role create(RoleReq data) {
-        return roleRepository.save(data.toEntity());
+    public RoleDto create(RoleReq data) {
+        return new RoleDto(roleRepository.save(data.toEntity()));
     }
 
     @Override

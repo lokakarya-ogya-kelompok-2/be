@@ -1,13 +1,14 @@
 package ogya.lokakarya.be.service.impl;
 
-import ogya.lokakarya.be.dto.menu.MenuReq;
 import ogya.lokakarya.be.dto.menu.MenuDto;
+import ogya.lokakarya.be.dto.menu.MenuReq;
 import ogya.lokakarya.be.entity.Menu;
 import ogya.lokakarya.be.repository.MenuRepository;
 import ogya.lokakarya.be.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,8 +20,8 @@ public class MenuServiceImpl implements MenuService {
     private MenuRepository menuRepository;
 
     @Override
-    public Menu create(MenuReq data) {
-        return menuRepository.save(data.toEntity());
+    public MenuDto create(MenuReq data) {
+        return new MenuDto(menuRepository.save(data.toEntity()));
     }
 
     @Override
