@@ -1,16 +1,11 @@
 package ogya.lokakarya.be.config.security.jwt;
 
 import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
@@ -56,14 +51,6 @@ public class JwtUtil {
     private Claims extractAllClaims(String token) {
         return Jwts.parser().verifyWith((SecretKey) jwtKey).build().parseSignedClaims(token)
                 .getPayload();
-    }
-
-    public Collection<GrantedAuthority> extractRoles(String token) {
-        return extractClaim(token, claims -> {
-            String authoritiesString = claims.get("roles", String.class);
-            return Arrays.stream(authoritiesString.split(",")).map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toList());
-        });
     }
 
     public boolean isTokenValid(String token) {

@@ -90,10 +90,10 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<SimpleGrantedAuthority> roles = new ArrayList<>();
-        userRoles.forEach(userRole -> roles
-                .add(new SimpleGrantedAuthority("ROLE_" + userRole.getRole().getRoleName())));
-        return roles;
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        userRoles.forEach(userRole -> authorities
+                .add(new SimpleGrantedAuthority(userRole.getRole().getRoleName())));
+        return authorities;
     }
 
 

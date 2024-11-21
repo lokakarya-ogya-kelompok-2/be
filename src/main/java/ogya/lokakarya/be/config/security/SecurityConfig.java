@@ -40,9 +40,10 @@ public class SecurityConfig {
                     cfg.setExposedHeaders(Arrays.asList("Authorization"));
                     return cfg;
                 }))
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/users/**").hasRole("HR")
-                        .requestMatchers("/roles/**").hasRole("HR").requestMatchers("/divisions/**")
-                        .hasRole("HR").anyRequest().permitAll())
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/users/**").hasAuthority("HR")
+                        .requestMatchers("/roles/**").hasAuthority("HR")
+                        .requestMatchers("/divisions/**").hasAuthority("HR").anyRequest()
+                        .permitAll())
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/**")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .addFilterBefore(jwtValidationFilter, UsernamePasswordAuthenticationFilter.class)
