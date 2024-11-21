@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,24 +33,22 @@ public class UserController {
     @PostMapping
     public ResponseEntity<ResponseDto<UserDto>> create(@RequestBody @Valid UserReq data) {
         var createdUser = userSvc.create(data);
-        return ResponseDto.<UserDto>builder().content(createdUser)
-                .message("Create user successful!").success(true).build()
-                .toResponse(HttpStatus.CREATED);
+        return ResponseDto.<UserDto>builder().success(true).content(createdUser)
+                .message("Create user successful!").build().toResponse(HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<ResponseDto<List<UserDto>>> list() {
         var users = userSvc.list();
-        return ResponseDto.<List<UserDto>>builder().content(users)
-                .message("List all user successful!").success(true).build()
-                .toResponse(HttpStatus.OK);
+        return ResponseDto.<List<UserDto>>builder().success(true).content(users)
+                .message("List all user successful!").build().toResponse(HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto<UserDto>> get(@PathVariable UUID id) {
         var user = userSvc.get(id);
-        return ResponseDto.<UserDto>builder().content(user)
-                .message(String.format("Get user with id %s successful!", id)).success(true).build()
+        return ResponseDto.<UserDto>builder().success(true).content(user)
+                .message(String.format("Get user with id %s successful!", id)).build()
                 .toResponse(HttpStatus.OK);
     }
 
@@ -58,8 +57,16 @@ public class UserController {
             @RequestBody @Valid UserReq data) {
         var updatedUser = userSvc.update(id, data);
 
-        return ResponseDto.<UserDto>builder().content(updatedUser)
-                .message(String.format("Update user with id %s successful!", id)).success(true)
-                .build().toResponse(HttpStatus.OK);
+        return ResponseDto.<UserDto>builder().success(true).content(updatedUser)
+                .message(String.format("Update user with id %s successful!", id)).build()
+                .toResponse(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseDto<Void>> delete(@PathVariable UUID id) {
+        userSvc.delete(id);
+        return ResponseDto.<Void>builder().success(true)
+                .message(String.format("Delete user with id %s successful!", id)).build()
+                .toResponse(HttpStatus.OK);
     }
 }

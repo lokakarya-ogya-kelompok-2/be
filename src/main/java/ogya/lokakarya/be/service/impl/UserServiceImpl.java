@@ -168,4 +168,17 @@ public class UserServiceImpl implements UserService {
 
         return new UserDto(user, true, true, true);
     }
+
+    @Transactional
+    @Override
+    public void delete(UUID id) {
+        Optional<User> userOpt = userRepo.findById(id);
+        if (userOpt.isEmpty()) {
+            throw ResponseException.userNotFound(id);
+        }
+        User user = userOpt.get();
+        userRoleRepo.deleteByUserId(id);
+        entityManager.flush();
+        userRepo.delete(user);
+    }
 }
