@@ -1,6 +1,7 @@
 package ogya.lokakarya.be.controller;
 
 import jakarta.validation.Valid;
+import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillDto;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillReq;
 import ogya.lokakarya.be.service.AchievementSkillService;
@@ -26,31 +27,41 @@ public class EmpAchievementSkillController {
     AchievementSkillService achievementSkillService;
 
     @PostMapping
-    public ResponseEntity<EmpAchievementSkillDto> create(@RequestBody @Valid EmpAchievementSkillReq data) {
+    public ResponseEntity<ResponseDto<EmpAchievementSkillDto>> create(@RequestBody @Valid EmpAchievementSkillReq data) {
         var createdAchievementSkill= achievementSkillService.create(data);
-        return new ResponseEntity<>(createdAchievementSkill, HttpStatus.CREATED);
+        return ResponseDto.<EmpAchievementSkillDto>builder().content(createdAchievementSkill)
+                .message("Create emp achievement skill successful!").success(true).build()
+                .toResponse(HttpStatus.CREATED);
     }
     @GetMapping
-    public ResponseEntity<List<EmpAchievementSkillDto>> getAllAchievementSkills() {
+    public ResponseEntity<ResponseDto<List<EmpAchievementSkillDto>>> getAllAchievementSkills() {
         System.out.println("Get All Achievement Skill");
         List<EmpAchievementSkillDto> response = achievementSkillService.getAllAchievementSkills();
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseDto.<List<EmpAchievementSkillDto>>builder().content(response)
+                .message("Get emp achievement skills successful!").success(true).build()
+                .toResponse(HttpStatus.OK);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<EmpAchievementSkillDto> getAchievementSkillById(@PathVariable UUID id) {
+    public ResponseEntity<ResponseDto<EmpAchievementSkillDto>> getAchievementSkillById(@PathVariable UUID id) {
         EmpAchievementSkillDto response = achievementSkillService.getAchievementSkillById(id);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseDto.<EmpAchievementSkillDto>builder().content(response)
+                .message(String.format("Get emp achievement skill with id %s successful!", id)).success(true).build()
+                .toResponse(HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmpAchievementSkillDto> updateAchievementSkillById
+    public ResponseEntity<ResponseDto<EmpAchievementSkillDto>> updateAchievementSkillById
             (@PathVariable UUID id, @RequestBody @Valid EmpAchievementSkillReq empAchievementSkillReq) {
         EmpAchievementSkillDto res= achievementSkillService.updateAchievementSkillById(id, empAchievementSkillReq);
-        return new ResponseEntity<>(res, HttpStatus.OK);
+        return ResponseDto.<EmpAchievementSkillDto>builder().content(res)
+                .message(String.format("Update emp achievement skill with id %s successful!", id)).success(true)
+                .build().toResponse(HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> deleteAchievementSkillById(@PathVariable UUID id) {
-        boolean res= achievementSkillService.deleteAchievementSkillById(id);
-        return new ResponseEntity<>(res, HttpStatus.OK);
+    public ResponseEntity<ResponseDto<Void>> deleteAchievementSkillById(@PathVariable UUID id) {
+        achievementSkillService.deleteAchievementSkillById(id);
+        return ResponseDto.<Void>builder().success(true)
+                .message(String.format("Delete achievement skill with id %s successful!", id)).build()
+                .toResponse(HttpStatus.OK);
     }
 }

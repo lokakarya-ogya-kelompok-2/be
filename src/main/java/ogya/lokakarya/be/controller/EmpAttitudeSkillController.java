@@ -1,6 +1,7 @@
 package ogya.lokakarya.be.controller;
 
 import jakarta.validation.Valid;
+import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillDto;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillReq;
 import ogya.lokakarya.be.service.EmpAttitudeSkillService;
@@ -26,27 +27,35 @@ public class EmpAttitudeSkillController {
     EmpAttitudeSkillService empAttitudeSkillService;
 
     @PostMapping
-    public ResponseEntity<EmpAttitudeSkillDto> create(@RequestBody @Valid EmpAttitudeSkillReq data) {
+    public ResponseEntity<ResponseDto<EmpAttitudeSkillDto>> create(@RequestBody @Valid EmpAttitudeSkillReq data) {
         var createdEmpAttitudeSkill= empAttitudeSkillService.create(data);
-        return new ResponseEntity<>(createdEmpAttitudeSkill, HttpStatus.CREATED);
+        return ResponseDto.<EmpAttitudeSkillDto>builder().content(createdEmpAttitudeSkill)
+                .message("Create emp attitude skill successful!").success(true).build()
+                .toResponse(HttpStatus.CREATED);
     }
     @GetMapping
-    public ResponseEntity<List<EmpAttitudeSkillDto>> getAllEmpAttitudeSkills() {
+    public ResponseEntity<ResponseDto<List<EmpAttitudeSkillDto>>> getAllEmpAttitudeSkills() {
         System.out.println("Get All Emp Attitude Skill");
         List<EmpAttitudeSkillDto> response = empAttitudeSkillService.getAllEmpAttitudeSkills();
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseDto.<List<EmpAttitudeSkillDto>>builder().content(response)
+                .message("Get emp attitude skills successful!").success(true).build()
+                .toResponse(HttpStatus.OK);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<EmpAttitudeSkillDto> getEmpAttitudeSkillById(@PathVariable UUID id) {
+    public ResponseEntity<ResponseDto<EmpAttitudeSkillDto>> getEmpAttitudeSkillById(@PathVariable UUID id) {
         EmpAttitudeSkillDto response = empAttitudeSkillService.getEmpAttitudeSkillById(id);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseDto.<EmpAttitudeSkillDto>builder().content(response)
+                .message(String.format("Get emp attitude skill with id %s successful!", id)).success(true).build()
+                .toResponse(HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmpAttitudeSkillDto> updateEmpAttitudeSkillById
+    public ResponseEntity<ResponseDto<EmpAttitudeSkillDto>> updateEmpAttitudeSkillById
             (@PathVariable UUID id, @RequestBody @Valid EmpAttitudeSkillReq empAttitudeSkillReq) {
         EmpAttitudeSkillDto res= empAttitudeSkillService.updateEmpAttitudeSkillById(id, empAttitudeSkillReq);
-        return new ResponseEntity<>(res, HttpStatus.OK);
+        return ResponseDto.<EmpAttitudeSkillDto>builder().content(res)
+                .message(String.format("Update emp attitude skill with id %s successful!", id)).success(true)
+                .build().toResponse(HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> deleteEmpAttitudeSkillById(@PathVariable UUID id) {
