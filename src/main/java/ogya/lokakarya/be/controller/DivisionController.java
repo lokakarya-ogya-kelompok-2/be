@@ -13,12 +13,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.division.DivisionDto;
 import ogya.lokakarya.be.dto.division.DivisionReq;
 import ogya.lokakarya.be.service.DivisionService;
 
+@SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/divisions")
 @RestController
 public class DivisionController {

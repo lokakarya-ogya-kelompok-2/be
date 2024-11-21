@@ -44,6 +44,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseDto<Object>> handleException(Exception ex, WebRequest req) {
+        ex.printStackTrace();
         return ResponseDto.builder().success(false).message(ex.getMessage()).build()
                 .toResponse(HttpStatus.INTERNAL_SERVER_ERROR);
     }

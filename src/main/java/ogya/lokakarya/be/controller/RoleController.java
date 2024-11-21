@@ -1,5 +1,6 @@
 package ogya.lokakarya.be.controller;
 
+
 import jakarta.validation.Valid;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.role.RoleDto;
@@ -16,15 +17,17 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.util.List;
 import java.util.UUID;
 
 @RequestMapping("/roles")
 @RestController
+@SecurityRequirement(name = "bearerAuth")
 public class RoleController {
-    @Autowired
-    private RoleService roleService;
+        @Autowired
+        private RoleService roleService;
 
     @PostMapping
     public ResponseEntity<ResponseDto<RoleDto>> create(@RequestBody @Valid RoleReq data) {

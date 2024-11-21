@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.util.List;
 import java.util.UUID;
 
+@SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/menus")
 @RestController
 public class MenuController {
@@ -33,6 +35,7 @@ public class MenuController {
                 .message("Create menu successful!").success(true).build()
                 .toResponse(HttpStatus.CREATED);
     }
+
     @GetMapping
     public ResponseEntity<ResponseDto<List<MenuDto>>> getAllMenus() {
         System.out.println("Get All Menus");
@@ -41,6 +44,7 @@ public class MenuController {
                 .message("Get all menus successful!").success(true).build()
                 .toResponse(HttpStatus.OK);
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto<MenuDto>> getMenuById(@PathVariable UUID id) {
         MenuDto response = menuService.getMenuById(id);
@@ -48,6 +52,7 @@ public class MenuController {
                 .message(String.format("Get menu with id %s successful!", id)).success(true).build()
                 .toResponse(HttpStatus.OK);
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDto<MenuDto>> updateDivisionById
             (@PathVariable UUID id, @RequestBody @Valid MenuReq menuReq) {
@@ -56,6 +61,7 @@ public class MenuController {
                 .message(String.format("Update menu with id %s successful!", id)).success(true)
                 .build().toResponse(HttpStatus.OK);
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto<Void>> deleteMenuById(@PathVariable UUID id) {
         menuService.deleteMenuById(id);
