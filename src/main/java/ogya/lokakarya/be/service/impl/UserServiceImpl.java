@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
     public UserDto get(UUID id) {
         Optional<User> userOpt = userRepo.findById(id);
         if (userOpt.isEmpty()) {
-            throw ResponseException.userNotFound("Get User By ID", id);
+            throw ResponseException.userNotFound(id);
         }
         User user = userOpt.get();
         return new UserDto(user, true, true, true);
