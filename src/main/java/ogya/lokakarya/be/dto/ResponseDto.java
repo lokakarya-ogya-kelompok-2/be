@@ -21,12 +21,16 @@ public class ResponseDto<T> {
 
     @SuppressWarnings("null")
     private static Long getTimeTakenMs() {
-        HttpServletRequest req =
-                ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
-                        .getRequest();
+        try {
+            HttpServletRequest req =
+                    ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                            .getRequest();
 
-        Long startTime = (Long) req.getAttribute("startTime");
-        return System.currentTimeMillis() - startTime;
+            Long startTime = (Long) req.getAttribute("startTime");
+            return System.currentTimeMillis() - startTime;
+        } catch (Exception e) {
+            return 0L;
+        }
     }
 
     private static String formatExecutionTime(long executionTimeMs) {
@@ -41,7 +45,6 @@ public class ResponseDto<T> {
     private long timestamp = System.currentTimeMillis();
 
     private String message;
-
 
     public ResponseEntity<ResponseDto<T>> toResponse(HttpStatus httpStatus) {
         return new ResponseEntity<>(this, httpStatus);

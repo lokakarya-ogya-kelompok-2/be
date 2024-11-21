@@ -2,7 +2,6 @@ package ogya.lokakarya.be.config.security.jwt.filter;
 
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -25,7 +25,7 @@ import ogya.lokakarya.be.service.AuthService;
 public class JwtValidationFilter extends OncePerRequestFilter {
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private HandlerExceptionResolver handlerExceptionResolver;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -47,26 +47,20 @@ public class JwtValidationFilter extends OncePerRequestFilter {
             final String jwt = authHeader.substring(7);
             final String subject = jwtUtil.extractSubject(jwt);
 
-            if (subject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                if (jwtUtil.isTokenValid(jwt)) {
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(subject);
-                    UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(userDetails, null,
-                                    userDetails.getAuthorities());
-                    authToken
-                            .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-                } else {
-                    throw new ResponseException("You're not allowed!", HttpStatus.FORBIDDEN);
-                }
+            if (subject != null && SecurityContextHolder.getContext().getAuthentication() == null
+                    && jwtUtil.isTokenValid(jwt)) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(subject);
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(userDetails, null,
+                                userDetails.getAuthorities());
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
 
             filterChain.doFilter(request, response);
         } catch (Exception ex) {
-            response.setStatus(403);
-            response.setContentType("application/json");
-            objectMapper.writeValue(response.getOutputStream(),
-                    ResponseDto.<Void>builder().success(false).message(ex.getMessage()).build());
+            handlerExceptionResolver.resolveException(request, response, null, ex);
         }
     }
 }
+

@@ -60,8 +60,7 @@ public class UserServiceImpl implements UserService {
         if (data.getDivisionId() != null) {
             Optional<Division> divisionOpt = divisionRepo.findById(data.getDivisionId());
             if (divisionOpt.isEmpty()) {
-                throw new RuntimeException(String.format("Division with id %s could not be found!",
-                        data.getDivisionId().toString()));
+                throw ResponseException.divisionNotFound(data.getDivisionId());
             }
             userEntity.setDivision(divisionOpt.get());
         }
@@ -73,8 +72,7 @@ public class UserServiceImpl implements UserService {
             for (UUID roleId : data.getRoles()) {
                 Optional<Role> roleOpt = roleRepo.findById(roleId);
                 if (roleOpt.isEmpty()) {
-                    throw new RuntimeException(String.format("Role with id %s could not be found!",
-                            roleId.toString()));
+                    throw ResponseException.roleNotFound(roleId);
                 }
                 UserRole userRole = new UserRole();
                 userRole.setUser(userEntity);
@@ -105,12 +103,13 @@ public class UserServiceImpl implements UserService {
         return new UserDto(user, true, true, true);
     }
 
+    @SuppressWarnings("java:S3776")
     @Transactional
     @Override
     public UserDto update(UUID id, UserReq data) {
         Optional<User> userOpt = userRepo.findById(id);
         if (userOpt.isEmpty()) {
-            throw new RuntimeException("USER WITH GIVEN ID COULD NOT BE FOUND!");
+            throw ResponseException.userNotFound(id);
         }
         User user = userOpt.get();
         User currentUser = securityUtil.getCurrentUser();
@@ -133,20 +132,14 @@ public class UserServiceImpl implements UserService {
             user.setJoinDate(Date.valueOf(data.getJoinDate()));
         }
         if (data.getPassword() != null) {
-            System.out.println(passwordEncoder.matches(data.getPassword(), user.getPassword())
-                    + " REQ AND ENTITY");
             String encodedPassword = passwordEncoder.encode(data.getPassword());
-            System.out.println(passwordEncoder.matches(data.getPassword(), encodedPassword)
-                    + " REQ AND REQ ENCODED");
-            System.out.println(
-                    encodedPassword + "<< FROM REQ || FROM ENTITY >>" + user.getPassword());
             user.setPassword(encodedPassword);
         }
 
         if (data.getDivisionId() != null) {
             Optional<Division> divisionOpt = divisionRepo.findById(data.getDivisionId());
             if (divisionOpt.isEmpty()) {
-                throw new RuntimeException("DIVISION WITH GIVEN ID COULD NOT BE FOUND!");
+                throw ResponseException.divisionNotFound(data.getDivisionId());
             }
             user.setDivision(divisionOpt.get());
         }
@@ -163,8 +156,7 @@ public class UserServiceImpl implements UserService {
             for (UUID roleId : data.getRoles()) {
                 Optional<Role> roleOpt = roleRepo.findById(roleId);
                 if (roleOpt.isEmpty()) {
-                    throw new RuntimeException(String.format("Role with id %s could not be found!",
-                            roleId.toString()));
+                    throw ResponseException.roleNotFound(roleId);
                 }
                 UserRole userRole = new UserRole();
                 userRole.setUser(user);

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.dto.user.UserReq;
 import ogya.lokakarya.be.service.UserService;
@@ -29,26 +30,36 @@ public class UserController {
 
 
     @PostMapping
-    public ResponseEntity<UserDto> create(@RequestBody @Valid UserReq data) {
+    public ResponseEntity<ResponseDto<UserDto>> create(@RequestBody @Valid UserReq data) {
         var createdUser = userSvc.create(data);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+        return ResponseDto.<UserDto>builder().content(createdUser)
+                .message("Create user successful!").success(true).build()
+                .toResponse(HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> list() {
+    public ResponseEntity<ResponseDto<List<UserDto>>> list() {
         var users = userSvc.list();
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        return ResponseDto.<List<UserDto>>builder().content(users)
+                .message("List all user successful!").success(true).build()
+                .toResponse(HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> get(@PathVariable UUID id) {
-        return new ResponseEntity<>(userSvc.get(id), HttpStatus.OK);
+    public ResponseEntity<ResponseDto<UserDto>> get(@PathVariable UUID id) {
+        var user = userSvc.get(id);
+        return ResponseDto.<UserDto>builder().content(user)
+                .message(String.format("Get user with id %s successful!", id)).success(true).build()
+                .toResponse(HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> update(@PathVariable UUID id, @RequestBody @Valid UserReq data) {
+    public ResponseEntity<ResponseDto<UserDto>> update(@PathVariable UUID id,
+            @RequestBody @Valid UserReq data) {
         var updatedUser = userSvc.update(id, data);
 
-        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        return ResponseDto.<UserDto>builder().content(updatedUser)
+                .message(String.format("Update user with id %s successful!", id)).success(true)
+                .build().toResponse(HttpStatus.OK);
     }
 }
