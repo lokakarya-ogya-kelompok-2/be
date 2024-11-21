@@ -1,6 +1,7 @@
 package ogya.lokakarya.be.controller;
 
 import jakarta.validation.Valid;
+import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionDto;
 import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionReq;
 import ogya.lokakarya.be.service.EmpSuggestionService;
@@ -26,27 +27,35 @@ public class EmpSuggestionController {
     private EmpSuggestionService empSuggestionService;
 
     @PostMapping
-    public ResponseEntity<EmpSuggestionDto> create(@RequestBody @Valid EmpSuggestionReq data) {
+    public ResponseEntity<ResponseDto<EmpSuggestionDto>> create(@RequestBody @Valid EmpSuggestionReq data) {
         var createdEmpSuggestion= empSuggestionService.create(data);
-        return new ResponseEntity<>(createdEmpSuggestion, HttpStatus.CREATED);
+        return ResponseDto.<EmpSuggestionDto>builder().content(createdEmpSuggestion)
+                .message("Create emp suggestion successful!").success(true).build()
+                .toResponse(HttpStatus.CREATED);
     }
     @GetMapping
-    public ResponseEntity<List<EmpSuggestionDto>> getAllEmpSuggestions() {
+    public ResponseEntity<ResponseDto<List<EmpSuggestionDto>>> getAllEmpSuggestions() {
         System.out.println("Get All Emp Suggestion");
         List<EmpSuggestionDto> response = empSuggestionService.getAllEmpSuggestions();
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseDto.<List<EmpSuggestionDto>>builder().content(response)
+                .message("Get all emp suggestions successful!").success(true).build()
+                .toResponse(HttpStatus.OK);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<EmpSuggestionDto> getEmpSuggestionById(@PathVariable UUID id) {
+    public ResponseEntity<ResponseDto<EmpSuggestionDto>> getEmpSuggestionById(@PathVariable UUID id) {
         EmpSuggestionDto response = empSuggestionService.getEmpSuggestionById(id);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseDto.<EmpSuggestionDto>builder().content(response)
+                .message(String.format("Get emp suggestion with id %s successful!", id)).success(true).build()
+                .toResponse(HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmpSuggestionDto> updateEmpSuggestionById
+    public ResponseEntity<ResponseDto<EmpSuggestionDto>> updateEmpSuggestionById
             (@PathVariable UUID id, @RequestBody @Valid EmpSuggestionReq empSuggestionReq) {
         EmpSuggestionDto res= empSuggestionService.updateEmpSuggestionById(id, empSuggestionReq);
-        return new ResponseEntity<>(res, HttpStatus.OK);
+        return ResponseDto.<EmpSuggestionDto>builder().content(res)
+                .message(String.format("Update emp suggestion with id %s successful!", id)).success(true)
+                .build().toResponse(HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> deleteEmpSuggestionById(@PathVariable UUID id) {

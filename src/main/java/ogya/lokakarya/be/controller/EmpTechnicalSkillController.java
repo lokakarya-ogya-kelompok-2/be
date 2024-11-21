@@ -1,6 +1,7 @@
 package ogya.lokakarya.be.controller;
 
 import jakarta.validation.Valid;
+import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillDto;
 import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillReq;
 import ogya.lokakarya.be.service.EmpTechnicalSkillService;
@@ -26,31 +27,41 @@ public class EmpTechnicalSkillController {
     private EmpTechnicalSkillService empTechnicalSkillService;
 
     @PostMapping
-    public ResponseEntity<EmpTechnicalSkillDto> create(@RequestBody @Valid EmpTechnicalSkillReq data) {
+    public ResponseEntity<ResponseDto<EmpTechnicalSkillDto>> create(@RequestBody @Valid EmpTechnicalSkillReq data) {
         var createdEmpTechnicalSkill= empTechnicalSkillService.create(data);
-        return new ResponseEntity<>(createdEmpTechnicalSkill, HttpStatus.CREATED);
+        return ResponseDto.<EmpTechnicalSkillDto>builder().content(createdEmpTechnicalSkill)
+                .message("Create emp technical skill successful!").success(true).build()
+                .toResponse(HttpStatus.CREATED);
     }
     @GetMapping
-    public ResponseEntity<List<EmpTechnicalSkillDto>> getAllEmpTechnicalSkills() {
-        System.out.println("Get All Emp Technical Skill");
+    public ResponseEntity<ResponseDto<List<EmpTechnicalSkillDto>>> getAllEmpTechnicalSkills() {
+        System.out.println("Get All Emp Technical Skills");
         List<EmpTechnicalSkillDto> response = empTechnicalSkillService.getAllEmpTechnicalSkills();
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseDto.<List<EmpTechnicalSkillDto>>builder().content(response)
+                .message("Get all emp technical skills successful!").success(true).build()
+                .toResponse(HttpStatus.OK);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<EmpTechnicalSkillDto> getEmpTechnicalSkillById(@PathVariable UUID id) {
+    public ResponseEntity<ResponseDto<EmpTechnicalSkillDto>> getEmpTechnicalSkillById(@PathVariable UUID id) {
         EmpTechnicalSkillDto response = empTechnicalSkillService.getEmpTechnicalSkillById(id);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseDto.<EmpTechnicalSkillDto>builder().content(response)
+                .message(String.format("Get emp technical skill with id %s successful!", id)).success(true).build()
+                .toResponse(HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmpTechnicalSkillDto> updateEmpTechnicalSkillById
+    public ResponseEntity<ResponseDto<EmpTechnicalSkillDto>> updateEmpTechnicalSkillById
             (@PathVariable UUID id, @RequestBody @Valid EmpTechnicalSkillReq empTechnicalSkillReq) {
         EmpTechnicalSkillDto res= empTechnicalSkillService.updateEmpTechnicalSkillById(id, empTechnicalSkillReq);
-        return new ResponseEntity<>(res, HttpStatus.OK);
+        return ResponseDto.<EmpTechnicalSkillDto>builder().content(res)
+                .message(String.format("Update emp technical skill with id %s successful!", id)).success(true)
+                .build().toResponse(HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> deleteEmpTechnicalSkillById(@PathVariable UUID id) {
-        boolean res= empTechnicalSkillService.deleteEmpTechnicalSkillById(id);
-        return new ResponseEntity<>(res, HttpStatus.OK);
+    public ResponseEntity<ResponseDto<Void>> deleteEmpTechnicalSkillById(@PathVariable UUID id) {
+        empTechnicalSkillService.deleteEmpTechnicalSkillById(id);
+        return ResponseDto.<Void>builder().success(true)
+                .message(String.format("Delete technical skill with id %s successful!", id)).build()
+                .toResponse(HttpStatus.OK);
     }
 }

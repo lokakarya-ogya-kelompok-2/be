@@ -1,14 +1,22 @@
 package ogya.lokakarya.be.controller;
 
 import jakarta.validation.Valid;
-import ogya.lokakarya.be.dto.menu.MenuReq;
+import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.menu.MenuDto;
-import ogya.lokakarya.be.entity.Menu;
+import ogya.lokakarya.be.dto.menu.MenuReq;
 import ogya.lokakarya.be.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -19,30 +27,40 @@ public class MenuController {
     MenuService menuService;
 
     @PostMapping
-    public ResponseEntity<Menu> create(@RequestBody @Valid MenuReq data) {
+    public ResponseEntity<ResponseDto<MenuDto>> create(@RequestBody @Valid MenuReq data) {
         var createMenu= menuService.create(data);
-        return new ResponseEntity<>(createMenu, HttpStatus.CREATED);
+        return ResponseDto.<MenuDto>builder().content(createMenu)
+                .message("Create menu successful!").success(true).build()
+                .toResponse(HttpStatus.CREATED);
     }
     @GetMapping
-    public ResponseEntity<List<MenuDto>> getAllMenus() {
+    public ResponseEntity<ResponseDto<List<MenuDto>>> getAllMenus() {
         System.out.println("Get All Menus");
         List<MenuDto> response = menuService.getAllMenus();
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseDto.<List<MenuDto>>builder().content(response)
+                .message("Get all menus successful!").success(true).build()
+                .toResponse(HttpStatus.OK);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<MenuDto> getMenuById(@PathVariable UUID id) {
+    public ResponseEntity<ResponseDto<MenuDto>> getMenuById(@PathVariable UUID id) {
         MenuDto response = menuService.getMenuById(id);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseDto.<MenuDto>builder().content(response)
+                .message(String.format("Get menu with id %s successful!", id)).success(true).build()
+                .toResponse(HttpStatus.OK);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<MenuDto> updateDivisionById
+    public ResponseEntity<ResponseDto<MenuDto>> updateDivisionById
             (@PathVariable UUID id, @RequestBody @Valid MenuReq menuReq) {
         MenuDto res= menuService.updateMenuById(id, menuReq);
-        return new ResponseEntity<>(res, HttpStatus.OK);
+        return ResponseDto.<MenuDto>builder().content(res)
+                .message(String.format("Update menu with id %s successful!", id)).success(true)
+                .build().toResponse(HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> deleteMenuById(@PathVariable UUID id) {
-        boolean res= menuService.deleteMenuById(id);
-        return new ResponseEntity<>(res, HttpStatus.OK);
+    public ResponseEntity<ResponseDto<Void>> deleteMenuById(@PathVariable UUID id) {
+        menuService.deleteMenuById(id);
+        return ResponseDto.<Void>builder().success(true)
+                .message(String.format("Delete menu with id %s successful!", id)).build()
+                .toResponse(HttpStatus.OK);
     }
 }

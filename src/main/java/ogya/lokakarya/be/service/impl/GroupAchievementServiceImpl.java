@@ -8,6 +8,7 @@ import ogya.lokakarya.be.service.GroupAchievementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,8 +20,8 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
     GroupAchievementRepository groupAchievementRepository;
 
     @Override
-    public GroupAchievement create(GroupAchievementReq data) {
-        return groupAchievementRepository.save(data.toEntity());
+    public GroupAchievementDto create(GroupAchievementReq data) {
+        return new GroupAchievementDto(groupAchievementRepository.save(data.toEntity()));
     }
 
     @Override
