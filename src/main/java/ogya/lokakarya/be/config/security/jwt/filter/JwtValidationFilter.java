@@ -3,7 +3,6 @@ package ogya.lokakarya.be.config.security.jwt.filter;
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,11 +10,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import ogya.lokakarya.be.config.security.jwt.JwtUtil;
+import ogya.lokakarya.be.dto.ResponseDto;
+import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.service.AuthService;
 
 
@@ -23,23 +25,25 @@ import ogya.lokakarya.be.service.AuthService;
 public class JwtValidationFilter extends OncePerRequestFilter {
 
     @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
     private JwtUtil jwtUtil;
 
     @Autowired
     private AuthService userDetailsService;
 
-
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            doFilter(request, response, filterChain);
-            return;
-        }
-
         try {
+            final String authHeader = request.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             final String jwt = authHeader.substring(7);
             final String subject = jwtUtil.extractSubject(jwt);
 
@@ -53,19 +57,16 @@ public class JwtValidationFilter extends OncePerRequestFilter {
                             .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 } else {
-                    throw new RuntimeException("invalid token!");
+                    throw new ResponseException("You're not allowed!", HttpStatus.FORBIDDEN);
                 }
             }
 
             filterChain.doFilter(request, response);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.setStatus(HttpStatus.FORBIDDEN.value());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
-
-            // objectMapper.writeValue(response.getOutputStream(), "INVALID");
+        } catch (Exception ex) {
+            response.setStatus(403);
+            response.setContentType("application/json");
+            objectMapper.writeValue(response.getOutputStream(),
+                    ResponseDto.<Void>builder().success(false).message(ex.getMessage()).build());
         }
     }
 }
