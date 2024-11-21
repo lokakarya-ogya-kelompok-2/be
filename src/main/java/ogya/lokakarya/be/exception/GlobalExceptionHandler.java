@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import io.jsonwebtoken.JwtException;
 import ogya.lokakarya.be.dto.ResponseDto;
 
 @ControllerAdvice
@@ -32,5 +33,18 @@ public class GlobalExceptionHandler {
             WebRequest req) {
         return ResponseDto.<Void>builder().success(false).message(ex.getMessage()).build()
                 .toResponse(ex.getHttpStatus());
+    }
+
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ResponseDto<Object>> handleJwtException(JwtException ex, WebRequest req) {
+        return ResponseDto.builder().success(false).message(ex.getMessage()).build()
+                .toResponse(HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ResponseDto<Object>> handleException(Exception ex, WebRequest req) {
+        return ResponseDto.builder().success(false).message(ex.getMessage()).build()
+                .toResponse(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
