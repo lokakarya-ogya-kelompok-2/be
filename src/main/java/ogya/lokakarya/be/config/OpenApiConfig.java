@@ -1,12 +1,5 @@
 package ogya.lokakarya.be.config;
 
-import java.util.List;
-import org.springdoc.core.models.GroupedOpenApi;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.lang.NonNull;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
@@ -14,6 +7,14 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import org.springdoc.core.models.GroupedOpenApi;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 @Configuration
 public class OpenApiConfig implements WebMvcConfigurer {
@@ -76,7 +77,7 @@ public class OpenApiConfig implements WebMvcConfigurer {
     }
     @Bean
     GroupedOpenApi allDivisions() {
-        return GroupedOpenApi.builder().group("Divisions").pathsToMatch("/dividions/**").build();
+        return GroupedOpenApi.builder().group("Divisions").pathsToMatch("/divisions/**").build();
     }
     @Bean
     GroupedOpenApi allDevPlans() {
