@@ -56,6 +56,8 @@ public class GroupAttitudeSKillServiceImpl implements GroupAttitudeSkillService 
             GroupAttitudeSkill groupAttitudeSkill= listData.get();
             if(!groupAttitudeSkillReq.getGroupName().isBlank()){
                 groupAttitudeSkill.setGroupName(groupAttitudeSkillReq.getGroupName());
+                groupAttitudeSkill.setPercentage(groupAttitudeSkillReq.getPercentage());
+                groupAttitudeSkill.setEnabled(groupAttitudeSkillReq.getEnabled());
             }
             GroupAttitudeSkillDto groupAttitudeSkillDto= convertToDto(groupAttitudeSkill);
             groupAttitudeSkillRepository.save(groupAttitudeSkill);
