@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import ogya.lokakarya.be.dto.ResponseDto;
+import ogya.lokakarya.be.dto.user.UserChangePasswordDto;
 import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.dto.user.UserReq;
+import ogya.lokakarya.be.dto.user.UserUpdateDto;
 import ogya.lokakarya.be.service.UserService;
 
 
@@ -54,7 +56,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDto<UserDto>> update(@PathVariable UUID id,
-            @RequestBody @Valid UserReq data) {
+            @RequestBody @Valid UserUpdateDto data) {
         var updatedUser = userSvc.update(id, data);
 
         return ResponseDto.<UserDto>builder().success(true).content(updatedUser)
@@ -68,5 +70,13 @@ public class UserController {
         return ResponseDto.<Void>builder().success(true)
                 .message(String.format("Delete user with id %s successful!", id)).build()
                 .toResponse(HttpStatus.OK);
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<ResponseDto<UserDto>> changePassword(
+            @RequestBody @Valid UserChangePasswordDto data) {
+        var updatedUser = userSvc.changePassword(data);
+        return ResponseDto.<UserDto>builder().success(true).content(updatedUser)
+                .message("Password changed successfuly!").build().toResponse(HttpStatus.OK);
     }
 }

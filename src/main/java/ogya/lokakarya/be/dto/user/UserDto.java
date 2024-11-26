@@ -48,6 +48,9 @@ public class UserDto {
 
     private DivisionDto division;
 
+    @JsonProperty("employee_status")
+    private Integer employeeStatus;
+
     public UserDto(User user, boolean withCreatedBy, boolean withUpdatedBy, boolean includeRoles) {
         setId(user.getId());
         setUsername(user.getUsername());
@@ -57,6 +60,7 @@ public class UserDto {
         setJoinDate(user.getJoinDate().toLocalDate());
         setEnabled(user.getEnabled());
         setPassword(user.getPassword());
+        setEmployeeStatus(user.getEmployeeStatus());
         if (user.getCreatedAt() != null) {
             setCreatedAt(user.getCreatedAt());
         }
