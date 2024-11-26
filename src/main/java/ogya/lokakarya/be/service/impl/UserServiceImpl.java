@@ -6,13 +6,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.config.security.SecurityUtil;
+import ogya.lokakarya.be.dto.user.UserChangePasswordDto;
 import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.dto.user.UserReq;
+import ogya.lokakarya.be.dto.user.UserUpdateDto;
 import ogya.lokakarya.be.entity.Division;
 import ogya.lokakarya.be.entity.Role;
 import ogya.lokakarya.be.entity.User;
@@ -106,7 +109,7 @@ public class UserServiceImpl implements UserService {
     @SuppressWarnings("java:S3776")
     @Transactional
     @Override
-    public UserDto update(UUID id, UserReq data) {
+    public UserDto update(UUID id, UserUpdateDto data) {
         Optional<User> userOpt = userRepo.findById(id);
         if (userOpt.isEmpty()) {
             throw ResponseException.userNotFound(id);
@@ -130,10 +133,6 @@ public class UserServiceImpl implements UserService {
         }
         if (data.getJoinDate() != null) {
             user.setJoinDate(Date.valueOf(data.getJoinDate()));
-        }
-        if (data.getPassword() != null) {
-            String encodedPassword = passwordEncoder.encode(data.getPassword());
-            user.setPassword(encodedPassword);
         }
 
         if (data.getDivisionId() != null) {
@@ -180,5 +179,20 @@ public class UserServiceImpl implements UserService {
         userRoleRepo.deleteByUserId(id);
         entityManager.flush();
         userRepo.delete(user);
+    }
+
+    @Override
+    public UserDto changePassword(UserChangePasswordDto data) {
+        User currentUser = securityUtil.getCurrentUser();
+        if (!passwordEncoder.matches(data.getCurrentPassword(), currentUser.getPassword())) {
+            throw new ResponseException("Incorrect current password!", HttpStatus.BAD_REQUEST);
+        }
+        if (!data.getNewPassword().equals(data.getConfirmNewPassword())) {
+            throw new ResponseException("New password and confirmation password mismatch!",
+                    HttpStatus.BAD_REQUEST);
+        }
+        currentUser.setPassword(passwordEncoder.encode(data.getNewPassword()));
+        currentUser = userRepo.save(currentUser);
+        return new UserDto(currentUser, true, true, false);
     }
 }
