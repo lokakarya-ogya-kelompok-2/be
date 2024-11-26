@@ -28,7 +28,6 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
     public List<GroupAchievementDto> getAllGroupAchievements() {
         List<GroupAchievementDto> listResult=new ArrayList<>();
         List<GroupAchievement> groupAchievementList=groupAchievementRepository.findAll();
-        System.out.println(groupAchievementList);
         for(GroupAchievement groupAchievement : groupAchievementList) {
             GroupAchievementDto result= convertToDto(groupAchievement);
             listResult.add(result);
@@ -41,7 +40,6 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
         Optional<GroupAchievement> listData;
         try{
             listData=groupAchievementRepository.findById(id);
-            System.out.println(listData);
         }catch(Exception e){
             e.printStackTrace();
             throw e;
