@@ -1,17 +1,18 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import ogya.lokakarya.be.dto.devplan.DevPlanDto;
 import ogya.lokakarya.be.dto.devplan.DevPlanReq;
 import ogya.lokakarya.be.entity.DevPlan;
 import ogya.lokakarya.be.repository.DevPlanRepository;
 import ogya.lokakarya.be.service.DevPlanService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class DevPlanServiceImpl implements DevPlanService {
@@ -57,7 +58,7 @@ public class DevPlanServiceImpl implements DevPlanService {
             DevPlan devPlan = listData.get();
             if (!devPlanReq.getPlan().isBlank()) {
                 devPlan.setPlan(devPlanReq.getPlan());
-                // devPlan.setEnabled(devPlanReq.geE;
+                devPlan.setEnabled(devPlanReq.getEnabled());
             }
             DevPlanDto devPlanDto = convertToDto(devPlan);
             devPlanRepository.save(devPlan);
