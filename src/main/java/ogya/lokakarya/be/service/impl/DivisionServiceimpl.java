@@ -4,7 +4,6 @@ import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.division.DivisionDto;
 import ogya.lokakarya.be.dto.division.DivisionReq;
 import ogya.lokakarya.be.entity.Division;
-import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.repository.DivisionRepository;
 import ogya.lokakarya.be.service.DivisionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +27,8 @@ public class DivisionServiceimpl implements DivisionService {
     @Override
     public DivisionDto create(DivisionReq data) {
         Division divisionEntity = data.toEntity();
-        User currentUser = securityUtil.getCurrentUser();
-        divisionEntity.setCreatedBy(currentUser);
+//        User currentUser = securityUtil.getCurrentUser();
+//        divisionEntity.setCreatedBy(currentUser);
         divisionEntity = divisionRepository.save(divisionEntity);
         return new DivisionDto(divisionEntity, true, false);
     }

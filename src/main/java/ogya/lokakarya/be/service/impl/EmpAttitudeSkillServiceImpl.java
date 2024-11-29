@@ -56,7 +56,9 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
             EmpAttitudeSkillDto result= convertToDto(empAttitudeSkill);
             listResult.add(result);
         }
+        System.out.println(listResult);
         return listResult;
+
     }
 
     @Override
