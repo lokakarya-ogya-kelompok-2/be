@@ -45,7 +45,7 @@ public class AuthController {
         }
 
         UserDetails userDetails = authSvc.loadUserByUsername(data.getEmailOrUsername());
-        final String token = jwtUtil.generateToken(userDetails);
+        final String token = jwtUtil.generateToken((User) userDetails);
         UserDto userDto = new UserDto((User) userDetails, true, true, true);
         return ResponseDto.<LoginRes>builder().success(true).content(new LoginRes(userDto, token))
                 .message("Login successful!").build().toResponse(HttpStatus.OK);

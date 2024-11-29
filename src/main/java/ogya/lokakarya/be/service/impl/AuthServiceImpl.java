@@ -1,6 +1,7 @@
 package ogya.lokakarya.be.service.impl;
 
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,6 +20,12 @@ public class AuthServiceImpl implements AuthService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> userOpt =
                 userRepo.findByUsername(username).or(() -> userRepo.findByEmailAddress(username));
+        return userOpt.orElseThrow(() -> new UsernameNotFoundException("user could not be found!"));
+    }
+
+    @Override
+    public UserDetails loadByUserId(UUID id) {
+        Optional<User> userOpt = userRepo.findById(id);
         return userOpt.orElseThrow(() -> new UsernameNotFoundException("user could not be found!"));
     }
 

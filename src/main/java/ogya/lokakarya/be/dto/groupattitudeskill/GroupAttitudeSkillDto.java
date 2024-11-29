@@ -1,10 +1,17 @@
 package ogya.lokakarya.be.dto.groupattitudeskill;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
-import ogya.lokakarya.be.entity.GroupAttitudeSkill;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillDto;
+import ogya.lokakarya.be.entity.GroupAttitudeSkill;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -36,7 +43,11 @@ public class GroupAttitudeSkillDto {
     @JsonProperty("updated_by")
     private UUID updatedBy;
 
-    public GroupAttitudeSkillDto(GroupAttitudeSkill groupAttitudeSkill) {
+    @JsonProperty("attitude_skills")
+    private List<AttitudeSkillDto> attitudeSkills;
+
+    public GroupAttitudeSkillDto(GroupAttitudeSkill groupAttitudeSkill,
+            boolean withAttitudeSkills) {
         setId(groupAttitudeSkill.getId());
         setGroupName(groupAttitudeSkill.getGroupName());
         setPercentage(groupAttitudeSkill.getPercentage());
@@ -45,5 +56,11 @@ public class GroupAttitudeSkillDto {
         setCreatedBy(groupAttitudeSkill.getCreatedBy());
         setUpdatedAt(groupAttitudeSkill.getUpdatedAt());
         setUpdatedBy(groupAttitudeSkill.getUpdatedBy());
+        List<AttitudeSkillDto> attitudeSkillDtos = new ArrayList<>();
+        if (withAttitudeSkills && groupAttitudeSkill.getAttitudeSkills() != null) {
+            groupAttitudeSkill.getAttitudeSkills().forEach(attitudeSkill -> attitudeSkillDtos
+                    .add(new AttitudeSkillDto(attitudeSkill, false, false, false)));
+        }
+        setAttitudeSkills(attitudeSkillDtos);
     }
 }
