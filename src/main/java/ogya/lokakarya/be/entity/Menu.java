@@ -21,7 +21,7 @@ public class Menu {
     @Column(name = "ID")
     private UUID id;
 
-    @Column(name = "MENU_NAME", length = 30)
+    @Column(name = "MENU_NAME", length = 30, unique = true)
     private String menuName;
 
     @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
