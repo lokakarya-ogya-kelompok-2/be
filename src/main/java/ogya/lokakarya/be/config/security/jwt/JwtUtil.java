@@ -3,15 +3,16 @@ package ogya.lokakarya.be.config.security.jwt;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import ogya.lokakarya.be.entity.User;
 
 @Component
 public class JwtUtil {
@@ -28,11 +29,13 @@ public class JwtUtil {
         jwtKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(User user) {
         final Date now = new Date();
-        return Jwts.builder().claims(new HashMap<>()).subject(userDetails.getUsername())
-                .issuedAt(now).expiration(new Date(now.getTime() + jwtExpirationMs))
-                .signWith(jwtKey).compact();
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", user.getUsername());
+        claims.put("full_name", user.getFullName());
+        return Jwts.builder().claims(claims).subject(user.getId().toString()).issuedAt(now)
+                .expiration(new Date(now.getTime() + jwtExpirationMs)).signWith(jwtKey).compact();
     }
 
     public String extractSubject(String token) {
