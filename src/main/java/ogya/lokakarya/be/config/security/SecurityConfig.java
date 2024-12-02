@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -43,7 +44,7 @@ public class SecurityConfig {
                         // .requestMatchers("/users/**").hasAuthority("HR")
                         // .requestMatchers("/roles/**").hasAuthority("HR")
                         // .requestMatchers("/divisions/**").hasAuthority("HR")
-                        // .requestMatchers("/menus/**").hasAuthority("HR")
+                        // .requestMatchers(HttpMethod.PUT, "/menus/**").hasAuthority("HR")
                         .anyRequest().permitAll())
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/**")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))

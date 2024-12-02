@@ -74,10 +74,16 @@ public class MenuController {
     @GetMapping("/search")
     public ResponseEntity<ResponseDto<List<MenuDto>>> listWithFilter(
             @RequestParam(name = "user_id", required = false) UUID userId,
-            @RequestParam(name = "role_names", required = false) List<String> roleNames) {
+            @RequestParam(name = "role_names", required = false) List<String> roleNames,
+            @RequestParam(name = "with_created_by", required = false,
+                    defaultValue = "false") Boolean withCreatedBy,
+            @RequestParam(name = "with_updated_by", required = false,
+                    defaultValue = "false") Boolean withUpdatedBy) {
         MenuFilter menuFilter = new MenuFilter();
         menuFilter.setUserId(userId);
         menuFilter.setRoleNames(roleNames);
+        menuFilter.setWithCreatedBy(withCreatedBy);
+        menuFilter.setWithUpdatedBy(withUpdatedBy);
         var menus = menuService.findWithFilter(menuFilter);
         return ResponseDto.<List<MenuDto>>builder().success(true).content(menus)
                 .message("list menu with filter successful!").build().toResponse(HttpStatus.OK);

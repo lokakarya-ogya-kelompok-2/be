@@ -109,23 +109,38 @@ public class MenuServiceImpl implements MenuService {
         CriteriaQuery<Menu> query = cb.createQuery(Menu.class);
         Root<Menu> root = query.from(Menu.class);
 
-        Join<Menu, RoleMenu> roleMenuJoin = root.join("roleMenus", JoinType.LEFT);
-        Join<RoleMenu, Role> roleJoin = roleMenuJoin.join("role", JoinType.LEFT);
-
         List<Predicate> predicates = new ArrayList<>();
+        if (filter.getRoleNames() != null || filter.getUserId() != null) {
+            Join<Menu, RoleMenu> roleMenuJoin = root.join("roleMenus", JoinType.LEFT);
+            Join<RoleMenu, Role> roleJoin = roleMenuJoin.join("role", JoinType.LEFT);
 
-        if (filter.getUserId() != null) {
-            Join<Role, UserRole> userRoleJoin = roleJoin.join("userRoles", JoinType.LEFT);
-            Join<UserRole, User> userJoin = userRoleJoin.join("user", JoinType.LEFT);
-            predicates.add(cb.equal(userJoin.get("id"), filter.getUserId()));
+            if (filter.getUserId() != null) {
+                Join<Role, UserRole> userRoleJoin = roleJoin.join("userRoles", JoinType.LEFT);
+                Join<UserRole, User> userJoin = userRoleJoin.join("user", JoinType.LEFT);
+                predicates.add(cb.equal(userJoin.get("id"), filter.getUserId()));
+            }
+
+            if (filter.getRoleNames() != null && !filter.getRoleNames().isEmpty()) {
+                predicates.add(roleJoin.get("roleName").in(filter.getRoleNames()));
+            }
         }
 
-        if (filter.getRoleNames() != null && !filter.getRoleNames().isEmpty()) {
-            predicates.add(roleJoin.get("roleName").in(filter.getRoleNames()));
+        if (filter.getWithCreatedBy().booleanValue() || filter.getWithUpdatedBy().booleanValue()) {
+            Join<Menu, User> userJoin = null;
+            if (filter.getWithCreatedBy().booleanValue()) {
+                userJoin = root.join("createdBy", JoinType.LEFT);
+            }
+            if (filter.getWithUpdatedBy().booleanValue()) {
+                if (userJoin == null) {
+                    root.join("updatedBy", JoinType.LEFT);
+                } else {
+                    userJoin.join("updatedBy", JoinType.LEFT);
+                }
+            }
         }
 
         if (!predicates.isEmpty()) {
-            query.where(cb.and(predicates.toArray(new Predicate[0])));
+            query.where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
         }
 
         query.distinct(true);
@@ -133,7 +148,8 @@ public class MenuServiceImpl implements MenuService {
 
         List<Menu> menuEntities = entityManager.createQuery(query).getResultList();
         List<MenuDto> menus = new ArrayList<>(menuEntities.size());
-        menuEntities.forEach(menu -> menus.add(new MenuDto(menu, false, false)));
+        menuEntities.forEach(menu -> menus
+                .add(new MenuDto(menu, filter.getWithCreatedBy(), filter.getWithUpdatedBy())));
         return menus;
     }
 }
