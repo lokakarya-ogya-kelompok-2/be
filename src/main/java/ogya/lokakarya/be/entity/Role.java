@@ -46,6 +46,9 @@ public class Role {
     // inverseJoinColumns = @JoinColumn(name = "MENU_ID"))
     // private Set<RoleMenu> menus;
 
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
+    private List<RoleMenu> roleMenus;
+  
     @OneToMany(mappedBy = "role")
     private List<UserRole> userRoles;
 }
