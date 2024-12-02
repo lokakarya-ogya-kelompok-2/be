@@ -48,7 +48,7 @@ public class Role {
 
     @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
     private List<RoleMenu> roleMenus;
-
+  
     @OneToMany(mappedBy = "role")
     private List<UserRole> userRoles;
 }
