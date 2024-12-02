@@ -31,7 +31,7 @@ public class RoleServiceImpl implements RoleService {
         Role roleEntity = data.toEntity();
         roleEntity.setCreatedBy(currentUser);
         roleEntity = roleRepository.save(roleEntity);
-        return new RoleDto(roleEntity, true, false);
+        return new RoleDto(roleEntity, true, true, false);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class RoleServiceImpl implements RoleService {
 
 
     private RoleDto convertToDto(Role data) {
-        RoleDto result = new RoleDto(data, true, true);
+        RoleDto result = new RoleDto(data, true, true, true);
         return result;
     }
 }
