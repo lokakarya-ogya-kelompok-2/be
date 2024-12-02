@@ -1,7 +1,7 @@
 package ogya.lokakarya.be.entity;
 
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,9 +10,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -42,8 +41,11 @@ public class Role {
     @JoinColumn(name = "UPDATED_BY")
     private User updatedBy;
 
-    @ManyToMany
-    @JoinTable(name = "TBL_APP_ROLE_MENU", joinColumns = @JoinColumn(name = "ROLE_ID"),
-            inverseJoinColumns = @JoinColumn(name = "MENU_ID"))
-    private Set<RoleMenu> menus;
+    // @ManyToMany
+    // @JoinTable(name = "TBL_APP_ROLE_MENU", joinColumns = @JoinColumn(name = "ROLE_ID"),
+    // inverseJoinColumns = @JoinColumn(name = "MENU_ID"))
+    // private Set<RoleMenu> menus;
+
+    @OneToMany(mappedBy = "role")
+    private List<UserRole> userRoles;
 }

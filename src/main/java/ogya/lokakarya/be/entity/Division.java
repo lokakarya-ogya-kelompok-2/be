@@ -21,7 +21,7 @@ public class Division {
     @Column(name = "ID")
     private UUID id;
 
-    @Column(name = "DIVISION_NAME", length = 50)
+    @Column(name = "DIVISION_NAME", length = 50, unique = true)
     private String divisionName;
 
     @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")

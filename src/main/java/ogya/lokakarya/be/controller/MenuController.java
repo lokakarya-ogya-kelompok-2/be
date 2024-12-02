@@ -1,10 +1,7 @@
 package ogya.lokakarya.be.controller;
 
-import jakarta.validation.Valid;
-import ogya.lokakarya.be.dto.ResponseDto;
-import ogya.lokakarya.be.dto.menu.MenuDto;
-import ogya.lokakarya.be.dto.menu.MenuReq;
-import ogya.lokakarya.be.service.MenuService;
+import java.util.List;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +12,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import ogya.lokakarya.be.dto.ResponseDto;
+import ogya.lokakarya.be.dto.menu.MenuDto;
+import ogya.lokakarya.be.dto.menu.MenuFilter;
+import ogya.lokakarya.be.dto.menu.MenuReq;
+import ogya.lokakarya.be.service.MenuService;
 
-import java.util.List;
-import java.util.UUID;
 
 @SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/menus")
@@ -30,10 +32,9 @@ public class MenuController {
 
     @PostMapping
     public ResponseEntity<ResponseDto<MenuDto>> create(@RequestBody @Valid MenuReq data) {
-        var createMenu= menuService.create(data);
-        return ResponseDto.<MenuDto>builder().content(createMenu)
-                .message("Create menu successful!").success(true).build()
-                .toResponse(HttpStatus.CREATED);
+        var createMenu = menuService.create(data);
+        return ResponseDto.<MenuDto>builder().content(createMenu).message("Create menu successful!")
+                .success(true).build().toResponse(HttpStatus.CREATED);
     }
 
     @GetMapping
@@ -54,9 +55,9 @@ public class MenuController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseDto<MenuDto>> updateDivisionById
-            (@PathVariable UUID id, @RequestBody @Valid MenuReq menuReq) {
-        MenuDto res= menuService.updateMenuById(id, menuReq);
+    public ResponseEntity<ResponseDto<MenuDto>> updateDivisionById(@PathVariable UUID id,
+            @RequestBody @Valid MenuReq menuReq) {
+        MenuDto res = menuService.updateMenuById(id, menuReq);
         return ResponseDto.<MenuDto>builder().content(res)
                 .message(String.format("Update menu with id %s successful!", id)).success(true)
                 .build().toResponse(HttpStatus.OK);
@@ -69,4 +70,23 @@ public class MenuController {
                 .message(String.format("Delete menu with id %s successful!", id)).build()
                 .toResponse(HttpStatus.OK);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<ResponseDto<List<MenuDto>>> listWithFilter(
+            @RequestParam(name = "user_id", required = false) UUID userId,
+            @RequestParam(name = "role_names", required = false) List<String> roleNames,
+            @RequestParam(name = "with_created_by", required = false,
+                    defaultValue = "false") Boolean withCreatedBy,
+            @RequestParam(name = "with_updated_by", required = false,
+                    defaultValue = "false") Boolean withUpdatedBy) {
+        MenuFilter menuFilter = new MenuFilter();
+        menuFilter.setUserId(userId);
+        menuFilter.setRoleNames(roleNames);
+        menuFilter.setWithCreatedBy(withCreatedBy);
+        menuFilter.setWithUpdatedBy(withUpdatedBy);
+        var menus = menuService.findWithFilter(menuFilter);
+        return ResponseDto.<List<MenuDto>>builder().success(true).content(menus)
+                .message("list menu with filter successful!").build().toResponse(HttpStatus.OK);
+    }
+
 }
