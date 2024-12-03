@@ -1,5 +1,7 @@
 package ogya.lokakarya.be.dto.emptechnicalskill;
 
+import java.util.Date;
+import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +11,6 @@ import lombok.ToString;
 import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillDto;
 import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.EmpTechnicalSkill;
-
-import java.util.Date;
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -38,27 +37,32 @@ public class EmpTechnicalSkillDto {
     private Date createdAt;
 
     @JsonProperty("created_by")
-    private UUID createdBy;
+    private UserDto createdBy;
 
     @JsonProperty("updated_at")
     private Date updatedAt;
 
     @JsonProperty("updated_by")
-    private UUID updatedBy;
+    private UserDto updatedBy;
 
-    public EmpTechnicalSkillDto (EmpTechnicalSkill empTechnicalSkill) {
+    public EmpTechnicalSkillDto(EmpTechnicalSkill empTechnicalSkill, boolean withCreatedBy,
+            boolean withUpdatedBy) {
         setId(empTechnicalSkill.getId());
-        if(empTechnicalSkill.getUser() != null) {
+        if (empTechnicalSkill.getUser() != null) {
             setUser(new UserDto(empTechnicalSkill.getUser(), false, false, false));
         }
-        if(empTechnicalSkill.getTechnicalSkill() != null) {
+        if (empTechnicalSkill.getTechnicalSkill() != null) {
             setTechnicalSkill(new TechnicalSkillDto(empTechnicalSkill.getTechnicalSkill()));
         }
         setScore(empTechnicalSkill.getScore());
         setAssessmentYear(empTechnicalSkill.getAssessmentYear());
         setCreatedAt(empTechnicalSkill.getCreatedAt());
-        setCreatedBy(empTechnicalSkill.getCreatedBy());
+        if (withCreatedBy && empTechnicalSkill.getCreatedBy() != null) {
+            setCreatedBy(new UserDto(empTechnicalSkill.getCreatedBy(), false, false, false));
+        }
         setUpdatedAt(empTechnicalSkill.getUpdatedAt());
-        setUpdatedBy(empTechnicalSkill.getUpdatedBy());
+        if (withUpdatedBy && empTechnicalSkill.getUpdatedBy() != null) {
+            setUpdatedBy(new UserDto(empTechnicalSkill.getUpdatedBy(), false, false, false));
+        }
     }
 }

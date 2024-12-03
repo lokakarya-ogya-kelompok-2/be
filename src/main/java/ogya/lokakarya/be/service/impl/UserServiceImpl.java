@@ -198,6 +198,7 @@ public class UserServiceImpl implements UserService {
 
         currentUser.setPassword(passwordEncoder.encode(data.getNewPassword()));
         currentUser = userRepo.save(currentUser);
+
         return new UserDto(currentUser, true, true, false);
     }
 }
