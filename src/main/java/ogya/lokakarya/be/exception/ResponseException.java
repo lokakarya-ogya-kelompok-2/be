@@ -32,4 +32,12 @@ public class ResponseException extends RuntimeException {
         return notFoundResponse("User", id);
     }
 
+    public static ResponseException technicalSkillNotFound(UUID id) {
+        return notFoundResponse("Technical Skill", id);
+    }
+
+    public static ResponseException empTechnicalSkillNotFound(UUID id) {
+        return notFoundResponse("Employee Technical Skill", id);
+    }
+
 }
