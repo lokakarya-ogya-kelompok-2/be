@@ -5,6 +5,7 @@ import ogya.lokakarya.be.dto.empdevplan.EmpDevPlanReq;
 import ogya.lokakarya.be.entity.DevPlan;
 import ogya.lokakarya.be.entity.EmpDevPlan;
 import ogya.lokakarya.be.entity.User;
+import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.DevPlanRepository;
 import ogya.lokakarya.be.repository.EmpDevPlanRepository;
 import ogya.lokakarya.be.repository.UserRepository;
@@ -77,6 +78,22 @@ public class EmpDevPlanServiceImpl implements EmpDevPlanService {
             EmpDevPlan empDevPlan= listData.get();
             if(empDevPlanReq.getAssessmentYear() !=null){
                 empDevPlan.setAssessmentYear(empDevPlanReq.getAssessmentYear());
+//
+//                empDevPlan.setDevPlan();
+            }
+            if(empDevPlanReq.getUserId()!=null){
+                Optional<User> User= userRepository.findById(empDevPlanReq.getUserId());
+                if(User.isEmpty()){
+                    throw ResponseException.userNotFound(empDevPlanReq.getUserId());
+                }
+                empDevPlan.setUser(User.get());
+            }
+            if(empDevPlanReq.getDevPlanId()!=null){
+                Optional<DevPlan> DevPlan= devPlanRepository.findById(empDevPlanReq.getDevPlanId());
+                if(DevPlan.isEmpty()){
+                    throw ResponseException.devPlanNotFound(empDevPlanReq.getDevPlanId());
+                }
+                empDevPlan.setDevPlan(DevPlan.get());
             }
             EmpDevPlanDto empDevPlanDto= convertToDto(empDevPlan);
             empDevPlanRepository.save(empDevPlan);
