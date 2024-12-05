@@ -25,8 +25,11 @@ public class EmpDevPlanDto {
     @JsonProperty("user_id")
     private UserDto user;
 
-    @JsonProperty("dev_plan_id")
+    @JsonProperty("dev_plan")
     private DevPlanDto devPlan;
+
+    @JsonProperty("detail")
+    private String tooBright;
 
     @JsonProperty("assessment_year")
     private Integer assessmentYear;
@@ -35,15 +38,15 @@ public class EmpDevPlanDto {
     private Date createdAt;
 
     @JsonProperty("created_by")
-    private UUID createdBy;
+    private UserDto createdBy;
 
     @JsonProperty("updated_at")
     private Date updatedAt;
 
     @JsonProperty("updated_by")
-    private UUID updatedBy;
+    private UserDto updatedBy;
 
-    public EmpDevPlanDto(EmpDevPlan empDevPlan) {
+    public EmpDevPlanDto(EmpDevPlan empDevPlan, boolean withCreatedBy, boolean withUpdatedBy) {
         setId(empDevPlan.getId());
         if(empDevPlan.getUser() != null) {
             setUser(new UserDto(empDevPlan.getUser(), false, false, false));
@@ -51,10 +54,15 @@ public class EmpDevPlanDto {
         if (empDevPlan.getDevPlan() != null) {
             setDevPlan(new DevPlanDto(empDevPlan.getDevPlan()));
         }
+        setTooBright(empDevPlan.getTooBright());
         setAssessmentYear(empDevPlan.getAssessmentYear());
         setCreatedAt(empDevPlan.getCreatedAt());
-        setCreatedBy(empDevPlan.getCreatedBy());
+        if (withCreatedBy && empDevPlan.getCreatedBy() != null) {
+            setCreatedBy(new UserDto(empDevPlan.getCreatedBy(), false, false, false));
+        }
         setUpdatedAt(empDevPlan.getUpdatedAt());
-        setUpdatedBy(empDevPlan.getUpdatedBy());
+        if (withUpdatedBy && empDevPlan.getUpdatedBy() != null) {
+            setUpdatedBy(new UserDto(empDevPlan.getUpdatedBy(), false, false, false));
+        }
     }
 }

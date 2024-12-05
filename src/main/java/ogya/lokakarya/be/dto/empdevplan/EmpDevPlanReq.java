@@ -19,13 +19,17 @@ import java.util.UUID;
 @Data
 @ToString
 public class EmpDevPlanReq {
-    @NotNull(message = "User ID cannot be null")
-    @JsonProperty("user_id")
-    private UUID userId;
+//    @NotNull(message = "User ID cannot be null")
+//    @JsonProperty("user_id")
+//    private UUID userId;
 
     @NotNull(message = "Development plan ID cannot be null")
     @JsonProperty("dev_plan_id")
     private UUID devPlanId;
+
+    @NotNull(message = "Detail cannot be null")
+    @JsonProperty("detail")
+    private String detail;
 
     @NotNull(message = "Assessment year cannot be null")
     @Min(value = 1900, message = "Assessment year must be greater than or equal to 1900")
@@ -36,6 +40,7 @@ public class EmpDevPlanReq {
     public EmpDevPlan toEntity(){
         EmpDevPlan empDevPlan = new EmpDevPlan();
         empDevPlan.setAssessmentYear(assessmentYear);
+        empDevPlan.setTooBright(detail);
         return empDevPlan;
     }
 }
