@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface EmpAttitudeSkillService {
+    List<EmpAttitudeSkillDto> createBulkEmpAttitudeSkill(List<EmpAttitudeSkillReq> data);
     EmpAttitudeSkillDto create(EmpAttitudeSkillReq data);
     List<EmpAttitudeSkillDto> getAllEmpAttitudeSkills();
     EmpAttitudeSkillDto getEmpAttitudeSkillById(UUID id);

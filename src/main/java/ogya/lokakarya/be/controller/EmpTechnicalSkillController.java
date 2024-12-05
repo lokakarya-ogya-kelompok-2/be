@@ -1,7 +1,10 @@
 package ogya.lokakarya.be.controller;
 
-import java.util.List;
-import java.util.UUID;
+import jakarta.validation.Valid;
+import ogya.lokakarya.be.dto.ResponseDto;
+import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillDto;
+import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillReq;
+import ogya.lokakarya.be.service.EmpTechnicalSkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +16,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import jakarta.validation.Valid;
-import ogya.lokakarya.be.dto.ResponseDto;
-import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillDto;
-import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillReq;
-import ogya.lokakarya.be.service.EmpTechnicalSkillService;
+
+import java.util.List;
+import java.util.UUID;
 
 @RequestMapping("/emp-technical-skills")
 @RestController
@@ -63,7 +64,7 @@ public class EmpTechnicalSkillController {
                 .success(true).build().toResponse(HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
+    @ PutMapping("/{id}")
     public ResponseEntity<ResponseDto<EmpTechnicalSkillDto>> updateEmpTechnicalSkillById(
             @PathVariable UUID id, @RequestBody @Valid EmpTechnicalSkillReq empTechnicalSkillReq) {
         EmpTechnicalSkillDto res =
