@@ -19,4 +19,6 @@ public interface UserService {
     void delete(UUID id);
 
     UserDto changePassword(UserChangePasswordDto data);
+
+    String resetPassword(UUID userId);
 }

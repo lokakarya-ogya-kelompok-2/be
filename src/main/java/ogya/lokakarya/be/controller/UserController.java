@@ -79,4 +79,12 @@ public class UserController {
         return ResponseDto.<UserDto>builder().success(true).content(updatedUser)
                 .message("Password changed successfuly!").build().toResponse(HttpStatus.OK);
     }
+
+    @PostMapping("/{id}/reset-password")
+    public ResponseEntity<ResponseDto<String>> postMethodName(@PathVariable UUID id) {
+        var generatedPassword = userSvc.resetPassword(id);
+        return ResponseDto.<String>builder().success(true).content(generatedPassword)
+                .message("Reset password successful!").build().toResponse(HttpStatus.OK);
+    }
+
 }

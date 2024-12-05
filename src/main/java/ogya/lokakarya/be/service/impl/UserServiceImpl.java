@@ -1,5 +1,14 @@
 package ogya.lokakarya.be.service.impl;
 
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.config.security.SecurityUtil;
@@ -17,16 +26,7 @@ import ogya.lokakarya.be.repository.RoleRepository;
 import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.repository.UserRoleRepository;
 import ogya.lokakarya.be.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import ogya.lokakarya.be.util.RandGen;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -201,5 +201,20 @@ public class UserServiceImpl implements UserService {
         currentUser = userRepo.save(currentUser);
 
         return new UserDto(currentUser, true, true, false);
+    }
+
+    @Override
+    public String resetPassword(UUID userId) {
+        Optional<User> userOpt = userRepo.findById(userId);
+        if (userOpt.isEmpty()) {
+            throw ResponseException.userNotFound(userId);
+        }
+        User user = userOpt.get();
+        User currentUser = securityUtil.getCurrentUser();
+        String randomGenerated = RandGen.generate(10);
+        user.setUpdatedBy(currentUser);
+        user.setPassword(passwordEncoder.encode(randomGenerated));
+        userRepo.save(user);
+        return randomGenerated;
     }
 }
