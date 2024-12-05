@@ -24,11 +24,13 @@ public class EmpTechnicalSkillDto {
     @JsonProperty("user_id")
     private UserDto user;
 
-    @JsonProperty("technical_skill_id")
+    @JsonProperty("technical_skill")
     private TechnicalSkillDto technicalSkill;
 
     @JsonProperty("score")
     private Integer score;
+
+    private String detail;
 
     @JsonProperty("assessment_year")
     private Integer assessmentYear;
@@ -54,6 +56,7 @@ public class EmpTechnicalSkillDto {
         if (empTechnicalSkill.getTechnicalSkill() != null) {
             setTechnicalSkill(new TechnicalSkillDto(empTechnicalSkill.getTechnicalSkill()));
         }
+        setDetail(empTechnicalSkill.getTechnicalSkilLDetail());
         setScore(empTechnicalSkill.getScore());
         setAssessmentYear(empTechnicalSkill.getAssessmentYear());
         setCreatedAt(empTechnicalSkill.getCreatedAt());
