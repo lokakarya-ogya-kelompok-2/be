@@ -1,15 +1,5 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillDto;
 import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillReq;
@@ -20,6 +10,17 @@ import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.EmpTechnicalSkillRepository;
 import ogya.lokakarya.be.repository.TechnicalSkillRepository;
 import ogya.lokakarya.be.service.EmpTechnicalSkillService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class EmpTechnicalSkillServiceImpl implements EmpTechnicalSkillService {
@@ -39,7 +40,7 @@ public class EmpTechnicalSkillServiceImpl implements EmpTechnicalSkillService {
         List<EmpTechnicalSkill> empTechnicalSkillEntities = new ArrayList<>(data.size());
         Map<UUID, TechnicalSkill> technicalSkillIds = new HashMap<>();
 
-        for (EmpTechnicalSkillReq d : data) {
+        for (EmpTechnicalSkillReq d  : data) {
             EmpTechnicalSkill empTechnicalSkillEntity = d.toEntity();
             empTechnicalSkillEntity.setUser(currentUser);
             empTechnicalSkillEntity.setCreatedBy(currentUser);
