@@ -191,7 +191,7 @@ public class UserServiceImpl implements UserService {
             throw new ResponseException("New password and confirmation password mismatch!",
                     HttpStatus.BAD_REQUEST);
         }
-        if (!data.getNewPassword().equals(data.getCurrentPassword())) {
+        if (data.getNewPassword().equals(data.getCurrentPassword())) {
             throw new ResponseException("New password can't be the same as current password!",
                     HttpStatus.BAD_REQUEST);
         }
