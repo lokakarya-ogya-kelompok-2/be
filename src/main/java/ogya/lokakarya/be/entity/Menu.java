@@ -43,7 +43,4 @@ public class Menu {
 
     @OneToMany(mappedBy = "menu")
     private List<RoleMenu> roleMenus;
-
-    // @ManyToMany(mappedBy = "menu")
-    // private Set<Role> roles = new HashSet<>();
 }
