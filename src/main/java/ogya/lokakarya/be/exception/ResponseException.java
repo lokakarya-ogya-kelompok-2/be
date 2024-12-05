@@ -1,8 +1,9 @@
 package ogya.lokakarya.be.exception;
 
-import java.util.UUID;
-import org.springframework.http.HttpStatus;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+import java.util.UUID;
 
 @Getter
 public class ResponseException extends RuntimeException {
@@ -31,6 +32,10 @@ public class ResponseException extends RuntimeException {
     public static ResponseException roleNotFound(UUID id) {
         return notFoundResponse("User", id);
     }
+    public static ResponseException devPlanNotFound(UUID id) {
+        return notFoundResponse("DevPlan", id);
+    }
+
 
     public static ResponseException technicalSkillNotFound(UUID id) {
         return notFoundResponse("Technical Skill", id);
@@ -38,6 +43,9 @@ public class ResponseException extends RuntimeException {
 
     public static ResponseException empTechnicalSkillNotFound(UUID id) {
         return notFoundResponse("Employee Technical Skill", id);
+    }
+    public static ResponseException empAttitudeSkillNotFound(UUID id) {
+        return notFoundResponse("Employee Attitude Skill", id);
     }
 
 }

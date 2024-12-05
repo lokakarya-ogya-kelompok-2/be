@@ -1,5 +1,6 @@
 package ogya.lokakarya.be.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillDto;
@@ -22,6 +23,7 @@ import java.util.UUID;
 
 @RequestMapping("/emp-attitude-skills")
 @RestController
+@SecurityRequirement(name = "bearerAuth")
 public class EmpAttitudeSkillController {
     @Autowired
     EmpAttitudeSkillService empAttitudeSkillService;
@@ -33,6 +35,17 @@ public class EmpAttitudeSkillController {
                 .message("Create emp attitude skill successful!").success(true).build()
                 .toResponse(HttpStatus.CREATED);
     }
+
+    @PostMapping("/bulk-create")
+    public ResponseEntity<ResponseDto<List<EmpAttitudeSkillDto>>> createBulk(
+            @RequestBody @Valid List<EmpAttitudeSkillReq> data){
+        System.out.println("Data: " + data);
+        var createdEmpAttitudeSkill= empAttitudeSkillService.createBulkEmpAttitudeSkill(data);
+        return ResponseDto.<List<EmpAttitudeSkillDto>>builder().success(true)
+                .message("Create all emp technical skills successful!")
+                .content(createdEmpAttitudeSkill).build().toResponse(HttpStatus.CREATED);
+    }
+
     @GetMapping
     public ResponseEntity<ResponseDto<List<EmpAttitudeSkillDto>>> getAllEmpAttitudeSkills() {
         System.out.println("Get All Emp Attitude Skill");
