@@ -1,5 +1,7 @@
 package ogya.lokakarya.be.dto.empattitudeskill;
 
+import java.util.Date;
+import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,9 +12,6 @@ import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillDto;
 import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.EmpAttitudeSkill;
 
-import java.util.Date;
-import java.util.UUID;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -22,10 +21,10 @@ public class EmpAttitudeSkillDto {
     @JsonProperty("id")
     private UUID id;
 
-    @JsonProperty("attitude_skill_id")
+    @JsonProperty("attitude_skill")
     private AttitudeSkillDto attitudeSkill;
 
-    @JsonProperty("user_id")
+    @JsonProperty("user")
     private UserDto user;
 
     @JsonProperty("score")
@@ -44,9 +43,10 @@ public class EmpAttitudeSkillDto {
     private Date updatedAt;
 
     @JsonProperty("updated_by")
-    private UUID updatedBy;
+    private UserDto updatedBy;
 
-    public EmpAttitudeSkillDto(EmpAttitudeSkill empAttitudeSkill, Boolean withCreatedBy) {
+    public EmpAttitudeSkillDto(EmpAttitudeSkill empAttitudeSkill, boolean withCreatedBy,
+            boolean withUpdatedBy) {
         setId(empAttitudeSkill.getId());
         if (empAttitudeSkill.getUser() != null) {
             setUser(new UserDto(empAttitudeSkill.getUser(), false, false, false));
@@ -62,6 +62,8 @@ public class EmpAttitudeSkillDto {
             setCreatedBy(new UserDto(empAttitudeSkill.getCreatedBy(), false, false, false));
         }
         setUpdatedAt(empAttitudeSkill.getUpdatedAt());
-        setUpdatedBy(empAttitudeSkill.getUpdatedBy());
+        if (withUpdatedBy && empAttitudeSkill.getUpdatedBy() != null) {
+            setUpdatedBy(new UserDto(empAttitudeSkill.getUpdatedBy(), false, false, false));
+        }
     }
 }

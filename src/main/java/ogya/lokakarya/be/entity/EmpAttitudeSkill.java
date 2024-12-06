@@ -1,5 +1,7 @@
 package ogya.lokakarya.be.entity;
 
+import java.util.Date;
+import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,16 +13,13 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-import java.util.Date;
-import java.util.UUID;
-
 @Entity
 @Data
-@Table(name="TBL_EMP_ATTITUDE_SKILL")
+@Table(name = "TBL_EMP_ATTITUDE_SKILL")
 public class EmpAttitudeSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name="ID")
+    @Column(name = "ID")
     private UUID id;
 
     @ManyToOne
@@ -28,7 +27,7 @@ public class EmpAttitudeSkill {
     private AttitudeSkill attitudeSkill;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "USER_ID")
     private User user;
 
     @Column(name = "SCORE", nullable = false, length = 3)
@@ -48,6 +47,6 @@ public class EmpAttitudeSkill {
     private Date updatedAt;
 
     @Column(name = "UPDATED_BY")
-    private UUID updatedBy;
+    private User updatedBy;
 }
 
