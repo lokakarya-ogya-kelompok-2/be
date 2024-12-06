@@ -18,9 +18,9 @@ import ogya.lokakarya.be.entity.EmpAttitudeSkill;
 @Data
 @ToString
 public class EmpAttitudeSkillReq {
-    @NotNull(message = "User ID cannot be null")
-    @JsonProperty("user_id")
-    private UUID userId;
+    // @NotNull(message = "User ID cannot be null")
+    // @JsonProperty("user_id")
+    // private UUID userId;
 
     @NotNull(message = "Attitude Skill ID cannot be null")
     @JsonProperty("attitude_skill_id")
