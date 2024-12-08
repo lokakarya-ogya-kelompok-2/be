@@ -6,30 +6,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillDto;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillFilter;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillReq;
 import ogya.lokakarya.be.entity.AttitudeSkill;
 import ogya.lokakarya.be.entity.EmpAttitudeSkill;
-import ogya.lokakarya.be.entity.Menu;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.AttitudeSkillRepository;
 import ogya.lokakarya.be.repository.EmpAttitudeSkillRepository;
-import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.service.EmpAttitudeSkillService;
 
 @Service
@@ -37,15 +26,9 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
     @Autowired
     private EmpAttitudeSkillRepository empAttitudeSkillRepository;
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private AttitudeSkillRepository attitudeSkillRepository;
     @Autowired
     private SecurityUtil securityUtil;
-
-    @Autowired
-    private EntityManager entityManager;
-
 
     @Override
     public List<EmpAttitudeSkillDto> createBulkEmpAttitudeSkill(List<EmpAttitudeSkillReq> data) {
@@ -70,8 +53,7 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
         }
         empAttitudeSkillsEntities = empAttitudeSkillRepository.saveAll(empAttitudeSkillsEntities);
         return empAttitudeSkillsEntities.stream()
-                .map(empAttSkill -> new EmpAttitudeSkillDto(empAttSkill, true, false))
-                .collect(Collectors.toList());
+                .map(empAttSkill -> new EmpAttitudeSkillDto(empAttSkill, true, false)).toList();
     }
 
     @Override
@@ -80,8 +62,7 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
                 attitudeSkillRepository.findById(data.getAttitudeSkillId());
         User currentUser = securityUtil.getCurrentUser();
         if (findAttitudeSkill.isEmpty()) {
-            throw new EntityNotFoundException(String.format("Attitude Skill not found",
-                    data.getAttitudeSkillId().toString()));
+            throw ResponseException.attitudeSkillNotFound(data.getAttitudeSkillId());
         }
         EmpAttitudeSkill dataEntity = data.toEntity();
         dataEntity.setUser(currentUser);
@@ -93,61 +74,12 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
 
     @Override
     public List<EmpAttitudeSkillDto> getAllEmpAttitudeSkills(EmpAttitudeSkillFilter filter) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<EmpAttitudeSkill> query = cb.createQuery(EmpAttitudeSkill.class);
-        Root<EmpAttitudeSkill> root = query.from(EmpAttitudeSkill.class);
-
-        List<Predicate> predicates = new ArrayList<>();
-        if (filter.getUserIds() != null) {
-            Join<EmpAttitudeSkill, User> attitudeSkillUserJoin = root.join("user", JoinType.LEFT);
-            predicates.add(attitudeSkillUserJoin.get("id").in(filter.getUserIds()));
-        }
-
-        if (filter.getYears() != null) {
-            predicates.add(root.get("assessmentYear").in(filter.getYears()));
-        }
-
-        if (!predicates.isEmpty()) {
-            query.where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
-        }
-
-        if (filter.getWithCreatedBy().booleanValue() || filter.getWithUpdatedBy().booleanValue()) {
-            Join<Menu, User> userJoin = null;
-            if (filter.getWithCreatedBy().booleanValue()) {
-                userJoin = root.join("createdBy", JoinType.LEFT);
-            }
-            if (filter.getWithUpdatedBy().booleanValue()) {
-                if (userJoin == null) {
-                    root.join("updatedBy", JoinType.LEFT);
-                } else {
-                    userJoin.join("updatedBy", JoinType.LEFT);
-                }
-            }
-        }
-
-        query.distinct(true);
-        query.select(root);
         List<EmpAttitudeSkill> empAttitudeSkillEntities =
-                entityManager.createQuery(query).getResultList();
-        System.out.println(empAttitudeSkillEntities.size() + " INI ARRAYNYA");
-        empAttitudeSkillEntities.forEach(empas -> {
-            // System.out.println("LOOP YG ATAS:");
-            // System.out.println(empas.getUser() == null);
-        });
-        System.out.println(empAttitudeSkillEntities.size() + " ADA BERAPA ELEMEN");
-
-        List<EmpAttitudeSkillDto> empAttitudeSkills =
-                new ArrayList<>(empAttitudeSkillEntities.size());
-        empAttitudeSkillEntities.forEach(empAS -> {
-            empAttitudeSkills.add(new EmpAttitudeSkillDto(empAS, filter.getWithCreatedBy(),
-                    filter.getWithCreatedBy()));
-            // System.out.println("YANG DARI ENTITY: ");
-            // System.out.println(empAS.getUser() == null);
-            // System.out.println("YANG DARI DTO: ");
-            // System.out.println(empAttitudeSkills.getLast().getUser() == null);
-        });
-        return empAttitudeSkills;
-
+                empAttitudeSkillRepository.findAllByFilter(filter);
+        return empAttitudeSkillEntities.stream()
+                .map(empAttSkill -> new EmpAttitudeSkillDto(empAttSkill, filter.getWithCreatedBy(),
+                        filter.getWithUpdatedBy()))
+                .toList();
     }
 
     @Override
@@ -192,7 +124,6 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
     }
 
     public EmpAttitudeSkillDto convertToDto(EmpAttitudeSkill data) {
-        EmpAttitudeSkillDto result = new EmpAttitudeSkillDto(data, true, true);
-        return result;
+        return new EmpAttitudeSkillDto(data, true, true);
     }
 }

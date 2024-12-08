@@ -27,66 +27,58 @@ import ogya.lokakarya.be.service.MenuService;
 @RequestMapping("/menus")
 @RestController
 public class MenuController {
-    @Autowired
-    MenuService menuService;
+        @Autowired
+        MenuService menuService;
 
-    @PostMapping
-    public ResponseEntity<ResponseDto<MenuDto>> create(@RequestBody @Valid MenuReq data) {
-        var createMenu = menuService.create(data);
-        return ResponseDto.<MenuDto>builder().content(createMenu).message("Create menu successful!")
-                .success(true).build().toResponse(HttpStatus.CREATED);
-    }
+        @PostMapping
+        public ResponseEntity<ResponseDto<MenuDto>> create(@RequestBody @Valid MenuReq data) {
+                var createMenu = menuService.create(data);
+                return ResponseDto.<MenuDto>builder().content(createMenu)
+                                .message("Create menu successful!").success(true).build()
+                                .toResponse(HttpStatus.CREATED);
+        }
 
-    @GetMapping
-    public ResponseEntity<ResponseDto<List<MenuDto>>> getAllMenus() {
-        System.out.println("Get All Menus");
-        List<MenuDto> response = menuService.getAllMenus();
-        return ResponseDto.<List<MenuDto>>builder().content(response)
-                .message("Get all menus successful!").success(true).build()
-                .toResponse(HttpStatus.OK);
-    }
+        @GetMapping
+        public ResponseEntity<ResponseDto<List<MenuDto>>> list(
+                        @RequestParam(name = "user_id", required = false) UUID userId,
+                        @RequestParam(name = "role_names", required = false) List<String> roleNames,
+                        @RequestParam(name = "with_created_by", required = false,
+                                        defaultValue = "false") Boolean withCreatedBy,
+                        @RequestParam(name = "with_updated_by", required = false,
+                                        defaultValue = "false") Boolean withUpdatedBy) {
+                MenuFilter menuFilter = new MenuFilter();
+                menuFilter.setUserId(userId);
+                menuFilter.setRoleNames(roleNames);
+                menuFilter.setWithCreatedBy(withCreatedBy);
+                menuFilter.setWithUpdatedBy(withUpdatedBy);
+                var menus = menuService.getAllMenus(menuFilter);
+                return ResponseDto.<List<MenuDto>>builder().success(true).content(menus)
+                                .message("list menu with filter successful!").build()
+                                .toResponse(HttpStatus.OK);
+        }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseDto<MenuDto>> getMenuById(@PathVariable UUID id) {
-        MenuDto response = menuService.getMenuById(id);
-        return ResponseDto.<MenuDto>builder().content(response)
-                .message(String.format("Get menu with id %s successful!", id)).success(true).build()
-                .toResponse(HttpStatus.OK);
-    }
+        @GetMapping("/{id}")
+        public ResponseEntity<ResponseDto<MenuDto>> getMenuById(@PathVariable UUID id) {
+                MenuDto response = menuService.getMenuById(id);
+                return ResponseDto.<MenuDto>builder().content(response)
+                                .message(String.format("Get menu with id %s successful!", id))
+                                .success(true).build().toResponse(HttpStatus.OK);
+        }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ResponseDto<MenuDto>> updateDivisionById(@PathVariable UUID id,
-            @RequestBody @Valid MenuReq menuReq) {
-        MenuDto res = menuService.updateMenuById(id, menuReq);
-        return ResponseDto.<MenuDto>builder().content(res)
-                .message(String.format("Update menu with id %s successful!", id)).success(true)
-                .build().toResponse(HttpStatus.OK);
-    }
+        @PutMapping("/{id}")
+        public ResponseEntity<ResponseDto<MenuDto>> updateDivisionById(@PathVariable UUID id,
+                        @RequestBody @Valid MenuReq menuReq) {
+                MenuDto res = menuService.updateMenuById(id, menuReq);
+                return ResponseDto.<MenuDto>builder().content(res)
+                                .message(String.format("Update menu with id %s successful!", id))
+                                .success(true).build().toResponse(HttpStatus.OK);
+        }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseDto<Void>> deleteMenuById(@PathVariable UUID id) {
-        menuService.deleteMenuById(id);
-        return ResponseDto.<Void>builder().success(true)
-                .message(String.format("Delete menu with id %s successful!", id)).build()
-                .toResponse(HttpStatus.OK);
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<ResponseDto<List<MenuDto>>> listWithFilter(
-            @RequestParam(name = "user_id", required = false) UUID userId,
-            @RequestParam(name = "role_names", required = false) List<String> roleNames,
-            @RequestParam(name = "with_created_by", required = false,
-                    defaultValue = "false") Boolean withCreatedBy,
-            @RequestParam(name = "with_updated_by", required = false,
-                    defaultValue = "false") Boolean withUpdatedBy) {
-        MenuFilter menuFilter = new MenuFilter();
-        menuFilter.setUserId(userId);
-        menuFilter.setRoleNames(roleNames);
-        menuFilter.setWithCreatedBy(withCreatedBy);
-        menuFilter.setWithUpdatedBy(withUpdatedBy);
-        var menus = menuService.findWithFilter(menuFilter);
-        return ResponseDto.<List<MenuDto>>builder().success(true).content(menus)
-                .message("list menu with filter successful!").build().toResponse(HttpStatus.OK);
-    }
-
+        @DeleteMapping("/{id}")
+        public ResponseEntity<ResponseDto<Void>> deleteMenuById(@PathVariable UUID id) {
+                menuService.deleteMenuById(id);
+                return ResponseDto.<Void>builder().success(true)
+                                .message(String.format("Delete menu with id %s successful!", id))
+                                .build().toResponse(HttpStatus.OK);
+        }
 }

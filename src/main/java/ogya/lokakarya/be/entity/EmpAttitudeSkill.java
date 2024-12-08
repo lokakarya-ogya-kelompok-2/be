@@ -11,11 +11,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "TBL_EMP_ATTITUDE_SKILL")
+@Table(name = "TBL_EMP_ATTITUDE_SKILL", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"ATTITUDE_SKILL_ID", "USER_ID", " YEAR"})})
 public class EmpAttitudeSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -46,7 +48,8 @@ public class EmpAttitudeSkill {
     @Column(name = "UPDATED_AT")
     private Date updatedAt;
 
-    @Column(name = "UPDATED_BY")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "UPDATED_BY")
     private User updatedBy;
 }
 

@@ -1,5 +1,7 @@
 package ogya.lokakarya.be.entity;
 
+import java.util.Date;
+import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,21 +10,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
-
-import java.util.Date;
-import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "TBL_ASSESSMENT_SUMMARY")
+@Table(name = "TBL_ASSESSMENT_SUMMARY",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"USER_ID", "YEAR"})})
 public class AssessmentSummary {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "USER_ID")
     private User user;
 
     @Column(name = "YEAR", nullable = false)

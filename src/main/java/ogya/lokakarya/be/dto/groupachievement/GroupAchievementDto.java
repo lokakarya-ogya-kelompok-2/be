@@ -1,10 +1,17 @@
 package ogya.lokakarya.be.dto.groupachievement;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
-import ogya.lokakarya.be.entity.GroupAchievement;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import ogya.lokakarya.be.dto.achievement.AchievementDto;
+import ogya.lokakarya.be.dto.user.UserDto;
+import ogya.lokakarya.be.entity.GroupAchievement;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,6 +28,7 @@ public class GroupAchievementDto {
     @JsonProperty("percentage")
     private Integer percentage;
 
+    @Builder.Default
     @JsonProperty("enabled")
     private Boolean enabled = true;
 
@@ -28,22 +36,30 @@ public class GroupAchievementDto {
     private Date createdAt;
 
     @JsonProperty("created_by")
-    private UUID createdBy;
+    private UserDto createdBy;
 
     @JsonProperty("updated_at")
     private Date updatedAt;
 
     @JsonProperty("updated_by")
-    private UUID updatedBy;
+    private UserDto updatedBy;
 
-    public GroupAchievementDto(GroupAchievement groupAchievement) {
+    private List<AchievementDto> achievements;
+
+    public GroupAchievementDto(GroupAchievement groupAchievement, boolean withCreatedBy,
+            boolean withUpdatedBy, boolean withAchievements) {
         setId(groupAchievement.getId());
         setGroupName(groupAchievement.getGroupName());
         setPercentage(groupAchievement.getPercentage());
         setEnabled(groupAchievement.getEnabled());
         setCreatedAt(groupAchievement.getCreatedAt());
-        setCreatedBy(groupAchievement.getCreatedBy());
+        if (withCreatedBy && groupAchievement.getCreatedBy() != null)
+            setCreatedBy(new UserDto(groupAchievement.getCreatedBy(), false, false, false));
         setUpdatedAt(groupAchievement.getUpdatedAt());
-        setUpdatedBy(groupAchievement.getUpdatedBy());
+        if (withUpdatedBy && groupAchievement.getUpdatedBy() != null)
+            setUpdatedBy(new UserDto(groupAchievement.getUpdatedBy(), false, false, false));
+        if (withAchievements && groupAchievement.getAchievements() != null)
+            setAchievements(groupAchievement.getAchievements().stream()
+                    .map(achievement -> new AchievementDto(achievement, false)).toList());
     }
 }

@@ -1,5 +1,7 @@
 package ogya.lokakarya.be.dto.assessmentsummary;
 
+import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -11,14 +13,15 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ogya.lokakarya.be.entity.AssessmentSummary;
 
-import java.util.UUID;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Data
 @ToString
 public class AssessmentSummaryReq {
+    @JsonIgnore
+    private UUID id;
+
     @NotNull(message = "User ID cannot be null")
     @JsonProperty("user_id")
     private UUID userId;

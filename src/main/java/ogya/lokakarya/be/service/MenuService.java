@@ -9,7 +9,7 @@ import ogya.lokakarya.be.dto.menu.MenuReq;
 public interface MenuService {
     MenuDto create(MenuReq data);
 
-    List<MenuDto> getAllMenus();
+    List<MenuDto> getAllMenus(MenuFilter filter);
 
     MenuDto getMenuById(UUID id);
 
@@ -17,5 +17,4 @@ public interface MenuService {
 
     boolean deleteMenuById(UUID id);
 
-    List<MenuDto> findWithFilter(MenuFilter filter);
 }

@@ -1,5 +1,7 @@
 package ogya.lokakarya.be.dto.achievement;
 
+import java.util.Date;
+import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,9 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ogya.lokakarya.be.dto.groupachievement.GroupAchievementDto;
 import ogya.lokakarya.be.entity.Achievement;
-
-import java.util.Date;
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,11 +26,12 @@ public class AchievementDto {
     @JsonProperty("group_id")
     private GroupAchievementDto groupAchievement;
 
+    @Builder.Default
     @JsonProperty("enabled")
     private Boolean enabled = true;
 
     @JsonProperty("created_at")
-    private Date createdAt = new Date();
+    private Date createdAt;
 
     @JsonProperty("created_by")
     private UUID createdBy;
@@ -42,11 +42,12 @@ public class AchievementDto {
     @JsonProperty("updated_by")
     private UUID updatedBy;
 
-    public AchievementDto(Achievement achievement) {
+    public AchievementDto(Achievement achievement, boolean withGroupAchievement) {
         setId(achievement.getId());
         setAchievement(achievement.getAchievement());
-        if(achievement.getGroupAchievement() != null){
-            setGroupAchievement(new GroupAchievementDto(achievement.getGroupAchievement()));
+        if (withGroupAchievement && achievement.getGroupAchievement() != null) {
+            setGroupAchievement(new GroupAchievementDto(achievement.getGroupAchievement(), false,
+                    false, false));
         }
         setEnabled(achievement.getEnabled());
         setCreatedAt(achievement.getCreatedAt());
