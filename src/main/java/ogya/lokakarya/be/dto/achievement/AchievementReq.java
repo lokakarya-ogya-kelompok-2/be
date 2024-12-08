@@ -21,11 +21,11 @@ public class AchievementReq {
     @NotBlank(message = "Achievement cannot be blank")
     @Size(max = 100, message = "Achievement cannot exceed 100 characters")
     @JsonProperty("achievement")
-    private String achievement;
+    private String achievementName;
 
     @NotNull(message = "Group ID cannot be null")
     @JsonProperty("group_id")
-    private UUID groupAchievement;
+    private UUID groupAchievementId;
 
     @NotNull(message = "Enabled status cannot be null")
     @JsonProperty("enabled")
@@ -33,7 +33,7 @@ public class AchievementReq {
 
     public Achievement toEntity() {
         Achievement achievement = new Achievement();
-        achievement.setAchievement(this.achievement);
+        achievement.setAchievement(this.achievementName);
         achievement.setEnabled(enabled);
         return achievement;
     }

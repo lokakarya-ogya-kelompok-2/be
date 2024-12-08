@@ -1,35 +1,43 @@
 package ogya.lokakarya.be.service.impl;
 
-import ogya.lokakarya.be.dto.groupachievement.GroupAchievementDto;
-import ogya.lokakarya.be.dto.groupachievement.GroupAchievementReq;
-import ogya.lokakarya.be.entity.GroupAchievement;
-import ogya.lokakarya.be.repository.GroupAchievementRepository;
-import ogya.lokakarya.be.service.GroupAchievementService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import ogya.lokakarya.be.config.security.SecurityUtil;
+import ogya.lokakarya.be.dto.groupachievement.GroupAchievementDto;
+import ogya.lokakarya.be.dto.groupachievement.GroupAchievementReq;
+import ogya.lokakarya.be.entity.GroupAchievement;
+import ogya.lokakarya.be.entity.User;
+import ogya.lokakarya.be.repository.GroupAchievementRepository;
+import ogya.lokakarya.be.service.GroupAchievementService;
 
 @Service
 public class GroupAchievementServiceImpl implements GroupAchievementService {
     @Autowired
-    GroupAchievementRepository groupAchievementRepository;
+    private GroupAchievementRepository groupAchievementRepository;
+
+    @Autowired
+    private SecurityUtil securityUtil;
 
     @Override
     public GroupAchievementDto create(GroupAchievementReq data) {
-        return new GroupAchievementDto(groupAchievementRepository.save(data.toEntity()));
+        User currentUser = securityUtil.getCurrentUser();
+        GroupAchievement groupAchievementEntity = data.toEntity();
+        groupAchievementEntity.setCreatedBy(currentUser);
+        groupAchievementEntity = groupAchievementRepository.save(groupAchievementEntity);
+        return new GroupAchievementDto(groupAchievementEntity, true, false, false);
     }
 
     @Override
     public List<GroupAchievementDto> getAllGroupAchievements() {
-        List<GroupAchievementDto> listResult=new ArrayList<>();
-        List<GroupAchievement> groupAchievementList=groupAchievementRepository.findAll();
-        for(GroupAchievement groupAchievement : groupAchievementList) {
-            GroupAchievementDto result= convertToDto(groupAchievement);
+        List<GroupAchievementDto> listResult = new ArrayList<>();
+        List<GroupAchievement> groupAchievementList = groupAchievementRepository.findAll();
+        for (GroupAchievement groupAchievement : groupAchievementList) {
+            GroupAchievementDto result = convertToDto(groupAchievement);
             listResult.add(result);
         }
         return listResult;
@@ -38,27 +46,28 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
     @Override
     public GroupAchievementDto getGroupAchievementById(UUID id) {
         Optional<GroupAchievement> listData;
-        try{
-            listData=groupAchievementRepository.findById(id);
-        }catch(Exception e){
+        try {
+            listData = groupAchievementRepository.findById(id);
+        } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
-        GroupAchievement data= listData.get();
+        GroupAchievement data = listData.get();
         return convertToDto(data);
     }
 
     @Override
-    public GroupAchievementDto updateGroupAchievementById(UUID id, GroupAchievementReq groupAchievementReq) {
-        Optional<GroupAchievement> listData= groupAchievementRepository.findById(id);
-        if(listData.isPresent()){
-            GroupAchievement groupAchievement= listData.get();
-            if(!groupAchievementReq.getGroupName().isBlank()){
+    public GroupAchievementDto updateGroupAchievementById(UUID id,
+            GroupAchievementReq groupAchievementReq) {
+        Optional<GroupAchievement> listData = groupAchievementRepository.findById(id);
+        if (listData.isPresent()) {
+            GroupAchievement groupAchievement = listData.get();
+            if (!groupAchievementReq.getGroupName().isBlank()) {
                 groupAchievement.setGroupName(groupAchievementReq.getGroupName());
                 groupAchievement.setEnabled(groupAchievementReq.getEnabled());
                 groupAchievement.setPercentage(groupAchievementReq.getPercentage());
             }
-            GroupAchievementDto groupAchievementDto= convertToDto(groupAchievement);
+            GroupAchievementDto groupAchievementDto = convertToDto(groupAchievement);
             groupAchievementRepository.save(groupAchievement);
             return groupAchievementDto;
         }
@@ -67,17 +76,16 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
 
     @Override
     public boolean deleteGroupAchievementById(UUID id) {
-        Optional<GroupAchievement> listData= groupAchievementRepository.findById(id);
-        if(listData.isPresent()){
+        Optional<GroupAchievement> listData = groupAchievementRepository.findById(id);
+        if (listData.isPresent()) {
             groupAchievementRepository.delete(listData.get());
             return ResponseEntity.ok().build().hasBody();
-        }else{
+        } else {
             return ResponseEntity.notFound().build().hasBody();
         }
     }
 
     public GroupAchievementDto convertToDto(GroupAchievement data) {
-        GroupAchievementDto result=new GroupAchievementDto(data);
-        return result;
+        return new GroupAchievementDto(data, true, true, true);
     }
 }
