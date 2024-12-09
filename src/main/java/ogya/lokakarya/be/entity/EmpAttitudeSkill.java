@@ -17,7 +17,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "TBL_EMP_ATTITUDE_SKILL", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"ATTITUDE_SKILL_ID", "USER_ID", " YEAR"})})
+        @UniqueConstraint(columnNames = {"ATTITUDE_SKILL_ID", "USER_ID", "ASSESSMENT_YEAR"})})
 public class EmpAttitudeSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
