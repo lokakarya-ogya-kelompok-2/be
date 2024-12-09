@@ -40,13 +40,13 @@ public class EmpAchievementSkillDto {
     private Date createdAt;
 
     @JsonProperty("created_by")
-    private UUID createdBy;
+    private UserDto createdBy;
 
     @JsonProperty("updated_at")
     private Date updatedAt;
 
     @JsonProperty("updated_by")
-    private UUID updatedBy;
+    private UserDto updatedBy;
 
     public EmpAchievementSkillDto(EmpAchievementSkill achievementSkill, boolean withCreatedBy,
             boolean withUpdatedBy) {
@@ -62,9 +62,9 @@ public class EmpAchievementSkillDto {
         setAssessmentYear(achievementSkill.getAssessmentYear());
         setCreatedAt(achievementSkill.getCreatedAt());
         if (withCreatedBy && achievementSkill.getCreatedBy() != null)
-            setCreatedBy(achievementSkill.getCreatedBy());
+            setCreatedBy(new UserDto(achievementSkill.getCreatedBy(), false, false, false));
         setUpdatedAt(achievementSkill.getUpdatedAt());
         if (withUpdatedBy && achievementSkill.getUpdatedBy() != null)
-            setUpdatedBy(achievementSkill.getUpdatedBy());
+            setUpdatedBy(new UserDto(achievementSkill.getUpdatedBy(), false, false, false));
     }
 }

@@ -19,19 +19,29 @@ import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillDto;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillFilter;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillReq;
-import ogya.lokakarya.be.service.AchievementSkillService;
+import ogya.lokakarya.be.service.EmpAchievementSkillService;
 
 @RequestMapping("/emp-achievement-skills")
 @RestController
 public class EmpAchievementSkillController {
         @Autowired
-        AchievementSkillService achievementSkillService;
+        EmpAchievementSkillService achievementSkillService;
 
         @PostMapping
         public ResponseEntity<ResponseDto<EmpAchievementSkillDto>> create(
                         @RequestBody @Valid EmpAchievementSkillReq data) {
                 var createdAchievementSkill = achievementSkillService.create(data);
                 return ResponseDto.<EmpAchievementSkillDto>builder()
+                                .content(createdAchievementSkill)
+                                .message("Create emp achievement skill successful!").success(true)
+                                .build().toResponse(HttpStatus.CREATED);
+        }
+
+        @PostMapping("/create-bulk")
+        public ResponseEntity<ResponseDto<List<EmpAchievementSkillDto>>> create(
+                        @RequestBody @Valid List<EmpAchievementSkillReq> data) {
+                var createdAchievementSkill = achievementSkillService.createBulk(data);
+                return ResponseDto.<List<EmpAchievementSkillDto>>builder()
                                 .content(createdAchievementSkill)
                                 .message("Create emp achievement skill successful!").success(true)
                                 .build().toResponse(HttpStatus.CREATED);

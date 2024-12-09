@@ -6,7 +6,9 @@ import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillDto;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillFilter;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillReq;
 
-public interface AchievementSkillService {
+public interface EmpAchievementSkillService {
+    List<EmpAchievementSkillDto> createBulk(List<EmpAchievementSkillReq> data);
+
     EmpAchievementSkillDto create(EmpAchievementSkillReq data);
 
     List<EmpAchievementSkillDto> getAllAchievementSkills(EmpAchievementSkillFilter filter);

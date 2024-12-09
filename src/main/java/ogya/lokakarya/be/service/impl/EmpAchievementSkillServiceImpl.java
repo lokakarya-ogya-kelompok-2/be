@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillDto;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillFilter;
@@ -17,12 +18,12 @@ import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.AchievementRepository;
 import ogya.lokakarya.be.repository.EmpAchievementSkillRepository;
 import ogya.lokakarya.be.repository.UserRepository;
-import ogya.lokakarya.be.service.AchievementSkillService;
+import ogya.lokakarya.be.service.EmpAchievementSkillService;
 
 @Service
-public class EmpAchievementSkillServiceImpl implements AchievementSkillService {
+public class EmpAchievementSkillServiceImpl implements EmpAchievementSkillService {
     @Autowired
-    private EmpAchievementSkillRepository achievementSkillRepository;
+    private EmpAchievementSkillRepository empAchievementSkillRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -44,14 +45,14 @@ public class EmpAchievementSkillServiceImpl implements AchievementSkillService {
         EmpAchievementSkill dataEntity = data.toEntity();
         dataEntity.setUser(currentUser);
         dataEntity.setAchievement(findAchievement.get());
-        EmpAchievementSkill createdData = achievementSkillRepository.save(dataEntity);
+        EmpAchievementSkill createdData = empAchievementSkillRepository.save(dataEntity);
         return new EmpAchievementSkillDto(createdData, true, false);
     }
 
     @Override
     public List<EmpAchievementSkillDto> getAllAchievementSkills(EmpAchievementSkillFilter filter) {
         List<EmpAchievementSkill> empAchievementEntities =
-                achievementSkillRepository.findAllByFilter(filter);
+                empAchievementSkillRepository.findAllByFilter(filter);
         return empAchievementEntities.stream().map(empAS -> new EmpAchievementSkillDto(empAS,
                 filter.getWithCreatedBy(), filter.getWithUpdatedBy())).toList();
     }
@@ -60,7 +61,7 @@ public class EmpAchievementSkillServiceImpl implements AchievementSkillService {
     public EmpAchievementSkillDto getAchievementSkillById(UUID id) {
         Optional<EmpAchievementSkill> listData;
         try {
-            listData = achievementSkillRepository.findById(id);
+            listData = empAchievementSkillRepository.findById(id);
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
@@ -72,7 +73,7 @@ public class EmpAchievementSkillServiceImpl implements AchievementSkillService {
     @Override
     public EmpAchievementSkillDto updateAchievementSkillById(UUID id,
             EmpAchievementSkillReq empAchievementSkillReq) {
-        Optional<EmpAchievementSkill> listData = achievementSkillRepository.findById(id);
+        Optional<EmpAchievementSkill> listData = empAchievementSkillRepository.findById(id);
         if (listData.isPresent()) {
             EmpAchievementSkill empAchievementSkill = listData.get();
             if (!empAchievementSkillReq.getNotes().isBlank()) {
@@ -90,7 +91,7 @@ public class EmpAchievementSkillServiceImpl implements AchievementSkillService {
                 }
             }
             EmpAchievementSkillDto achievementSkillDto = convertToDto(empAchievementSkill);
-            achievementSkillRepository.save(empAchievementSkill);
+            empAchievementSkillRepository.save(empAchievementSkill);
             return achievementSkillDto;
         }
         return null;
@@ -98,9 +99,9 @@ public class EmpAchievementSkillServiceImpl implements AchievementSkillService {
 
     @Override
     public boolean deleteAchievementSkillById(UUID id) {
-        Optional<EmpAchievementSkill> listData = achievementSkillRepository.findById(id);
+        Optional<EmpAchievementSkill> listData = empAchievementSkillRepository.findById(id);
         if (listData.isPresent()) {
-            achievementSkillRepository.delete(listData.get());
+            empAchievementSkillRepository.delete(listData.get());
             return ResponseEntity.ok().build().hasBody();
         } else {
             return ResponseEntity.notFound().build().hasBody();
@@ -109,5 +110,31 @@ public class EmpAchievementSkillServiceImpl implements AchievementSkillService {
 
     public EmpAchievementSkillDto convertToDto(EmpAchievementSkill data) {
         return new EmpAchievementSkillDto(data, true, true);
+    }
+
+    @Transactional
+    @Override
+    public List<EmpAchievementSkillDto> createBulk(List<EmpAchievementSkillReq> data) {
+        User currentUser = securityUtil.getCurrentUser();
+        List<EmpAchievementSkill> empAchievementSkillEntities = data.stream().map(empAc -> {
+            EmpAchievementSkill empAchievementSkillEntity = empAc.toEntity();
+            Optional<User> userOpt = userRepository.findById(empAc.getUserId());
+            if (userOpt.isEmpty()) {
+                throw ResponseException.userNotFound(empAc.getUserId());
+            }
+            empAchievementSkillEntity.setUser(userOpt.get());
+            Optional<Achievement> achievementOpt =
+                    achievementRepository.findById(empAc.getAchievementId());
+            if (achievementOpt.isEmpty()) {
+                throw ResponseException.achievementNotFound(empAc.getAchievementId());
+            }
+            empAchievementSkillEntity.setAchievement(achievementOpt.get());
+            empAchievementSkillEntity.setCreatedBy(currentUser);
+            return empAchievementSkillEntity;
+        }).toList();
+        empAchievementSkillEntities =
+                empAchievementSkillRepository.saveAll(empAchievementSkillEntities);
+        return empAchievementSkillEntities.stream()
+                .map(empAc -> new EmpAchievementSkillDto(empAc, true, false)).toList();
     }
 }
