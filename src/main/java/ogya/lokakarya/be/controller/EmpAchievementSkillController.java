@@ -37,7 +37,7 @@ public class EmpAchievementSkillController {
                                 .build().toResponse(HttpStatus.CREATED);
         }
 
-        @PostMapping("/create-bulk")
+        @PostMapping("/bulk-create")
         public ResponseEntity<ResponseDto<List<EmpAchievementSkillDto>>> create(
                         @RequestBody @Valid List<EmpAchievementSkillReq> data) {
                 var createdAchievementSkill = achievementSkillService.createBulk(data);
