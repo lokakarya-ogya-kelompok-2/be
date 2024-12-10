@@ -1,5 +1,12 @@
 package ogya.lokakarya.be.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionDto;
@@ -9,14 +16,6 @@ import ogya.lokakarya.be.entity.EmpSuggestion;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.repository.EmpSuggestionRepository;
 import ogya.lokakarya.be.service.EmpSuggestionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class EmpSuggestionServiceImpl implements EmpSuggestionService {
@@ -39,8 +38,7 @@ public class EmpSuggestionServiceImpl implements EmpSuggestionService {
         }
         empSuggestionEntities = empSuggestionRepository.saveAll(empSuggestionEntities);
         return empSuggestionEntities.stream()
-                .map(empSuggestion -> new EmpSuggestionDto(empSuggestion, true, false))
-                .toList();
+                .map(empSuggestion -> new EmpSuggestionDto(empSuggestion, true, false)).toList();
     }
 
     @Override
@@ -49,15 +47,15 @@ public class EmpSuggestionServiceImpl implements EmpSuggestionService {
         EmpSuggestion dataEmpSuggestion = data.toEntity();
         dataEmpSuggestion.setUser(currentUser);
         EmpSuggestion createdEmpSuggestion = empSuggestionRepository.save(dataEmpSuggestion);
-        return new EmpSuggestionDto(createdEmpSuggestion, true,true);
+        return new EmpSuggestionDto(createdEmpSuggestion, true, true);
     }
 
     @Override
     public List<EmpSuggestionDto> getAllEmpSuggestions(EmpSuggestionFilter filter) {
-        List<EmpSuggestionDto> listResult=new ArrayList<>();
-        List<EmpSuggestion> empSuggestionList=empSuggestionRepository.findAll();
-        for(EmpSuggestion empSuggestion : empSuggestionList) {
-            EmpSuggestionDto result= convertToDto(empSuggestion);
+        List<EmpSuggestionDto> listResult = new ArrayList<>();
+        List<EmpSuggestion> empSuggestionList = empSuggestionRepository.findAllByFilter(filter);
+        for (EmpSuggestion empSuggestion : empSuggestionList) {
+            EmpSuggestionDto result = convertToDto(empSuggestion);
             listResult.add(result);
         }
         return listResult;
@@ -67,30 +65,30 @@ public class EmpSuggestionServiceImpl implements EmpSuggestionService {
     public EmpSuggestionDto getEmpSuggestionById(UUID id) {
         System.out.println("QUERYING FOR: " + id.toString());
         Optional<EmpSuggestion> listData;
-        try{
-            listData=empSuggestionRepository.findById(id);
+        try {
+            listData = empSuggestionRepository.findById(id);
             System.out.println(listData);
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
         if (listData.isEmpty()) {
             return null;
         }
-        EmpSuggestion data= listData.get();
+        EmpSuggestion data = listData.get();
         return convertToDto(data);
     }
 
     @Override
     public EmpSuggestionDto updateEmpSuggestionById(UUID id, EmpSuggestionReq empSuggestionReq) {
-        Optional<EmpSuggestion> listData= empSuggestionRepository.findById(id);
-        if(listData.isPresent()){
-            EmpSuggestion empSuggestion= listData.get();
-            if(!empSuggestionReq.getSuggestion().isBlank()){
+        Optional<EmpSuggestion> listData = empSuggestionRepository.findById(id);
+        if (listData.isPresent()) {
+            EmpSuggestion empSuggestion = listData.get();
+            if (!empSuggestionReq.getSuggestion().isBlank()) {
                 empSuggestion.setSuggestion(empSuggestionReq.getSuggestion());
                 empSuggestion.setAssessmentYear(empSuggestionReq.getAssessmentYear());
             }
-            EmpSuggestionDto empSuggestionDto= convertToDto(empSuggestion);
+            EmpSuggestionDto empSuggestionDto = convertToDto(empSuggestion);
             empSuggestionRepository.save(empSuggestion);
             return empSuggestionDto;
         }
@@ -99,11 +97,11 @@ public class EmpSuggestionServiceImpl implements EmpSuggestionService {
 
     @Override
     public boolean deleteEmpSuggestionById(UUID id) {
-        Optional<EmpSuggestion> listData= empSuggestionRepository.findById(id);
-        if(listData.isPresent()){
+        Optional<EmpSuggestion> listData = empSuggestionRepository.findById(id);
+        if (listData.isPresent()) {
             empSuggestionRepository.delete(listData.get());
             return ResponseEntity.ok().build().hasBody();
-        }else{
+        } else {
             return ResponseEntity.notFound().build().hasBody();
         }
     }
