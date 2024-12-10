@@ -1,5 +1,6 @@
 package ogya.lokakarya.be.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionDto;
@@ -22,6 +23,7 @@ import java.util.UUID;
 
 @RequestMapping("/emp-suggestions")
 @RestController
+@SecurityRequirement(name = "bearerAuth")
 public class EmpSuggestionController {
     @Autowired
     private EmpSuggestionService empSuggestionService;
@@ -33,9 +35,18 @@ public class EmpSuggestionController {
                 .message("Create emp suggestion successful!").success(true).build()
                 .toResponse(HttpStatus.CREATED);
     }
+    @PostMapping("/bulk-create")
+    public ResponseEntity<ResponseDto<List<EmpSuggestionDto>>> createBulk(
+            @RequestBody @Valid List<EmpSuggestionReq> data) {
+        System.out.println("Data: " + data);
+        var createdEmpSuggestion = empSuggestionService.createBulk(data);
+        return ResponseDto.<List<EmpSuggestionDto>>builder().success(true)
+                .message("Create all emp suggestions successful!")
+                .content(createdEmpSuggestion).build().toResponse(HttpStatus.CREATED);
+    }
     @GetMapping
     public ResponseEntity<ResponseDto<List<EmpSuggestionDto>>> getAllEmpSuggestions() {
-        System.out.println("Get All Emp Suggestion");
+//        System.out.println("Get All Emp Suggestion");
         List<EmpSuggestionDto> response = empSuggestionService.getAllEmpSuggestions();
         return ResponseDto.<List<EmpSuggestionDto>>builder().content(response)
                 .message("Get all emp suggestions successful!").success(true).build()

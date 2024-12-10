@@ -33,8 +33,9 @@ public class EmpSuggestionDto {
     @JsonProperty("created_at")
     private Date createdAt;
 
+
     @JsonProperty("created_by")
-    private UUID createdBy;
+    private UserDto createdBy;
 
     @JsonProperty("updated_at")
     private Date updatedAt;
@@ -42,13 +43,16 @@ public class EmpSuggestionDto {
     @JsonProperty("updated_by")
     private UUID updatedBy;
 
-    public EmpSuggestionDto(EmpSuggestion empSuggestion) {
+    public EmpSuggestionDto(EmpSuggestion empSuggestion, boolean withCreatedBy, boolean withUpdatedBy) {
         setId(empSuggestion.getId());
         setUser(new UserDto(empSuggestion.getUser(), false, false, false));
         setSuggestion(empSuggestion.getSuggestion());
         setAssessmentYear(empSuggestion.getAssessmentYear());
         setCreatedAt(empSuggestion.getCreatedAt());
-        setCreatedBy(empSuggestion.getCreatedBy());
+//        setCreatedBy(empSuggestion.getCreatedBy());
+        if(withCreatedBy&&empSuggestion.getCreatedBy()!=null) {
+            setCreatedBy(new UserDto(empSuggestion.getCreatedBy(), false, false, false));
+        }
         setUpdatedAt(empSuggestion.getUpdatedAt());
         setUpdatedBy(empSuggestion.getUpdatedBy());
     }

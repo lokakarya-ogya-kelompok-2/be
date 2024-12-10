@@ -1,11 +1,12 @@
 package ogya.lokakarya.be.service.impl;
 
+import jakarta.transaction.Transactional;
+import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionDto;
 import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionReq;
 import ogya.lokakarya.be.entity.EmpSuggestion;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.repository.EmpSuggestionRepository;
-import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.service.EmpSuggestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,20 +21,34 @@ import java.util.UUID;
 public class EmpSuggestionServiceImpl implements EmpSuggestionService {
     @Autowired
     EmpSuggestionRepository empSuggestionRepository;
+
     @Autowired
-    private UserRepository userRepository;
+    private SecurityUtil securityUtil;
+
+    @Transactional
+    @Override
+    public List<EmpSuggestionDto> createBulk(List<EmpSuggestionReq> data) {
+        User currentUser = securityUtil.getCurrentUser();
+        List<EmpSuggestion> empSuggestionEntities = new ArrayList<>(data.size());
+        for (EmpSuggestionReq d : data) {
+            EmpSuggestion empSuggestionEntity = d.toEntity();
+            empSuggestionEntity.setUser(currentUser);
+            empSuggestionEntity.setCreatedBy(currentUser);
+            empSuggestionEntities.add(empSuggestionEntity);
+        }
+        empSuggestionEntities = empSuggestionRepository.saveAll(empSuggestionEntities);
+        return empSuggestionEntities.stream()
+                .map(empSuggestion -> new EmpSuggestionDto(empSuggestion, true, false))
+                .toList();
+    }
 
     @Override
     public EmpSuggestionDto create(EmpSuggestionReq data) {
-        Optional<User> findUser= userRepository.findById(data.getUser());
-        if(findUser.isEmpty()) {
-            throw new RuntimeException(String.format("User not found",
-                    data.getUser().toString()));
-        }
+        User currentUser = securityUtil.getCurrentUser();
         EmpSuggestion dataEmpSuggestion = data.toEntity();
-        dataEmpSuggestion.setUser(findUser.get());
+        dataEmpSuggestion.setUser(currentUser);
         EmpSuggestion createdEmpSuggestion = empSuggestionRepository.save(dataEmpSuggestion);
-        return new EmpSuggestionDto(createdEmpSuggestion);
+        return new EmpSuggestionDto(createdEmpSuggestion, true,true);
     }
 
     @Override
@@ -41,7 +56,6 @@ public class EmpSuggestionServiceImpl implements EmpSuggestionService {
         List<EmpSuggestionDto> listResult=new ArrayList<>();
         List<EmpSuggestion> empSuggestionList=empSuggestionRepository.findAll();
         for(EmpSuggestion empSuggestion : empSuggestionList) {
-            System.out.println(empSuggestion);
             EmpSuggestionDto result= convertToDto(empSuggestion);
             listResult.add(result);
         }
@@ -94,7 +108,7 @@ public class EmpSuggestionServiceImpl implements EmpSuggestionService {
     }
 
     private EmpSuggestionDto convertToDto(EmpSuggestion data) {
-        EmpSuggestionDto result = new EmpSuggestionDto(data);
+        EmpSuggestionDto result = new EmpSuggestionDto(data, true, true);
         return result;
     }
 }

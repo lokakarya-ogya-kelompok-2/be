@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface EmpSuggestionService {
+    List<EmpSuggestionDto> createBulk(List<EmpSuggestionReq> data);
     EmpSuggestionDto create(EmpSuggestionReq data);
     List<EmpSuggestionDto> getAllEmpSuggestions();
     EmpSuggestionDto getEmpSuggestionById(UUID id);

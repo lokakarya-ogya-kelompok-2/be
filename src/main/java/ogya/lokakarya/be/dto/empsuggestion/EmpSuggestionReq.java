@@ -1,6 +1,5 @@
 package ogya.lokakarya.be.dto.empsuggestion;
 
-import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -20,9 +19,9 @@ import ogya.lokakarya.be.entity.EmpSuggestion;
 @Data
 @ToString
 public class EmpSuggestionReq {
-    @NotNull(message = "User ID cannot be null")
-    @JsonProperty("user_id")
-    private UUID user;
+//    @NotNull(message = "User ID cannot be null")
+//    @JsonProperty("user_id")
+//    private UUID user;
 
     @NotBlank(message = "Suggestion cannot be blank")
     @Size(max = 200, message = "Suggestion must be less than or equal to 200 characters")
