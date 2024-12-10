@@ -82,6 +82,7 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
             assessmentSummaryEntity.setScore(assessmentSummary.getScore());
             User user = new User();
             user.setId(currentUser.getId());
+            assessmentSummaryEntity.setId(assessmentSummary.getId());
             assessmentSummaryEntity.setUser(user);
             assessmentSummaryEntity.setYear(assessmentSummary.getYear());
             assessmentSummaryEntity.setStatus(assessmentSummary.getUser().getEmployeeStatus());
