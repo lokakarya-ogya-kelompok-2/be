@@ -174,11 +174,16 @@ public class EmpAchievementSkillServiceImpl implements EmpAchievementSkillServic
             assessmentSummaryEntity.setScore(assessmentSummary.getScore());
             User user = new User();
             user.setId(uIdAndYear.getUserId());
+            assessmentSummaryEntity.setId(assessmentSummary.getId());
             assessmentSummaryEntity.setUser(user);
+            assessmentSummaryEntity.setYear(assessmentSummary.getYear());
             assessmentSummaryEntity.setStatus(assessmentSummary.getUser().getEmployeeStatus());
             assessmentSummaries.add(assessmentSummaryEntity);
         });
 
+        System.out.println("INI ENTITY-NYA: " + assessmentSummaries.getFirst());
+        System.out.println(assessmentSummaries.size() + " ADA BERAPA??");
+        // ini kalo ga dikomen malah error ??? kalo dikomen ttp kesimpen??????
         assessmentSummaryRepo.saveAll(assessmentSummaries);
 
         return empAchievementSkillEntities.stream()
