@@ -2,23 +2,31 @@ package ogya.lokakarya.be.service.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.config.security.SecurityUtil;
+import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillDto;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillFilter;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillReq;
+import ogya.lokakarya.be.entity.AssessmentSummary;
 import ogya.lokakarya.be.entity.AttitudeSkill;
 import ogya.lokakarya.be.entity.EmpAttitudeSkill;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.exception.ResponseException;
+import ogya.lokakarya.be.repository.AssessmentSummaryRepository;
 import ogya.lokakarya.be.repository.AttitudeSkillRepository;
 import ogya.lokakarya.be.repository.EmpAttitudeSkillRepository;
+import ogya.lokakarya.be.service.AssessmentSummaryService;
 import ogya.lokakarya.be.service.EmpAttitudeSkillService;
 
 @Service
@@ -30,8 +38,19 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
     @Autowired
     private SecurityUtil securityUtil;
 
+    @Autowired
+    private EntityManager entityManager;
+
+    @Autowired
+    private AssessmentSummaryService assessmentSummarySvc;
+
+    @Autowired
+    private AssessmentSummaryRepository assessmentSummaryRepo;
+
+    @Transactional
     @Override
     public List<EmpAttitudeSkillDto> createBulkEmpAttitudeSkill(List<EmpAttitudeSkillReq> data) {
+        Set<Integer> years = new HashSet<>();
         User currentUser = securityUtil.getCurrentUser();
         List<EmpAttitudeSkill> empAttitudeSkillsEntities = new ArrayList<>(data.size());
         Map<UUID, AttitudeSkill> attitudeSkillIds = new HashMap<>();
@@ -50,8 +69,27 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
             }
             empAttitudeSkillEntity.setAttitudeSkill(attitudeSkillIds.get(d.getAttitudeSkillId()));
             empAttitudeSkillsEntities.add(empAttitudeSkillEntity);
+            years.add(d.getAssessmentYear());
         }
         empAttitudeSkillsEntities = empAttitudeSkillRepository.saveAll(empAttitudeSkillsEntities);
+        entityManager.flush();
+
+        List<AssessmentSummary> assessmentSummaries = new ArrayList<>();
+        years.forEach(year -> {
+            AssessmentSummaryDto assessmentSummary =
+                    assessmentSummarySvc.calculateAssessmentSummary(currentUser.getId(), year);
+            AssessmentSummary assessmentSummaryEntity = new AssessmentSummary();
+            assessmentSummaryEntity.setScore(assessmentSummary.getScore());
+            User user = new User();
+            user.setId(currentUser.getId());
+            assessmentSummaryEntity.setUser(user);
+            assessmentSummaryEntity.setYear(assessmentSummary.getYear());
+            assessmentSummaryEntity.setStatus(assessmentSummary.getUser().getEmployeeStatus());
+            assessmentSummaries.add(assessmentSummaryEntity);
+        });
+
+        assessmentSummaryRepo.saveAll(assessmentSummaries);
+
         return empAttitudeSkillsEntities.stream()
                 .map(empAttSkill -> new EmpAttitudeSkillDto(empAttSkill, true, false)).toList();
     }

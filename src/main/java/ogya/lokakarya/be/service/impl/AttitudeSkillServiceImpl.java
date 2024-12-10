@@ -11,6 +11,7 @@ import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillDto;
 import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillReq;
 import ogya.lokakarya.be.entity.AttitudeSkill;
 import ogya.lokakarya.be.entity.GroupAttitudeSkill;
+import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.AttitudeSkillRepository;
 import ogya.lokakarya.be.repository.GroupAttitudeSkillRepository;
 import ogya.lokakarya.be.service.AttitudeSkillService;
@@ -27,7 +28,7 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
         Optional<GroupAttitudeSkill> findGroupAttitudeSKill =
                 groupAttitudeSkillRepository.findById(data.getGroupAttitudeSkill());
         if (findGroupAttitudeSKill.isEmpty()) {
-            throw new RuntimeException(String.format("Group attitude skill not found"));
+            throw ResponseException.groupAttitudeSkillNotFound(data.getGroupAttitudeSkill());
         }
         AttitudeSkill dataEntity = data.toEntity();
         dataEntity.setGroupAttitudeSkill(findGroupAttitudeSKill.get());

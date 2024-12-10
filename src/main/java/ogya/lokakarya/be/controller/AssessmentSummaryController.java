@@ -17,58 +17,86 @@ import jakarta.validation.Valid;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryReq;
+import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
+
 
 @RequestMapping("/assessment-summaries")
 @RestController
 public class AssessmentSummaryController {
-    @Autowired
-    private AssessmentSummaryService assessmentSummaryService;
+        @Autowired
+        private AssessmentSummaryService assessmentSummaryService;
 
-    @PostMapping
-    public ResponseEntity<ResponseDto<AssessmentSummaryDto>> createAssessmentSummary(
-            @RequestBody @Valid AssessmentSummaryReq data) {
-        var createdAssessmentSummary = assessmentSummaryService.create(data);
-        return ResponseDto.<AssessmentSummaryDto>builder().success(true)
-                .content(createdAssessmentSummary).message("Create assessment summary successful!")
-                .build().toResponse(HttpStatus.CREATED);
-    }
+        @PostMapping
+        public ResponseEntity<ResponseDto<AssessmentSummaryDto>> createAssessmentSummary(
+                        @RequestBody @Valid AssessmentSummaryReq data) {
+                var createdAssessmentSummary = assessmentSummaryService.create(data);
+                return ResponseDto.<AssessmentSummaryDto>builder().success(true)
+                                .content(createdAssessmentSummary)
+                                .message("Create assessment summary successful!").build()
+                                .toResponse(HttpStatus.CREATED);
+        }
 
-    @GetMapping
-    public ResponseEntity<ResponseDto<List<AssessmentSummaryDto>>> getAllAssessmentSummaries() {
-        List<AssessmentSummaryDto> assessmentSummaries =
-                assessmentSummaryService.getAllAssessmentSummaries();
-        return ResponseDto.<List<AssessmentSummaryDto>>builder().success(true)
-                .content(assessmentSummaries).message("List all assessment summary successful!")
-                .build().toResponse(HttpStatus.OK);
-    }
+        @GetMapping
+        public ResponseEntity<ResponseDto<List<AssessmentSummaryDto>>> getAllAssessmentSummaries() {
+                List<AssessmentSummaryDto> assessmentSummaries =
+                                assessmentSummaryService.getAllAssessmentSummaries();
+                return ResponseDto.<List<AssessmentSummaryDto>>builder().success(true)
+                                .content(assessmentSummaries)
+                                .message("List all assessment summary successful!").build()
+                                .toResponse(HttpStatus.OK);
+        }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseDto<AssessmentSummaryDto>> getAssessmentSummaryById(
-            @PathVariable UUID id) {
-        AssessmentSummaryDto assessmentSummary =
-                assessmentSummaryService.getAssessmentSummaryById(id);
-        return ResponseDto.<AssessmentSummaryDto>builder().success(true).content(assessmentSummary)
-                .message(String.format("Get assessment summary with id %s successful!", id)).build()
-                .toResponse(HttpStatus.OK);
-    }
+        @GetMapping("/{id}")
+        public ResponseEntity<ResponseDto<AssessmentSummaryDto>> getAssessmentSummaryById(
+                        @PathVariable UUID id) {
+                AssessmentSummaryDto assessmentSummary =
+                                assessmentSummaryService.getAssessmentSummaryById(id);
+                return ResponseDto.<AssessmentSummaryDto>builder().success(true)
+                                .content(assessmentSummary)
+                                .message(String.format(
+                                                "Get assessment summary with id %s successful!",
+                                                id))
+                                .build().toResponse(HttpStatus.OK);
+        }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ResponseDto<AssessmentSummaryDto>> updateAssessmentSummaryById(
-            @PathVariable UUID id, @RequestBody @Valid AssessmentSummaryReq assessmentSummaryReq) {
-        AssessmentSummaryDto updatedAssessmentSummary =
-                assessmentSummaryService.updateAssessmentSummaryById(id, assessmentSummaryReq);
-        return ResponseDto.<AssessmentSummaryDto>builder().success(true)
-                .content(updatedAssessmentSummary)
-                .message(String.format("Update assessment summary with id %s successful!", id))
-                .build().toResponse(HttpStatus.OK);
-    }
+        @PutMapping("/{id}")
+        public ResponseEntity<ResponseDto<AssessmentSummaryDto>> updateAssessmentSummaryById(
+                        @PathVariable UUID id,
+                        @RequestBody @Valid AssessmentSummaryReq assessmentSummaryReq) {
+                AssessmentSummaryDto updatedAssessmentSummary = assessmentSummaryService
+                                .updateAssessmentSummaryById(id, assessmentSummaryReq);
+                return ResponseDto.<AssessmentSummaryDto>builder().success(true)
+                                .content(updatedAssessmentSummary)
+                                .message(String.format(
+                                                "Update assessment summary with id %s successful!",
+                                                id))
+                                .build().toResponse(HttpStatus.OK);
+        }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseDto<Void>> deleteAssessmentSummaryById(@PathVariable UUID id) {
-        assessmentSummaryService.deleteAssessmentSummaryById(id);
-        return ResponseDto.<Void>builder().success(true)
-                .message(String.format("Delete assessment summary with id %s successful!", id))
-                .build().toResponse(HttpStatus.OK);
-    }
+        @DeleteMapping("/{id}")
+        public ResponseEntity<ResponseDto<Void>> deleteAssessmentSummaryById(
+                        @PathVariable UUID id) {
+                assessmentSummaryService.deleteAssessmentSummaryById(id);
+                return ResponseDto.<Void>builder().success(true).message(String
+                                .format("Delete assessment summary with id %s successful!", id))
+                                .build().toResponse(HttpStatus.OK);
+        }
+
+        @GetMapping("/calculate/{userId}/{year}")
+        public ResponseEntity<ResponseDto<AssessmentSummaryDto>> calculateAssessmentSummary(
+                        @PathVariable UUID userId, @PathVariable Integer year) {
+                var assessmentSummary =
+                                assessmentSummaryService.calculateAssessmentSummary(userId, year);
+                if (assessmentSummary.getId() == null) {
+                        throw new ResponseException(String.format(
+                                        "assessment summary for user_id %s and year %d could not be found!",
+                                        userId, year), HttpStatus.NOT_FOUND);
+                }
+                return ResponseDto.<AssessmentSummaryDto>builder().success(true).message(String
+                                .format("Calculate assessment summary for user_id %s and year %d successful!",
+                                                userId, year))
+                                .content(assessmentSummary).build().toResponse(HttpStatus.OK);
+        }
+
 }

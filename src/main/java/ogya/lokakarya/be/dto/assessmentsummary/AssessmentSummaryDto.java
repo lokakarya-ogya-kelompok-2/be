@@ -1,6 +1,7 @@
 package ogya.lokakarya.be.dto.assessmentsummary;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -32,17 +33,24 @@ public class AssessmentSummaryDto {
         @JsonProperty("status")
         private Integer status;
 
+        private List<SummaryData> achievements;
+
+        @JsonProperty("attitude_skills")
+        private List<SummaryData> attitudeSkills;
+
         @JsonProperty("created_at")
         private Date createdAt;
 
-        @JsonProperty("CREATED_BY")
-        private UUID createdBy;
+        // @JsonProperty("created_by")
+        // private UserDto createdBy;
 
-        @JsonProperty("UPDATED_AT")
+        @JsonProperty("updated_at")
         private Date updatedAt;
 
-        @JsonProperty("UPDATED_BY")
-        private UUID updatedBy;
+        // @JsonProperty("updated_by")
+        // private UserDto updatedBy;
+
+
 
         public AssessmentSummaryDto(AssessmentSummary assessmentSummary) {
                 setId(assessmentSummary.getId());
@@ -53,8 +61,8 @@ public class AssessmentSummaryDto {
                 setScore(assessmentSummary.getScore());
                 setStatus(assessmentSummary.getStatus());
                 setCreatedAt(assessmentSummary.getCreatedAt());
-                setCreatedBy(assessmentSummary.getCreatedBy());
+                // setCreatedBy(assessmentSummary.getCreatedBy());
                 setUpdatedAt(assessmentSummary.getUpdatedAt());
-                setUpdatedBy(assessmentSummary.getUpdatedBy());
+                // setUpdatedBy(assessmentSummary.getUpdatedBy());
         }
 }
