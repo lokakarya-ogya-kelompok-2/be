@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionDto;
+import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionFilter;
 import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionReq;
 import ogya.lokakarya.be.service.EmpSuggestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -45,9 +47,22 @@ public class EmpSuggestionController {
                 .content(createdEmpSuggestion).build().toResponse(HttpStatus.CREATED);
     }
     @GetMapping
-    public ResponseEntity<ResponseDto<List<EmpSuggestionDto>>> getAllEmpSuggestions() {
-//        System.out.println("Get All Emp Suggestion");
-        List<EmpSuggestionDto> response = empSuggestionService.getAllEmpSuggestions();
+    public ResponseEntity<ResponseDto<List<EmpSuggestionDto>>> getAllEmpSuggestions(
+            @RequestParam(name = "user_ids", required = false) List<UUID> userIds,
+            @RequestParam(required = false) List<Integer> years,
+            @RequestParam(name = "with_created_by", required = false,
+                    defaultValue = "false") Boolean withCreatedBy,
+            @RequestParam(name = "with_updated_by", required = false,
+                    defaultValue = "false") Boolean withUpdatedBy
+    ) {
+        System.out.println(userIds+"Aaaaaaaaaaaaaaaaaaaaaaaaa");
+        System.out.println("Get All Achievement Skill");
+        EmpSuggestionFilter filter = new EmpSuggestionFilter();
+        filter.setUserIds(userIds);
+        filter.setYears(years);
+        filter.setWithCreatedBy(withCreatedBy);
+        filter.setWithUpdatedBy(withUpdatedBy);
+        List<EmpSuggestionDto> response = empSuggestionService.getAllEmpSuggestions(filter);
         return ResponseDto.<List<EmpSuggestionDto>>builder().content(response)
                 .message("Get all emp suggestions successful!").success(true).build()
                 .toResponse(HttpStatus.OK);

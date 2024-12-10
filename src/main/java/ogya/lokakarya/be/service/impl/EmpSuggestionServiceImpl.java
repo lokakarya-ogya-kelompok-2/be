@@ -3,6 +3,7 @@ package ogya.lokakarya.be.service.impl;
 import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionDto;
+import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionFilter;
 import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionReq;
 import ogya.lokakarya.be.entity.EmpSuggestion;
 import ogya.lokakarya.be.entity.User;
@@ -52,7 +53,7 @@ public class EmpSuggestionServiceImpl implements EmpSuggestionService {
     }
 
     @Override
-    public List<EmpSuggestionDto> getAllEmpSuggestions() {
+    public List<EmpSuggestionDto> getAllEmpSuggestions(EmpSuggestionFilter filter) {
         List<EmpSuggestionDto> listResult=new ArrayList<>();
         List<EmpSuggestion> empSuggestionList=empSuggestionRepository.findAll();
         for(EmpSuggestion empSuggestion : empSuggestionList) {
