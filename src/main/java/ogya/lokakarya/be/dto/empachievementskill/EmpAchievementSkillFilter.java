@@ -8,6 +8,6 @@ import lombok.Data;
 public class EmpAchievementSkillFilter {
     private List<UUID> userIds;
     private List<Integer> years;
-    private Boolean withCreatedBy;
-    private Boolean withUpdatedBy;
+    private Boolean withCreatedBy = false;
+    private Boolean withUpdatedBy = false;
 }

@@ -60,4 +60,12 @@ public class ResponseException extends RuntimeException {
     public static ResponseException groupAchievementNotFound(UUID id) {
         return notFoundResponse("Group Achievement", id);
     }
+
+    public static ResponseException groupAttitudeSkillNotFound(UUID id) {
+        return notFoundResponse("Group Attitude Skill", id);
+    }
+
+    public static ResponseException assessmentSummaryNotFound(UUID id) {
+        return notFoundResponse("Assessment Summary", id);
+    }
 }

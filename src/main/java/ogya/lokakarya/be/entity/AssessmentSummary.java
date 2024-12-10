@@ -32,7 +32,7 @@ public class AssessmentSummary {
     @Column(name = "SCORE", nullable = false, length = 3)
     private Integer score;
 
-    @Column(name = "status", nullable = false)
+    @Column(name = "STATUS", nullable = false)
     private Integer status;
 
     @Column(name = "CREATED_AT", nullable = false)
