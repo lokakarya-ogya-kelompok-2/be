@@ -35,8 +35,9 @@ public class EmpSuggestion {
     @Column(name = "CREATED_AT", nullable = false)
     private Date createdAt =new Date();
 
-    @Column(name = "CREATED_BY")
-    private UUID createdBy;
+    @ManyToOne
+    @JoinColumn(name = "CREATED_BY")
+    private User createdBy;
 
     @Column(name = "UPDATED_AT")
     private Date updatedAt;
