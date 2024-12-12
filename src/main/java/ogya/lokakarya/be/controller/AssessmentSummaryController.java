@@ -17,7 +17,6 @@ import jakarta.validation.Valid;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryReq;
-import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 
 
@@ -86,15 +85,13 @@ public class AssessmentSummaryController {
         @GetMapping("/calculate/{userId}/{year}")
         public ResponseEntity<ResponseDto<AssessmentSummaryDto>> calculateAssessmentSummary(
                         @PathVariable UUID userId, @PathVariable Integer year) {
-                var assessmentSummary =
-                                assessmentSummaryService.calculateAssessmentSummary(userId, year);
-                if (assessmentSummary.getId() == null) {
-                        throw new ResponseException(String.format(
-                                        "assessment summary for user_id %s and year %d could not be found!",
-                                        userId, year), HttpStatus.NOT_FOUND);
-                }
-                return ResponseDto.<AssessmentSummaryDto>builder().success(true).message(String
-                                .format("Calculate assessment summary for user_id %s and year %d successful!",
+                var assessmentSummary = assessmentSummaryService
+                                .calculateAssessmentSummaryButValidateTheUserIdFirstBeforeCalculating(
+                                                userId, year);
+                return ResponseDto.<AssessmentSummaryDto>builder()
+                                .success(assessmentSummary.getId() == null)
+                                .message(String.format(
+                                                "Calculate assessment summary for user_id %s and year %d successful!",
                                                 userId, year))
                                 .content(assessmentSummary).build().toResponse(HttpStatus.OK);
         }
