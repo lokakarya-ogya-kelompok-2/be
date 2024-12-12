@@ -1,5 +1,16 @@
 package ogya.lokakarya.be.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
 import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryReq;
@@ -21,16 +32,6 @@ import ogya.lokakarya.be.repository.GroupAchievementRepository;
 import ogya.lokakarya.be.repository.GroupAttitudeSkillRepository;
 import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
@@ -131,7 +132,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         return new AssessmentSummaryDto(data);
     }
 
-    @SuppressWarnings({"java:S6541", "java:S3776"})
+    @SuppressWarnings({ "java:S6541", "java:S3776" })
     @Transactional
     @Override
     public AssessmentSummaryDto calculateAssessmentSummary(UUID userId, Integer year) {
@@ -152,14 +153,11 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         EmpAttitudeSkillFilter filterAS = new EmpAttitudeSkillFilter();
         filterAS.setUserIds(List.of(userId));
         filterAS.setYears(List.of(year));
-        List<EmpAttitudeSkill> empAttitudeSkillsEntity =
-                empAttitudeSkillRepo.findAllByFilter(filterAS);
+        List<EmpAttitudeSkill> empAttitudeSkillsEntity = empAttitudeSkillRepo.findAllByFilter(filterAS);
 
-        Map<GroupAttitudeSkill, List<EmpAttitudeSkill>> userEmpAttitudeSkillGrouped =
-                new HashMap<>();
+        Map<GroupAttitudeSkill, List<EmpAttitudeSkill>> userEmpAttitudeSkillGrouped = new HashMap<>();
         empAttitudeSkillsEntity.forEach(empAS -> {
-            GroupAttitudeSkill group =
-                    (GroupAttitudeSkill) idToGroup.get(empAS.getAttitudeSkill().getId());
+            GroupAttitudeSkill group = (GroupAttitudeSkill) idToGroup.get(empAS.getAttitudeSkill().getId());
 
             if (!userEmpAttitudeSkillGrouped.containsKey(group)) {
                 userEmpAttitudeSkillGrouped.put(group, new ArrayList<>());
@@ -182,17 +180,13 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             totalWeight += group.getPercentage();
         }
 
-
         EmpAchievementSkillFilter filterAc = new EmpAchievementSkillFilter();
         filterAc.setUserIds(List.of(userId));
         filterAc.setYears(List.of(year));
-        List<EmpAchievementSkill> empAchievementEntities =
-                empAchievementSkillRepo.findAllByFilter(filterAc);
-        Map<GroupAchievement, List<EmpAchievementSkill>> userEmpAchievementGrouped =
-                new HashMap<>();
+        List<EmpAchievementSkill> empAchievementEntities = empAchievementSkillRepo.findAllByFilter(filterAc);
+        Map<GroupAchievement, List<EmpAchievementSkill>> userEmpAchievementGrouped = new HashMap<>();
         empAchievementEntities.forEach(empAc -> {
-            GroupAchievement group =
-                    (GroupAchievement) idToGroup.get(empAc.getAchievement().getId());
+            GroupAchievement group = (GroupAchievement) idToGroup.get(empAc.getAchievement().getId());
             if (!userEmpAchievementGrouped.containsKey(group)) {
                 userEmpAchievementGrouped.put(group, new ArrayList<>());
             }
@@ -217,8 +211,8 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             groupAttitudeSkillIdToSummaryData.put(group.getId(), summaryData);
         }
 
-        Optional<AssessmentSummary> assessmentSummaryOpt =
-                assessmentSummaryRepository.findByUserIdAndYear(userId, year);
+        Optional<AssessmentSummary> assessmentSummaryOpt = assessmentSummaryRepository.findByUserIdAndYear(userId,
+                year);
         AssessmentSummary assessmentSummary;
         if (assessmentSummaryOpt.isEmpty()) {
             assessmentSummary = new AssessmentSummary();
@@ -246,8 +240,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             List<EmpAttitudeSkill> empASs = entry.getValue();
 
             Integer currGroupWeight = group.getPercentage();
-            Integer childCount =
-                    group.getAttitudeSkills() != null ? group.getAttitudeSkills().size() : 0;
+            Integer childCount = group.getAttitudeSkills() != null ? group.getAttitudeSkills().size() : 0;
 
             Double currGroupPct = (currGroupWeight.doubleValue() / totalWeight.doubleValue());
             Integer totalScore = 0;
@@ -271,8 +264,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             List<EmpAchievementSkill> empAcs = entry.getValue();
 
             Integer currGroupWeight = group.getPercentage();
-            Integer childCount =
-                    group.getAchievements() != null ? group.getAchievements().size() : 0;
+            Integer childCount = group.getAchievements() != null ? group.getAchievements().size() : 0;
 
             Double currGroupPct = currGroupWeight.doubleValue() / totalWeight.doubleValue();
             Integer totalScore = 0;
@@ -299,4 +291,17 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
 
         return assessmentSummaryDto;
     }
+
+    @Transactional
+    @Override
+    public void recalculateAllAssessmentSummaries() {
+        List<AssessmentSummary> assessmentSummaries = assessmentSummaryRepository.findAll();
+        for (AssessmentSummary assessmentSummary : assessmentSummaries) {
+            var newAssessmentSummary = calculateAssessmentSummary(
+                    assessmentSummary.getUser().getId(), assessmentSummary.getYear());
+            assessmentSummary.setScore(newAssessmentSummary.getScore());
+        }
+        assessmentSummaryRepository.saveAll(assessmentSummaries);
+    }
+
 }

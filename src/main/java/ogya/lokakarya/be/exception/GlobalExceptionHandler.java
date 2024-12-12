@@ -81,6 +81,8 @@ public class GlobalExceptionHandler {
                 message = "Group attitude skill with given name already exists!";
             } else if (exceptionMsg.contains("UK_GROUP_ACHIEVEMENT_NAME")) {
                 message = "Group achievement with given name already exists!";
+            } else if (exceptionMsg.contains("UK_DEV_PLAN_NAME")) {
+                message = "Development plan with given name already exists!";
             }
 
             return ResponseDto.builder().success(false).message(message).build()
@@ -124,6 +126,8 @@ public class GlobalExceptionHandler {
             message = "Group attitude skill with given name already exists!";
         } else if (exceptionMsg.contains("UK_GROUP_ACHIEVEMENT_NAME")) {
             message = "Group achievement with given name already exists!";
+        } else if (exceptionMsg.contains("UK_DEV_PLAN_NAME")) {
+            message = "Development plan with given name already exists!";
         } else {
             httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         }

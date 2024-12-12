@@ -12,6 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -22,7 +23,9 @@ import java.util.UUID;
 
 @Entity
 @Data
-@Table(name = "TBL_DEV_PLAN")
+@Table(name = "TBL_DEV_PLAN", uniqueConstraints = {
+        @UniqueConstraint(name = "UK_DEV_PLAN_NAME", columnNames = { "PLAN" })
+})
 public class DevPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
