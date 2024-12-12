@@ -1,12 +1,5 @@
 package ogya.lokakarya.be.entity;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,6 +12,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -51,6 +50,6 @@ public class DevPlan {
     @JoinColumn(name = "UPDATED_BY")
     private User updatedBy;
 
-    @OneToMany(mappedBy = "dev_plan", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "devPlan", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<EmpDevPlan> empDevPlans;
 }
