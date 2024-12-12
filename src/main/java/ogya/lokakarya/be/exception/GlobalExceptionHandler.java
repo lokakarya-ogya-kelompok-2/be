@@ -61,10 +61,16 @@ public class GlobalExceptionHandler {
             } else if (exceptionMsg.contains("UK_DIVISION_DIVISION_NAME")) {
                 message = "Division with given name already exists!";
             } else if (exceptionMsg.contains("FK_USER_DIVISION")) {
-                message = "Cannot delete this division because it still has active users assigned to it. Please reassign or remove these users first.";
+                message = "Cannot delete this division because it still has users assigned to it. Please reassign or remove these users first.";
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
             } else if (exceptionMsg.contains("UK_ROLE_ROLENAME")) {
                 message = "Role with given name already exists!";
+            } else if (exceptionMsg.contains("UK_MENU_MENU_NAME")) {
+                message = "Menu with given name already exists!";
+            } else if (exceptionMsg.contains("FK_ATTITUDE_SKILL_GROUP_ATTITUDE_SKILL")) {
+                message = "Cannot delete this group attitude skill because it still has attitude skills assigned to it. Please reassign or remove these attitude skills first.";
+            } else if (exceptionMsg.contains("UK_ATTITUDE_SKILL_GROUP_NAME")) {
+                message = "Attitude skill with given name already exists in this group!";
             }
 
             return ResponseDto.builder().success(false).message(message).build()
@@ -92,6 +98,12 @@ public class GlobalExceptionHandler {
             httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
         } else if (exceptionMsg.contains("UK_ROLE_ROLENAME")) {
             message = "Role with given name already exists!";
+        } else if (exceptionMsg.contains("UK_MENU_MENU_NAME")) {
+            message = "Menu with given name already exists!";
+        } else if (exceptionMsg.contains("FK_ATTITUDE_SKILL_GROUP_ATTITUDE_SKILL")) {
+            message = "Cannot delete this group attitude skill because it still has attitude skills assigned to it. Please reassign or remove these attitude skills first.";
+        } else if (exceptionMsg.contains("UK_ATTITUDE_SKILL_GROUP_NAME")) {
+            message = "Attitude skill with given name already exists in this group!";
         } else {
             httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         }
