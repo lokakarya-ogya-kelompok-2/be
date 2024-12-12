@@ -89,10 +89,12 @@ public class AssessmentSummaryController {
                                 .calculateAssessmentSummaryButValidateTheUserIdFirstBeforeCalculating(
                                                 userId, year);
                 return ResponseDto.<AssessmentSummaryDto>builder()
-                                .success(assessmentSummary.getId() == null)
+                                .success(assessmentSummary.getId() != null)
                                 .message(String.format(
-                                                "Calculate assessment summary for user_id %s and year %d successful!",
-                                                userId, year))
+                                                "Calculate assessment summary for user_id %s and year %d %s!",
+                                                userId, year,
+                                                assessmentSummary.getId() == null ? "failed"
+                                                                : "successful"))
                                 .content(assessmentSummary).build().toResponse(HttpStatus.OK);
         }
 
