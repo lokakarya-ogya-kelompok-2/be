@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillDto;
+import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.GroupAttitudeSkill;
 
 @AllArgsConstructor
@@ -35,13 +38,13 @@ public class GroupAttitudeSkillDto {
     private Date createdAt;
 
     @JsonProperty("created_by")
-    private UUID createdBy;
+    private UserDto createdBy;
 
     @JsonProperty("update_at")
     private Date updatedAt;
 
     @JsonProperty("updated_by")
-    private UUID updatedBy;
+    private UserDto updatedBy;
 
     @JsonProperty("attitude_skills")
     private List<AttitudeSkillDto> attitudeSkills;
@@ -53,9 +56,11 @@ public class GroupAttitudeSkillDto {
         setPercentage(groupAttitudeSkill.getPercentage());
         setEnabled(groupAttitudeSkill.getEnabled());
         setCreatedAt(groupAttitudeSkill.getCreatedAt());
-        setCreatedBy(groupAttitudeSkill.getCreatedBy());
+        if (groupAttitudeSkill.getCreatedBy() != null)
+            setCreatedBy(new UserDto(groupAttitudeSkill.getCreatedBy(), false, false, false));
         setUpdatedAt(groupAttitudeSkill.getUpdatedAt());
-        setUpdatedBy(groupAttitudeSkill.getUpdatedBy());
+        if (groupAttitudeSkill.getUpdatedBy() != null)
+            setUpdatedBy(new UserDto(groupAttitudeSkill.getUpdatedBy(), false, false, false));
         List<AttitudeSkillDto> attitudeSkillDtos = new ArrayList<>();
         if (withAttitudeSkills && groupAttitudeSkill.getAttitudeSkills() != null) {
             groupAttitudeSkill.getAttitudeSkills().forEach(attitudeSkill -> attitudeSkillDtos

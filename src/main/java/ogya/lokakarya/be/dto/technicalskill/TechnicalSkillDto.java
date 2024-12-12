@@ -1,10 +1,17 @@
 package ogya.lokakarya.be.dto.technicalskill;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
-import ogya.lokakarya.be.entity.TechnicalSkill;
 import java.util.Date;
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import ogya.lokakarya.be.dto.user.UserDto;
+import ogya.lokakarya.be.entity.TechnicalSkill;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,26 +26,31 @@ public class TechnicalSkillDto {
     private String technicalSKill;
 
     @JsonProperty("enabled")
-    private boolean enabled=true;
+    private boolean enabled = true;
 
     @JsonProperty("created_at")
     private Date createdAt;
 
     @JsonProperty("created_by")
-    private UUID createdBy;
+    private UserDto createdBy;
 
     @JsonProperty("updated_at")
     private Date updatedAt;
 
     @JsonProperty("updated_by")
-    private UUID updatedBy;
+    private UserDto updatedBy;
 
     public TechnicalSkillDto(TechnicalSkill technicalSkill) {
         setId(technicalSkill.getId());
-        setTechnicalSKill(technicalSkill.getTechnicalSkill());
+        setTechnicalSKill(technicalSkill.getName());
         setEnabled(technicalSkill.getEnabled());
         setCreatedAt(technicalSkill.getCreatedAt());
-        setCreatedBy(technicalSkill.getCreatedBy());
+        if (technicalSkill.getCreatedBy() != null) {
+            setCreatedBy(new UserDto(technicalSkill.getCreatedBy(), false, false, false));
+        }
         setUpdatedAt(technicalSkill.getUpdatedAt());
+        if (technicalSkill.getUpdatedBy() != null) {
+            setUpdatedBy(new UserDto(technicalSkill.getUpdatedBy(), false, false, false));
+        }
     }
 }

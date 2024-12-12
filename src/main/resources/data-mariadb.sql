@@ -65,7 +65,8 @@ VALUES
     (UUID(), @role_hr, @menu_dev_plan_all),
     (UUID(), @role_hr, @menu_group_achievement_all),
     (UUID(), @role_hr, @menu_emp_achievement_all),
-    (UUID(), @role_hr, @menu_summary_read);
+    (UUID(), @role_hr, @menu_summary_read),
+    (UUID(), @role_hr, @menu_achievement_all);
 
 -- User role menu mappings
 INSERT IGNORE INTO
@@ -73,7 +74,7 @@ INSERT IGNORE INTO
 VALUES
     (UUID(), @role_user, @menu_emp_attitude_skill_all),
     (UUID(), @role_user, @menu_emp_technical_skill_all),
-    (UUID(), @role_user, @menu_dev_plan_all),
+    (UUID(), @role_user, @menu_emp_dev_plan_all),
     (UUID(), @role_user, @menu_emp_suggestion_all),
     (UUID(), @role_user, @menu_summary_read_self);
 
