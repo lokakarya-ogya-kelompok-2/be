@@ -50,8 +50,8 @@ public class EmpSuggestion {
 
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "UPDATED_BY")
-    private UUID updatedBy;
+    @JoinColumn(name = "UPDATED_BY")
+    private User updatedBy;
 
     @PreUpdate
     private void fillUpdatedAt() {
