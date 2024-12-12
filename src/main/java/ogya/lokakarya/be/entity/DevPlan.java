@@ -17,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -51,6 +52,11 @@ public class DevPlan {
     @JoinColumn(name = "UPDATED_BY")
     private User updatedBy;
 
-    @OneToMany(mappedBy = "dev_plan", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "devPlan", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<EmpDevPlan> empDevPlans;
+
+    @PreUpdate
+    private void fillUpdatedAt() {
+        updatedAt = new java.util.Date();
+    }
 }

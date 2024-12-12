@@ -2,6 +2,10 @@ package ogya.lokakarya.be.entity;
 
 import java.util.Date;
 import java.util.UUID;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,12 +14,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "TBL_EMP_ACHIEVEMENT_SKill")
+@Table(name = "TBL_EMP_ACHIEVEMENT_SKill", uniqueConstraints = {
+        @UniqueConstraint(columnNames = { "USER_ID", "ACHIEVEMENT_ID", "ASSESSMENT_YEAR" })
+})
 public class EmpAchievementSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -23,14 +31,14 @@ public class EmpAchievementSkill {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "USER_ID")
     private User user;
 
     @Column(name = "NOTES", length = 100)
     private String notes;
 
     @ManyToOne
-    @JoinColumn(name = "achievement_id")
+    @JoinColumn(name = "ACHIEVEMENT_ID")
     private Achievement achievement;
 
     @Column(name = "SCORE", nullable = false, length = 3)
@@ -39,9 +47,10 @@ public class EmpAchievementSkill {
     @Column(name = "ASSESSMENT_YEAR", nullable = false, length = 4)
     private Integer assessmentYear;
 
-    @Column(name = "CREATED_AT", nullable = false)
+    @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     private Date createdAt = new Date();
 
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CREATED_BY")
     private User createdBy;
@@ -49,7 +58,13 @@ public class EmpAchievementSkill {
     @Column(name = "UPDATED_AT")
     private Date updatedAt;
 
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "UPDATED_BY")
     private User updatedBy;
+
+    @PreUpdate
+    private void fillUpdatedAt() {
+        updatedAt = new Date();
+    }
 }

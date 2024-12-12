@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillDto;
 import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillReq;
 import ogya.lokakarya.be.entity.AttitudeSkill;
@@ -25,8 +27,8 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
 
     @Override
     public AttitudeSkillDto create(AttitudeSkillReq data) {
-        Optional<GroupAttitudeSkill> findGroupAttitudeSKill =
-                groupAttitudeSkillRepository.findById(data.getGroupAttitudeSkill());
+        Optional<GroupAttitudeSkill> findGroupAttitudeSKill = groupAttitudeSkillRepository
+                .findById(data.getGroupAttitudeSkill());
         if (findGroupAttitudeSKill.isEmpty()) {
             throw ResponseException.groupAttitudeSkillNotFound(data.getGroupAttitudeSkill());
         }
@@ -71,7 +73,7 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
                         .findById(attitudeSkillReq.getGroupAttitudeSkill());
                 if (findGroupAttitudeSKill.isPresent()) {
                     attitudeSkill.setGroupAttitudeSkill(findGroupAttitudeSKill.get());
-                    attitudeSkill.setAttitudeSkill(attitudeSkillReq.getAttitudeSkill());
+                    attitudeSkill.setName(attitudeSkillReq.getAttitudeSkill());
                     attitudeSkill.setEnabled(attitudeSkillReq.getEnabled());
                 }
             }

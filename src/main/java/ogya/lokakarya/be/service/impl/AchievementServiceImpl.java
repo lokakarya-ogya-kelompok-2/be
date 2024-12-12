@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 import ogya.lokakarya.be.dto.achievement.AchievementDto;
 import ogya.lokakarya.be.dto.achievement.AchievementReq;
 import ogya.lokakarya.be.entity.Achievement;
@@ -30,8 +32,8 @@ public class AchievementServiceImpl implements AchievementService {
     @Override
     public AchievementDto create(AchievementReq data) {
         LOG.info("Start service: create achievement");
-        Optional<GroupAchievement> findGroupAchievement =
-                groupAchievementRepository.findById(data.getGroupAchievementId());
+        Optional<GroupAchievement> findGroupAchievement = groupAchievementRepository
+                .findById(data.getGroupAchievementId());
         if (findGroupAchievement.isEmpty()) {
             throw ResponseException.groupAchievementNotFound(data.getGroupAchievementId());
         }
@@ -71,12 +73,12 @@ public class AchievementServiceImpl implements AchievementService {
         Optional<Achievement> listData = achievementRepository.findById(id);
         if (listData.isPresent()) {
             Achievement achievement = listData.get();
-            if (!achievement.getAchievement().isBlank()) {
-                Optional<GroupAchievement> findGroupAchievement =
-                        groupAchievementRepository.findById(achievementReq.getGroupAchievementId());
+            if (!achievement.getName().isBlank()) {
+                Optional<GroupAchievement> findGroupAchievement = groupAchievementRepository
+                        .findById(achievementReq.getGroupAchievementId());
                 if (findGroupAchievement.isPresent()) {
                     achievement.setGroupAchievement(findGroupAchievement.get());
-                    achievement.setAchievement(achievementReq.getAchievementName());
+                    achievement.setName(achievementReq.getAchievementName());
                     achievement.setEnabled(achievementReq.getEnabled());
                 }
             }
