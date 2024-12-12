@@ -44,10 +44,11 @@ public class SecurityConfig {
                 }))
                 .authorizeHttpRequests(
                         auth -> auth
-                                .requestMatchers("/users").authenticated()
-                                .requestMatchers("/divisions").authenticated()
-                                .requestMatchers("/dev-plans").authenticated()
+                                .requestMatchers("/users/**").authenticated()
+                                .requestMatchers("/divisions/**").authenticated()
+                                .requestMatchers("/dev-plans/**").authenticated()
                                 .requestMatchers("/emp-attitude-skills/**").authenticated()
+                                .requestMatchers("/emp-dev-plans/**").authenticated()
                                 // .requestMatchers("/users/**").hasAuthority("HR")
                                 // .requestMatchers("/roles/**").hasAuthority("HR")
                                 // .requestMatchers("/divisions/**").hasAuthority("HR")
