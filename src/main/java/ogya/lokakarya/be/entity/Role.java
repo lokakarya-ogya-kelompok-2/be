@@ -3,6 +3,8 @@ package ogya.lokakarya.be.entity;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,18 +15,20 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "TBL_APP_ROLE")
+@Table(name = "TBL_APP_ROLE", uniqueConstraints = {
+        @UniqueConstraint(name = "UK_ROLE_ROLENAME", columnNames = { "ROLENAME" }) })
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ID")
     private UUID id;
 
-    @Column(name = "ROLENAME", unique = true, nullable = false, length = 30)
+    @Column(name = "ROLENAME", nullable = false, length = 30)
     private String roleName;
 
     @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
@@ -41,14 +45,9 @@ public class Role {
     @JoinColumn(name = "UPDATED_BY")
     private User updatedBy;
 
-    // @ManyToMany
-    // @JoinTable(name = "TBL_APP_ROLE_MENU", joinColumns = @JoinColumn(name = "ROLE_ID"),
-    // inverseJoinColumns = @JoinColumn(name = "MENU_ID"))
-    // private Set<RoleMenu> menus;
-
-    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<RoleMenu> roleMenus;
-  
-    @OneToMany(mappedBy = "role")
+
+    @OneToMany(mappedBy = "role", cascade = CascadeType.REMOVE)
     private List<UserRole> userRoles;
 }

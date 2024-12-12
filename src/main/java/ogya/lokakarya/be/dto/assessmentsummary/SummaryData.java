@@ -6,8 +6,8 @@ import lombok.Data;
 @Data
 public class SummaryData {
     private String aspect;
-    private Integer score = 0;
-    private Integer weight = 0;
+    private Double score = 0d;
+    private Double weight = 0d;
     @JsonProperty("final_score")
-    private Integer finalScore = 0;
+    private Double finalScore = 0d;
 }

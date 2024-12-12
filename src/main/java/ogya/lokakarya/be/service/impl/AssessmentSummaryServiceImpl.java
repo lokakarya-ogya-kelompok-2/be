@@ -204,16 +204,16 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         for (GroupAchievement group : groupAchievements) {
             SummaryData summaryData = new SummaryData();
             summaryData.setAspect(group.getGroupName());
-            summaryData.setWeight((int) Math.round(
-                    (group.getPercentage().doubleValue() / totalWeight.doubleValue()) * 100l));
+            summaryData.setWeight(
+                    ((group.getPercentage().doubleValue() / totalWeight.doubleValue()) * 100l));
             groupAchievementToSummaryData.put(group.getId(), summaryData);
         }
 
         for (GroupAttitudeSkill group : groupAttitudeSkills) {
             SummaryData summaryData = new SummaryData();
             summaryData.setAspect(group.getGroupName());
-            summaryData.setWeight((int) Math.round(
-                    (group.getPercentage().doubleValue() / totalWeight.doubleValue()) * 100l));
+            summaryData.setWeight(
+                    ((group.getPercentage().doubleValue() / totalWeight.doubleValue()) * 100l));
             groupAttitudeSkillIdToSummaryData.put(group.getId(), summaryData);
         }
 
@@ -258,8 +258,8 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             Double userScore = (double) (totalScore.doubleValue() / maxScore);
 
             SummaryData summaryData = groupAttitudeSkillIdToSummaryData.get(group.getId());
-            summaryData.setFinalScore((int) Math.round(userScore * currGroupPct * 100l));
-            summaryData.setScore((int) Math.round(userScore * 100l));
+            summaryData.setFinalScore((userScore * currGroupPct * 100l));
+            summaryData.setScore((userScore * 100l));
 
             finalScore += summaryData.getFinalScore();
             groupAttitudeSkillIdToSummaryData.put(group.getId(), summaryData);
@@ -283,8 +283,8 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             Double userScore = (double) (totalScore.doubleValue() / maxScore);
 
             SummaryData summaryData = groupAchievementToSummaryData.get(group.getId());
-            summaryData.setFinalScore((int) Math.round(userScore * currGroupPct * 100l));
-            summaryData.setScore((int) Math.round(userScore * 100l));
+            summaryData.setFinalScore((userScore * currGroupPct * 100l));
+            summaryData.setScore((userScore * 100l));
 
             finalScore += summaryData.getFinalScore();
             groupAchievementToSummaryData.put(group.getId(), summaryData);

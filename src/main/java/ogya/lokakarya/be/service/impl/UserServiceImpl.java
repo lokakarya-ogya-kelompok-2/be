@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.config.security.SecurityUtil;
@@ -169,7 +171,6 @@ public class UserServiceImpl implements UserService {
         return new UserDto(user, true, true, true);
     }
 
-    @Transactional
     @Override
     public void delete(UUID id) {
         Optional<User> userOpt = userRepo.findById(id);
@@ -177,8 +178,6 @@ public class UserServiceImpl implements UserService {
             throw ResponseException.userNotFound(id);
         }
         User user = userOpt.get();
-        userRoleRepo.deleteByUserId(id);
-        entityManager.flush();
         userRepo.delete(user);
     }
 
