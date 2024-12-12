@@ -1,6 +1,10 @@
 package ogya.lokakarya.be.dto.empsuggestion;
 
+import java.util.Date;
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,9 +12,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.EmpSuggestion;
-
-import java.util.Date;
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,7 +34,6 @@ public class EmpSuggestionDto {
     @JsonProperty("created_at")
     private Date createdAt;
 
-
     @JsonProperty("created_by")
     private UserDto createdBy;
 
@@ -41,7 +41,7 @@ public class EmpSuggestionDto {
     private Date updatedAt;
 
     @JsonProperty("updated_by")
-    private UUID updatedBy;
+    private UserDto updatedBy;
 
     public EmpSuggestionDto(EmpSuggestion empSuggestion, boolean withCreatedBy, boolean withUpdatedBy) {
         setId(empSuggestion.getId());
@@ -49,11 +49,12 @@ public class EmpSuggestionDto {
         setSuggestion(empSuggestion.getSuggestion());
         setAssessmentYear(empSuggestion.getAssessmentYear());
         setCreatedAt(empSuggestion.getCreatedAt());
-//        setCreatedBy(empSuggestion.getCreatedBy());
-        if(withCreatedBy&&empSuggestion.getCreatedBy()!=null) {
+        if (withCreatedBy && empSuggestion.getCreatedBy() != null) {
             setCreatedBy(new UserDto(empSuggestion.getCreatedBy(), false, false, false));
         }
         setUpdatedAt(empSuggestion.getUpdatedAt());
-        setUpdatedBy(empSuggestion.getUpdatedBy());
+        if (withUpdatedBy && empSuggestion.getUpdatedBy() != null) {
+            setUpdatedBy(new UserDto(empSuggestion.getUpdatedBy(), false, false, false));
+        }
     }
 }
