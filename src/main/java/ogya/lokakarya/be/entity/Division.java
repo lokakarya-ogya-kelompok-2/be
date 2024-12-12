@@ -2,6 +2,10 @@ package ogya.lokakarya.be.entity;
 
 import java.util.Date;
 import java.util.UUID;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,7 +20,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "TBL_DIVISION", uniqueConstraints = {
-        @UniqueConstraint(name = "UK_DIVISION_DIVISION_NAME", columnNames = {"DIVISION_NAME"})})
+        @UniqueConstraint(name = "UK_DIVISION_DIVISION_NAME", columnNames = { "DIVISION_NAME" }) })
 public class Division {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -29,6 +33,7 @@ public class Division {
     @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     private Date createdAt = new Date();
 
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @ManyToOne
     @JoinColumn(name = "CREATED_BY")
     private User createdBy;
@@ -36,6 +41,7 @@ public class Division {
     @Column(name = "UPDATED_AT")
     private Date updatedAt;
 
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @ManyToOne
     @JoinColumn(name = "UPDATED_BY")
     private User updatedBy;

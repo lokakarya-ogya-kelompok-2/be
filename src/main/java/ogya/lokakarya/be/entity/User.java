@@ -5,9 +5,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,7 +23,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.PreRemove;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -27,10 +30,9 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "TBL_APP_USER",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "UK_USER_USERNAME", columnNames = {"USERNAME"}),
-                @UniqueConstraint(name = "UK_USER_EMAIL", columnNames = {"EMAIL_ADDRESS"})})
+@Table(name = "TBL_APP_USER", uniqueConstraints = {
+        @UniqueConstraint(name = "UK_USER_USERNAME", columnNames = { "USERNAME" }),
+        @UniqueConstraint(name = "UK_USER_EMAIL", columnNames = { "EMAIL_ADDRESS" }) })
 public class User implements UserDetails {
 
     @Id
@@ -68,6 +70,7 @@ public class User implements UserDetails {
     @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     private java.util.Date createdAt = new java.util.Date();
 
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CREATED_BY")
     private User createdBy;
@@ -76,6 +79,7 @@ public class User implements UserDetails {
     @JoinColumn(name = "updated_at")
     private java.util.Date updatedAt;
 
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "UPDATED_BY")
     private User updatedBy;
@@ -93,15 +97,8 @@ public class User implements UserDetails {
     private List<EmpSuggestion> empSuggestions;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "DIVISION_ID", nullable = false,
-            foreignKey = @ForeignKey(name = "FK_USER_DIVISION"))
+    @JoinColumn(name = "DIVISION_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_USER_DIVISION"))
     private Division division;
-
-    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
-    private List<User> createdUsers;
-
-    @OneToMany(mappedBy = "updatedBy", fetch = FetchType.LAZY)
-    private List<User> updatedUsers;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -114,11 +111,5 @@ public class User implements UserDetails {
     @PreUpdate
     private void fillUpdatedAt() {
         updatedAt = new java.util.Date();
-    }
-
-    @PreRemove
-    private void nullifyUserReferences() {
-        createdUsers.forEach(user -> user.setCreatedBy(null));
-        updatedUsers.forEach(user -> user.setUpdatedBy(null));
     }
 }

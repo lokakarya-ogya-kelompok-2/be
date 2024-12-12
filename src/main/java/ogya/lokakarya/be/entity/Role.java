@@ -3,6 +3,7 @@ package ogya.lokakarya.be.entity;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,7 +21,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "TBL_APP_ROLE", uniqueConstraints = {
-        @UniqueConstraint(name = "UK_ROLE_ROLENAME", columnNames = {"ROLENAME"})})
+        @UniqueConstraint(name = "UK_ROLE_ROLENAME", columnNames = { "ROLENAME" }) })
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -43,7 +44,6 @@ public class Role {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "UPDATED_BY")
     private User updatedBy;
-
 
     @OneToMany(mappedBy = "role", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<RoleMenu> roleMenus;

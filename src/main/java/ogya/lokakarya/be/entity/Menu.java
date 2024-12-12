@@ -3,6 +3,8 @@ package ogya.lokakarya.be.entity;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -41,6 +43,6 @@ public class Menu {
     @JoinColumn(name = "UPDATED_BY")
     private User updatedBy;
 
-    @OneToMany(mappedBy = "menu")
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.REMOVE)
     private List<RoleMenu> roleMenus;
 }
