@@ -3,7 +3,8 @@
     "scopes": [
         "user",
         "auth",
-        "role"
+        "role",
+        "per-cascade-an"
     ],
     "maxHeaderLength": 100
 }

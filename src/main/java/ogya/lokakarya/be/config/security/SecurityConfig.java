@@ -2,6 +2,7 @@ package ogya.lokakarya.be.config.security;
 
 import java.util.Arrays;
 import java.util.Collections;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
+
 import lombok.RequiredArgsConstructor;
 import ogya.lokakarya.be.config.security.jwt.filter.JwtValidationFilter;
 import ogya.lokakarya.be.service.AuthService;
@@ -41,7 +43,11 @@ public class SecurityConfig {
                     return cfg;
                 }))
                 .authorizeHttpRequests(
-                        auth -> auth.requestMatchers("/emp-attitude-skills/**").authenticated()
+                        auth -> auth
+                                .requestMatchers("/users").authenticated()
+                                .requestMatchers("/divisions").authenticated()
+                                .requestMatchers("/dev-plans").authenticated()
+                                .requestMatchers("/emp-attitude-skills/**").authenticated()
                                 // .requestMatchers("/users/**").hasAuthority("HR")
                                 // .requestMatchers("/roles/**").hasAuthority("HR")
                                 // .requestMatchers("/divisions/**").hasAuthority("HR")

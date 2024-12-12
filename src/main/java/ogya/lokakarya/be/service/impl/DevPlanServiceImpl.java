@@ -1,27 +1,36 @@
 package ogya.lokakarya.be.service.impl;
 
-import ogya.lokakarya.be.dto.devplan.DevPlanDto;
-import ogya.lokakarya.be.dto.devplan.DevPlanReq;
-import ogya.lokakarya.be.entity.DevPlan;
-import ogya.lokakarya.be.repository.DevPlanRepository;
-import ogya.lokakarya.be.service.DevPlanService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import ogya.lokakarya.be.config.security.SecurityUtil;
+import ogya.lokakarya.be.dto.devplan.DevPlanDto;
+import ogya.lokakarya.be.dto.devplan.DevPlanReq;
+import ogya.lokakarya.be.entity.DevPlan;
+import ogya.lokakarya.be.entity.User;
+import ogya.lokakarya.be.exception.ResponseException;
+import ogya.lokakarya.be.repository.DevPlanRepository;
+import ogya.lokakarya.be.service.DevPlanService;
 
 @Service
 public class DevPlanServiceImpl implements DevPlanService {
     @Autowired
     private DevPlanRepository devPlanRepository;
 
+    @Autowired
+    private SecurityUtil securityUtil;
+
     @Override
     public DevPlanDto create(DevPlanReq data) {
+        User currentUser = securityUtil.getCurrentUser();
         DevPlan devPlanEntity = data.toEntity();
+        devPlanEntity.setCreatedBy(currentUser);
         devPlanEntity = devPlanRepository.save(devPlanEntity);
         return new DevPlanDto(devPlanEntity);
     }
@@ -39,47 +48,44 @@ public class DevPlanServiceImpl implements DevPlanService {
 
     @Override
     public DevPlanDto getDevPlanById(UUID id) {
-        Optional<DevPlan> listData;
-        try {
-            listData = devPlanRepository.findById(id);
-            System.out.println(listData);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+        Optional<DevPlan> devPlanOpt = devPlanRepository.findById(id);
+        if (devPlanOpt.isEmpty()) {
+            throw ResponseException.devPlanNotFound(id);
         }
-        DevPlan data = listData.get();
+        DevPlan data = devPlanOpt.get();
         return convertToDto(data);
     }
 
     @Override
     public DevPlanDto updateDevPlanById(UUID id, DevPlanReq devPlanReq) {
-        Optional<DevPlan> listData = devPlanRepository.findById(id);
-        if (listData.isPresent()) {
-            DevPlan devPlan = listData.get();
-            if (!devPlanReq.getPlan().isBlank()) {
-                devPlan.setPlan(devPlanReq.getPlan());
-                devPlan.setEnabled(devPlanReq.getEnabled());
-            }
-            DevPlanDto devPlanDto = convertToDto(devPlan);
-            devPlanRepository.save(devPlan);
-            return devPlanDto;
+        Optional<DevPlan> devPlanOpt = devPlanRepository.findById(id);
+        if (devPlanOpt.isEmpty()) {
+            throw ResponseException.devPlanNotFound(id);
         }
-        return null;
+        User currentUser = securityUtil.getCurrentUser();
+        DevPlan devPlan = devPlanOpt.get();
+        if (devPlanReq.getPlan() != null) {
+            devPlan.setPlan(devPlanReq.getPlan());
+        }
+        if (devPlanReq.getEnabled() != null) {
+            devPlan.setEnabled(devPlanReq.getEnabled());
+        }
+        devPlan.setUpdatedBy(currentUser);
+        devPlan = devPlanRepository.save(devPlan);
+        return convertToDto(devPlan);
     }
 
     @Override
     public boolean deleteDevPlanById(UUID id) {
-        Optional<DevPlan> listData = devPlanRepository.findById(id);
-        if (listData.isPresent()) {
-            devPlanRepository.delete(listData.get());
-            return ResponseEntity.ok().build().hasBody();
-        } else {
-            return ResponseEntity.notFound().build().hasBody();
+        Optional<DevPlan> devPlanOpt = devPlanRepository.findById(id);
+        if (devPlanOpt.isEmpty()) {
+            throw ResponseException.devPlanNotFound(id);
         }
+        devPlanRepository.delete(devPlanOpt.get());
+        return ResponseEntity.ok().build().hasBody();
     }
 
     private DevPlanDto convertToDto(DevPlan data) {
-        DevPlanDto result = new DevPlanDto(data);
-        return result;
+        return new DevPlanDto(data);
     }
 }
