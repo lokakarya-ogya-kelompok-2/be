@@ -71,6 +71,10 @@ public class GlobalExceptionHandler {
                 message = "Cannot delete this group attitude skill because it still has attitude skills assigned to it. Please reassign or remove these attitude skills first.";
             } else if (exceptionMsg.contains("UK_ATTITUDE_SKILL_GROUP_NAME")) {
                 message = "Attitude skill with given name already exists in this group!";
+            } else if (exceptionMsg.contains("FK_ACHIEVEMENT_GROUP_ACHIEVEMENT")) {
+                message = "Cannot delete this group achievement because it still has achievements assigned to it. Please reassign or remove these achievement first.";
+            } else if (exceptionMsg.contains("UK_ACHIEVEMENT_NAME_GROUP_ID")) {
+                message = "Achievement with given name already exists in this group!";
             }
 
             return ResponseDto.builder().success(false).message(message).build()
@@ -104,6 +108,10 @@ public class GlobalExceptionHandler {
             message = "Cannot delete this group attitude skill because it still has attitude skills assigned to it. Please reassign or remove these attitude skills first.";
         } else if (exceptionMsg.contains("UK_ATTITUDE_SKILL_GROUP_NAME")) {
             message = "Attitude skill with given name already exists in this group!";
+        } else if (exceptionMsg.contains("FK_ACHIEVEMENT_GROUP_ACHIEVEMENT")) {
+            message = "Cannot delete this group achievement because it still has achievements assigned to it. Please reassign or remove these achievement first.";
+        } else if (exceptionMsg.contains("UK_ACHIEVEMENT_NAME_GROUP_ID")) {
+            message = "Achievement with given name already exists in this group!";
         } else {
             httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         }

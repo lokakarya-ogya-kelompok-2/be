@@ -43,7 +43,7 @@ public class EmpAttitudeSkill {
     @Column(name = "ASSESSMENT_YEAR", nullable = false, length = 4)
     private Integer assessmentYear;
 
-    @Column(name = "CREATED_AT", nullable = false)
+    @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     private Date createdAt = new Date();
 
     @OnDelete(action = OnDeleteAction.SET_NULL)

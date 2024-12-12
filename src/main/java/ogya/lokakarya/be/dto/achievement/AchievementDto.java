@@ -2,13 +2,16 @@ package ogya.lokakarya.be.dto.achievement;
 
 import java.util.Date;
 import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ogya.lokakarya.be.dto.groupachievement.GroupAchievementDto;
+import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.Achievement;
 
 @AllArgsConstructor
@@ -34,25 +37,27 @@ public class AchievementDto {
     private Date createdAt;
 
     @JsonProperty("created_by")
-    private UUID createdBy;
+    private UserDto createdBy;
 
     @JsonProperty("updated_at")
     private Date updatedAt;
 
     @JsonProperty("updated_by")
-    private UUID updatedBy;
+    private UserDto updatedBy;
 
     public AchievementDto(Achievement achievement, boolean withGroupAchievement) {
         setId(achievement.getId());
-        setAchievement(achievement.getAchievement());
+        setAchievement(achievement.getName());
         if (withGroupAchievement && achievement.getGroupAchievement() != null) {
             setGroupAchievement(new GroupAchievementDto(achievement.getGroupAchievement(), false,
                     false, false));
         }
         setEnabled(achievement.getEnabled());
         setCreatedAt(achievement.getCreatedAt());
-        setCreatedBy(achievement.getCreatedBy());
+        if (achievement.getCreatedBy() != null)
+            setCreatedBy(new UserDto(achievement.getCreatedBy(), false, false, false));
         setUpdatedAt(achievement.getUpdatedAt());
-        setUpdatedBy(achievement.getUpdatedBy());
+        if (achievement.getUpdatedBy() != null)
+            setUpdatedBy(new UserDto(achievement.getUpdatedBy(), false, false, false));
     }
 }

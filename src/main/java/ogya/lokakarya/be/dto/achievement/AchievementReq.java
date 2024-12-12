@@ -1,7 +1,9 @@
 package ogya.lokakarya.be.dto.achievement;
 
 import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -33,7 +35,7 @@ public class AchievementReq {
 
     public Achievement toEntity() {
         Achievement achievement = new Achievement();
-        achievement.setAchievement(this.achievementName);
+        achievement.setName(this.achievementName);
         achievement.setEnabled(enabled);
         return achievement;
     }
