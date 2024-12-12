@@ -14,6 +14,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PreUpdate;
@@ -43,7 +44,7 @@ public class TechnicalSkill {
 
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "CREATED_BY")
+    @JoinColumn(name = "CREATED_BY")
     private User createdBy;
 
     @Column(name = "UPDATED_AT")
@@ -51,7 +52,7 @@ public class TechnicalSkill {
 
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "UPDATED_BY")
+    @JoinColumn(name = "UPDATED_BY")
     private User updatedBy;
 
     @OneToMany(mappedBy = "technicalSkill", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
