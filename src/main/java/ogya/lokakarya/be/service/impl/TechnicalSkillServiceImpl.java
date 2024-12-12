@@ -56,7 +56,7 @@ public class TechnicalSkillServiceImpl implements TechnicalSkillService {
         if (listData.isPresent()) {
             TechnicalSkill technicalSkill = listData.get();
             if (!technicalSkillReq.getTechnicalSKill().isBlank()) {
-                technicalSkill.setTechnicalSkill(technicalSkillReq.getTechnicalSKill());
+                technicalSkill.setName(technicalSkillReq.getTechnicalSKill());
             }
             if (technicalSkillReq.getEnabled() != null) {
                 technicalSkill.setEnabled(technicalSkillReq.getEnabled());

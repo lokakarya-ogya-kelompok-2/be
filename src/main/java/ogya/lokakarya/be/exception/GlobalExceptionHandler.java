@@ -75,6 +75,8 @@ public class GlobalExceptionHandler {
                 message = "Cannot delete this group achievement because it still has achievements assigned to it. Please reassign or remove these achievement first.";
             } else if (exceptionMsg.contains("UK_ACHIEVEMENT_NAME_GROUP_ID")) {
                 message = "Achievement with given name already exists in this group!";
+            } else if (exceptionMsg.contains("UK_TECHNICAL_SKILL_NAME")) {
+                message = "Technical skill with given name already exists!";
             }
 
             return ResponseDto.builder().success(false).message(message).build()
@@ -112,6 +114,8 @@ public class GlobalExceptionHandler {
             message = "Cannot delete this group achievement because it still has achievements assigned to it. Please reassign or remove these achievement first.";
         } else if (exceptionMsg.contains("UK_ACHIEVEMENT_NAME_GROUP_ID")) {
             message = "Achievement with given name already exists in this group!";
+        } else if (exceptionMsg.contains("UK_TECHNICAL_SKILL_NAME")) {
+            message = "Technical skill with given name already exists!";
         } else {
             httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         }
