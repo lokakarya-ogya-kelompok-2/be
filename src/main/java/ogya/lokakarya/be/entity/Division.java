@@ -10,18 +10,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "TBL_DIVISION")
+@Table(name = "TBL_DIVISION", uniqueConstraints = {
+        @UniqueConstraint(name = "UK_DIVISION_DIVISION_NAME", columnNames = {"DIVISION_NAME"})})
 public class Division {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ID")
     private UUID id;
 
-    @Column(name = "DIVISION_NAME", length = 50, unique = true)
+    @Column(name = "DIVISION_NAME", length = 50)
     private String divisionName;
 
     @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
@@ -38,6 +40,4 @@ public class Division {
     @JoinColumn(name = "UPDATED_BY")
     private User updatedBy;
 
-    // @ManyToMany(mappedBy = "divisions")
-    // private Set<User> users = new HashSet<>();
 }

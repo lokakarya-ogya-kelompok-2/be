@@ -1,7 +1,9 @@
 package ogya.lokakarya.be.exception;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -40,6 +42,40 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseDto<Object>> handleJwtException(JwtException ex, WebRequest req) {
         return ResponseDto.builder().success(false).message(ex.getMessage()).build()
                 .toResponse(HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ResponseDto<Object>> handleDataIntegrityViolationException(
+            DataIntegrityViolationException ex, WebRequest req) {
+
+        Throwable rootCause = ex.getRootCause();
+
+        if (rootCause instanceof SQLIntegrityConstraintViolationException sqlEx) {
+            String exceptionMsg = sqlEx.getMessage();
+            HttpStatus httpStatus = HttpStatus.CONFLICT;
+            String message = "Unknown error";
+            if (exceptionMsg.contains("UK_USER_USERNAME")) {
+                message = "User with given username already exists!";
+            } else if (exceptionMsg.contains("UK_USER_EMAIL")) {
+                message = "User with given email already exists!";
+            } else if (exceptionMsg.contains("UK_DIVISION_DIVISION_NAME")) {
+                message = "Division with given name already exists!";
+            } else if (exceptionMsg.contains("FK_USER_DIVISION")) {
+                message =
+                        "Cannot delete this division because it still has active users assigned to it. Please reassign or remove these users first.";
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
+            } else if (exceptionMsg.contains("UK_ROLE_ROLENAME")) {
+                message = "Role with given name already exists!";
+            }
+
+            return ResponseDto.builder().success(false).message(message).build()
+                    .toResponse(httpStatus);
+        }
+
+
+
+        return ResponseDto.builder().success(false).message("Unknown error").build()
+                .toResponse(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class)
