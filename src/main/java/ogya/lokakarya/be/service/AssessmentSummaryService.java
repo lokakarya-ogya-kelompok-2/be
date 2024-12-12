@@ -2,7 +2,6 @@ package ogya.lokakarya.be.service;
 
 import java.util.List;
 import java.util.UUID;
-
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryReq;
 
@@ -21,4 +20,7 @@ public interface AssessmentSummaryService {
     boolean deleteAssessmentSummaryById(UUID id);
 
     void recalculateAllAssessmentSummaries();
+
+    AssessmentSummaryDto calculateAssessmentSummaryButValidateTheUserIdFirstBeforeCalculating(
+            UUID userId, Integer year);
 }
