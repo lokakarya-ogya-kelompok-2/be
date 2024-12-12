@@ -18,11 +18,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "TBL_GROUP_ACHIEVEMENT")
+@Table(name = "TBL_GROUP_ACHIEVEMENT", uniqueConstraints = {
+        @UniqueConstraint(name = "UK_GROUP_ACHIEVEMENT_NAME", columnNames = { "GROUP_NAME" })
+})
 public class GroupAchievement {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
