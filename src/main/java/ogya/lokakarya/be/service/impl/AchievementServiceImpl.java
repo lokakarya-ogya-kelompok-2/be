@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.dto.achievement.AchievementDto;
 import ogya.lokakarya.be.dto.achievement.AchievementReq;
 import ogya.lokakarya.be.entity.Achievement;
@@ -19,6 +21,7 @@ import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.AchievementRepository;
 import ogya.lokakarya.be.repository.GroupAchievementRepository;
 import ogya.lokakarya.be.service.AchievementService;
+import ogya.lokakarya.be.service.AssessmentSummaryService;
 
 @Service
 public class AchievementServiceImpl implements AchievementService {
@@ -29,17 +32,28 @@ public class AchievementServiceImpl implements AchievementService {
     @Autowired
     private GroupAchievementRepository groupAchievementRepository;
 
+    @Autowired
+    private AssessmentSummaryService assessmentSummarySvc;
+
+    @Autowired
+    private EntityManager entityManager;
+
+    @Transactional
     @Override
     public AchievementDto create(AchievementReq data) {
         LOG.info("Start service: create achievement");
-        Optional<GroupAchievement> findGroupAchievement = groupAchievementRepository
+        Optional<GroupAchievement> groupAchievementOpt = groupAchievementRepository
                 .findById(data.getGroupAchievementId());
-        if (findGroupAchievement.isEmpty()) {
+        if (groupAchievementOpt.isEmpty()) {
             throw ResponseException.groupAchievementNotFound(data.getGroupAchievementId());
         }
         Achievement dataEntity = data.toEntity();
-        dataEntity.setGroupAchievement(findGroupAchievement.get());
+        dataEntity.setGroupAchievement(groupAchievementOpt.get());
         Achievement createdData = achievementRepository.save(dataEntity);
+
+        entityManager.flush();
+        assessmentSummarySvc.recalculateAllAssessmentSummaries();
+
         LOG.info("End service: create achievement");
         return new AchievementDto(createdData, false);
     }
@@ -89,15 +103,20 @@ public class AchievementServiceImpl implements AchievementService {
         return null;
     }
 
+    @Transactional
     @Override
     public boolean deleteAchievementById(UUID id) {
-        Optional<Achievement> listData = achievementRepository.findById(id);
-        if (listData.isPresent()) {
-            achievementRepository.delete(listData.get());
-            return ResponseEntity.ok().build().hasBody();
-        } else {
-            return ResponseEntity.notFound().build().hasBody();
+        Optional<Achievement> achievementOpt = achievementRepository.findById(id);
+        if (achievementOpt.isEmpty()) {
+            throw ResponseException.achievementNotFound(id);
         }
+        achievementRepository.delete(achievementOpt.get());
+
+        entityManager.flush();
+        assessmentSummarySvc.recalculateAllAssessmentSummaries();
+
+        return ResponseEntity.ok().build().hasBody();
+
     }
 
     public AchievementDto convertToDto(Achievement data) {
