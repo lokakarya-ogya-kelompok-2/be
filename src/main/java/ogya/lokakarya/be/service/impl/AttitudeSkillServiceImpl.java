@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillDto;
 import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillReq;
 import ogya.lokakarya.be.entity.AttitudeSkill;
@@ -16,6 +18,7 @@ import ogya.lokakarya.be.entity.GroupAttitudeSkill;
 import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.AttitudeSkillRepository;
 import ogya.lokakarya.be.repository.GroupAttitudeSkillRepository;
+import ogya.lokakarya.be.service.AssessmentSummaryService;
 import ogya.lokakarya.be.service.AttitudeSkillService;
 
 @Service
@@ -25,18 +28,29 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
     @Autowired
     private GroupAttitudeSkillRepository groupAttitudeSkillRepository;
 
+    @Autowired
+    private AssessmentSummaryService assessmentSummarySvc;
+
+    @Autowired
+    private EntityManager entityManager;
+
+    @Transactional
     @Override
     public AttitudeSkillDto create(AttitudeSkillReq data) {
-        Optional<GroupAttitudeSkill> findGroupAttitudeSKill = groupAttitudeSkillRepository
+        Optional<GroupAttitudeSkill> groupAttitudeOpt = groupAttitudeSkillRepository
                 .findById(data.getGroupAttitudeSkill());
-        if (findGroupAttitudeSKill.isEmpty()) {
+        if (groupAttitudeOpt.isEmpty()) {
             throw ResponseException.groupAttitudeSkillNotFound(data.getGroupAttitudeSkill());
         }
         AttitudeSkill dataEntity = data.toEntity();
-        dataEntity.setGroupAttitudeSkill(findGroupAttitudeSKill.get());
+        dataEntity.setGroupAttitudeSkill(groupAttitudeOpt.get());
         AttitudeSkill createdData = attitudeSkillRepository.save(dataEntity);
+
+        entityManager.flush();
+        assessmentSummarySvc.recalculateAllAssessmentSummaries();
+
         return new AttitudeSkillDto(createdData, true, true, false);
-    };
+    }
 
     @Override
     public List<AttitudeSkillDto> getAllAttitudeSkills() {
@@ -84,15 +98,19 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
         return null;
     }
 
+    @Transactional
     @Override
     public boolean deleteAttitudeSkillById(UUID id) {
-        Optional<AttitudeSkill> listData = attitudeSkillRepository.findById(id);
-        if (listData.isPresent()) {
-            attitudeSkillRepository.delete(listData.get());
-            return ResponseEntity.ok().build().hasBody();
-        } else {
-            return ResponseEntity.notFound().build().hasBody();
+        Optional<AttitudeSkill> attitudeSkillOpt = attitudeSkillRepository.findById(id);
+        if (attitudeSkillOpt.isEmpty()) {
+            throw ResponseException.attitudeSkillNotFound(id);
         }
+        attitudeSkillRepository.delete(attitudeSkillOpt.get());
+
+        entityManager.flush();
+        assessmentSummarySvc.recalculateAllAssessmentSummaries();
+
+        return ResponseEntity.ok().build().hasBody();
     }
 
     private AttitudeSkillDto convertToDto(AttitudeSkill data) {
