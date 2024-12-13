@@ -109,8 +109,12 @@ public class EmpTechnicalSkillServiceImpl implements EmpTechnicalSkillService {
             throw ResponseException.empTechnicalSkillNotFound(id);
         }
         User currentUser = securityUtil.getCurrentUser();
-
         EmpTechnicalSkill empTechnicalSkill = empTechnicalSkillOpt.get();
+        if (empTechnicalSkill.getCreatedBy() != null
+                && !empTechnicalSkill.getCreatedBy().equals(currentUser)) {
+            throw ResponseException.unauthorized();
+        }
+
         if (empTechnicalSkillReq.getScore() != null) {
             empTechnicalSkill.setScore(empTechnicalSkillReq.getScore());
         }
@@ -130,7 +134,13 @@ public class EmpTechnicalSkillServiceImpl implements EmpTechnicalSkillService {
         if (empTechnicalSkillOpt.isEmpty()) {
             throw ResponseException.empTechnicalSkillNotFound(id);
         }
-        empTechnicalSkillRepository.delete(empTechnicalSkillOpt.get());
+        User currentUser = securityUtil.getCurrentUser();
+        EmpTechnicalSkill empTechnicalSkill = empTechnicalSkillOpt.get();
+        if (empTechnicalSkill.getCreatedBy() != null
+                && !empTechnicalSkill.getCreatedBy().equals(currentUser)) {
+            throw ResponseException.unauthorized();
+        }
+        empTechnicalSkillRepository.delete(empTechnicalSkill);
         return true;
     }
 

@@ -84,4 +84,9 @@ public class ResponseException extends RuntimeException {
     public static ResponseException menuNotFound(UUID id) {
         return notFoundResponse("Menu", id);
     }
+
+    public static ResponseException unauthorized() {
+        return new ResponseException("You're not allowed to perform this action!",
+                HttpStatus.UNAUTHORIZED);
+    }
 }

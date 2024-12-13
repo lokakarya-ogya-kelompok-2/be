@@ -103,6 +103,10 @@ public class EmpDevPlanServiceImpl implements EmpDevPlanService {
             throw ResponseException.empDevPlanNotFound(id);
         }
         EmpDevPlan empDevPlan = empDevPlanOpt.get();
+        User currentUser = securityUtil.getCurrentUser();
+        if (empDevPlan.getCreatedBy() != null && !empDevPlan.getCreatedBy().equals(currentUser)) {
+            throw ResponseException.unauthorized();
+        }
         if (empDevPlanReq.getAssessmentYear() != null) {
             empDevPlan.setAssessmentYear(empDevPlanReq.getAssessmentYear());
         }
@@ -126,7 +130,12 @@ public class EmpDevPlanServiceImpl implements EmpDevPlanService {
         if (empDevPlanOpt.isEmpty()) {
             throw ResponseException.empDevPlanNotFound(id);
         }
-        empDevPlanRepository.delete(empDevPlanOpt.get());
+        User currentUser = securityUtil.getCurrentUser();
+        EmpDevPlan empDevPlan = empDevPlanOpt.get();
+        if (empDevPlan.getCreatedBy() != null && !empDevPlan.getCreatedBy().equals(currentUser)) {
+            throw ResponseException.unauthorized();
+        }
+        empDevPlanRepository.delete(empDevPlan);
         return true;
     }
 
