@@ -12,6 +12,7 @@ import ogya.lokakarya.be.dto.menu.MenuFilter;
 import ogya.lokakarya.be.dto.menu.MenuReq;
 import ogya.lokakarya.be.entity.Menu;
 import ogya.lokakarya.be.entity.User;
+import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.MenuRepository;
 import ogya.lokakarya.be.service.MenuService;
 
@@ -44,42 +45,38 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public MenuDto getMenuById(UUID id) {
-        Optional<Menu> listData;
-        try {
-            listData = menuRepository.findById(id);
-            System.out.println(listData);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+        Optional<Menu> menuOpt = menuRepository.findById(id);
+        if (menuOpt.isEmpty()) {
+            throw ResponseException.menuNotFound(id);
         }
-        Menu data = listData.get();
+        Menu data = menuOpt.get();
         return convertToDto(data);
     }
 
     @Override
     public MenuDto updateMenuById(UUID id, MenuReq menuReq) {
-        Optional<Menu> listData = menuRepository.findById(id);
-        if (listData.isPresent()) {
-            Menu menu = listData.get();
-            if (!menuReq.getMenuName().isBlank()) {
-                menu.setMenuName(menuReq.getMenuName());
-            }
-            MenuDto menuDto = convertToDto(menu);
-            menuRepository.save(menu);
-            return menuDto;
+        Optional<Menu> menuOpt = menuRepository.findById(id);
+        if (menuOpt.isEmpty()) {
+            throw ResponseException.menuNotFound(id);
         }
-        return null;
+        User currentUser = securityUtil.getCurrentUser();
+        Menu menu = menuOpt.get();
+        if (menuReq.getMenuName() != null) {
+            menu.setMenuName(menuReq.getMenuName());
+        }
+        menu.setUpdatedBy(currentUser);
+        menu = menuRepository.save(menu);
+        return convertToDto(menu);
     }
 
     @Override
     public boolean deleteMenuById(UUID id) {
-        Optional<Menu> listData = menuRepository.findById(id);
-        if (listData.isPresent()) {
-            menuRepository.delete(listData.get());
-            return ResponseEntity.ok().build().hasBody();
-        } else {
-            return ResponseEntity.notFound().build().hasBody();
+        Optional<Menu> menuOpt = menuRepository.findById(id);
+        if (menuOpt.isEmpty()) {
+            throw ResponseException.menuNotFound(id);
         }
+        menuRepository.delete(menuOpt.get());
+        return ResponseEntity.ok().build().hasBody();
     }
 
     private MenuDto convertToDto(Menu data) {

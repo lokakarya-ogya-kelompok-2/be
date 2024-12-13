@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
@@ -51,16 +50,17 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     @Autowired
     private EmpAchievementSkillRepository empAchievementSkillRepo;
 
+
     @Override
     public AssessmentSummaryDto create(AssessmentSummaryReq data) {
-        Optional<User> findUser = userRepository.findById(data.getUserId());
-        if (findUser.isEmpty()) {
+        Optional<User> userOpt = userRepository.findById(data.getUserId());
+        if (userOpt.isEmpty()) {
             throw ResponseException.userNotFound(data.getUserId());
         }
         AssessmentSummary dataEntity = data.toEntity();
-        dataEntity.setUser(findUser.get());
-        AssessmentSummary createData = assessmentSummaryRepository.save(dataEntity);
-        return new AssessmentSummaryDto(createData);
+        dataEntity.setUser(userOpt.get());
+        dataEntity = assessmentSummaryRepository.save(dataEntity);
+        return new AssessmentSummaryDto(dataEntity);
     }
 
     @Override
@@ -117,13 +117,13 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
 
     @Override
     public boolean deleteAssessmentSummaryById(UUID id) {
-        Optional<AssessmentSummary> listData = assessmentSummaryRepository.findById(id);
-        if (listData.isPresent()) {
-            assessmentSummaryRepository.delete(listData.get());
-            return ResponseEntity.ok().build().hasBody();
-        } else {
-            return ResponseEntity.notFound().build().hasBody();
+        Optional<AssessmentSummary> assessmentSummaryOpt = assessmentSummaryRepository.findById(id);
+        if (assessmentSummaryOpt.isEmpty()) {
+            throw ResponseException.assessmentSummaryNotFound(id);
         }
+
+        assessmentSummaryRepository.delete(assessmentSummaryOpt.get());
+        return true;
     }
 
     private AssessmentSummaryDto convertToDto(AssessmentSummary data) {

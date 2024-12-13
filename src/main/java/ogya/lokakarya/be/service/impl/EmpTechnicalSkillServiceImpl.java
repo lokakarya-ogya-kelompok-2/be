@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillDto;
@@ -94,25 +93,22 @@ public class EmpTechnicalSkillServiceImpl implements EmpTechnicalSkillService {
 
     @Override
     public EmpTechnicalSkillDto getEmpTechnicalSkillById(UUID id) {
-        Optional<EmpTechnicalSkill> listData;
-        try {
-            listData = empTechnicalSkillRepository.findById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+        Optional<EmpTechnicalSkill> empTechnicalSkillOpt = empTechnicalSkillRepository.findById(id);
+        if (empTechnicalSkillOpt.isEmpty()) {
+            throw ResponseException.empTechnicalSkillNotFound(id);
         }
-        EmpTechnicalSkill data = listData.get();
+        EmpTechnicalSkill data = empTechnicalSkillOpt.get();
         return convertToDto(data);
     }
 
     @Override
     public EmpTechnicalSkillDto updateEmpTechnicalSkillById(UUID id,
             EmpTechnicalSkillReq empTechnicalSkillReq) {
-        User currentUser = securityUtil.getCurrentUser();
         Optional<EmpTechnicalSkill> empTechnicalSkillOpt = empTechnicalSkillRepository.findById(id);
         if (empTechnicalSkillOpt.isEmpty()) {
             throw ResponseException.empTechnicalSkillNotFound(id);
         }
+        User currentUser = securityUtil.getCurrentUser();
 
         EmpTechnicalSkill empTechnicalSkill = empTechnicalSkillOpt.get();
         if (empTechnicalSkillReq.getScore() != null) {
@@ -130,13 +126,12 @@ public class EmpTechnicalSkillServiceImpl implements EmpTechnicalSkillService {
 
     @Override
     public boolean deleteEmpTechnicalSkillById(UUID id) {
-        Optional<EmpTechnicalSkill> listData = empTechnicalSkillRepository.findById(id);
-        if (listData.isPresent()) {
-            empTechnicalSkillRepository.delete(listData.get());
-            return ResponseEntity.ok().build().hasBody();
-        } else {
-            return ResponseEntity.notFound().build().hasBody();
+        Optional<EmpTechnicalSkill> empTechnicalSkillOpt = empTechnicalSkillRepository.findById(id);
+        if (empTechnicalSkillOpt.isEmpty()) {
+            throw ResponseException.empTechnicalSkillNotFound(id);
         }
+        empTechnicalSkillRepository.delete(empTechnicalSkillOpt.get());
+        return true;
     }
 
     public EmpTechnicalSkillDto convertToDto(EmpTechnicalSkill data) {

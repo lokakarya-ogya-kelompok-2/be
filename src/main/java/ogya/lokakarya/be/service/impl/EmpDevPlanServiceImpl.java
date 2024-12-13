@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.empdevplan.EmpDevPlanDto;
@@ -88,52 +87,47 @@ public class EmpDevPlanServiceImpl implements EmpDevPlanService {
 
     @Override
     public EmpDevPlanDto getEmpDevPlanById(UUID id) {
-        Optional<EmpDevPlan> listData;
-        try {
-            listData = empDevPlanRepository.findById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+        Optional<EmpDevPlan> empDevPlanOpt;
+        empDevPlanOpt = empDevPlanRepository.findById(id);
+        if (empDevPlanOpt.isEmpty()) {
+            throw ResponseException.empDevPlanNotFound(id);
         }
-        EmpDevPlan data = listData.get();
+        EmpDevPlan data = empDevPlanOpt.get();
         return convertToDto(data);
     }
 
     @Override
     public EmpDevPlanDto updateEmpDevPlanById(UUID id, EmpDevPlanReq empDevPlanReq) {
-        Optional<EmpDevPlan> listData = empDevPlanRepository.findById(id);
-        if (listData.isPresent()) {
-            EmpDevPlan empDevPlan = listData.get();
-            if (empDevPlanReq.getAssessmentYear() != null) {
-                empDevPlan.setAssessmentYear(empDevPlanReq.getAssessmentYear());
-            }
-            User user = securityUtil.getCurrentUser();
-            empDevPlan.setUser(user);
-            empDevPlan.setCreatedBy(user);
-            if (empDevPlanReq.getDevPlanId() != null) {
-                Optional<DevPlan> devPlan =
-                        devPlanRepository.findById(empDevPlanReq.getDevPlanId());
-                if (devPlan.isEmpty()) {
-                    throw ResponseException.devPlanNotFound(empDevPlanReq.getDevPlanId());
-                }
-                empDevPlan.setDevPlan(devPlan.get());
-            }
-            EmpDevPlanDto empDevPlanDto = convertToDto(empDevPlan);
-            empDevPlanRepository.save(empDevPlan);
-            return empDevPlanDto;
+        Optional<EmpDevPlan> empDevPlanOpt = empDevPlanRepository.findById(id);
+        if (empDevPlanOpt.isEmpty()) {
+            throw ResponseException.empDevPlanNotFound(id);
         }
-        return null;
+        EmpDevPlan empDevPlan = empDevPlanOpt.get();
+        if (empDevPlanReq.getAssessmentYear() != null) {
+            empDevPlan.setAssessmentYear(empDevPlanReq.getAssessmentYear());
+        }
+        User user = securityUtil.getCurrentUser();
+        empDevPlan.setUser(user);
+        empDevPlan.setUpdatedBy(user);
+        if (empDevPlanReq.getDevPlanId() != null) {
+            Optional<DevPlan> devPlan = devPlanRepository.findById(empDevPlanReq.getDevPlanId());
+            if (devPlan.isEmpty()) {
+                throw ResponseException.devPlanNotFound(empDevPlanReq.getDevPlanId());
+            }
+            empDevPlan.setDevPlan(devPlan.get());
+        }
+        empDevPlan = empDevPlanRepository.save(empDevPlan);
+        return convertToDto(empDevPlan);
     }
 
     @Override
     public boolean deleteEmpDevPlanById(UUID id) {
-        Optional<EmpDevPlan> listData = empDevPlanRepository.findById(id);
-        if (listData.isPresent()) {
-            empDevPlanRepository.delete(listData.get());
-            return ResponseEntity.ok().build().hasBody();
-        } else {
-            return ResponseEntity.notFound().build().hasBody();
+        Optional<EmpDevPlan> empDevPlanOpt = empDevPlanRepository.findById(id);
+        if (empDevPlanOpt.isEmpty()) {
+            throw ResponseException.empDevPlanNotFound(id);
         }
+        empDevPlanRepository.delete(empDevPlanOpt.get());
+        return true;
     }
 
     public EmpDevPlanDto convertToDto(EmpDevPlan data) {

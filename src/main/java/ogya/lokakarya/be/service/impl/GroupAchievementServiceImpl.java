@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.config.security.SecurityUtil;
@@ -62,14 +59,11 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
 
     @Override
     public GroupAchievementDto getGroupAchievementById(UUID id) {
-        Optional<GroupAchievement> listData;
-        try {
-            listData = groupAchievementRepository.findById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+        Optional<GroupAchievement> groupAchievementOpt = groupAchievementRepository.findById(id);
+        if (groupAchievementOpt.isEmpty()) {
+            throw ResponseException.groupAchievementNotFound(id);
         }
-        GroupAchievement data = listData.get();
+        GroupAchievement data = groupAchievementOpt.get();
         return convertToDto(data);
     }
 
@@ -92,15 +86,19 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
             groupAchievement.setEnabled(groupAchievementReq.getEnabled());
         }
         if (groupAchievementReq.getPercentage() != null) {
-            shouldUpdateAssSum = groupAchievementReq.getPercentage().equals(groupAchievement.getPercentage());
+            shouldUpdateAssSum =
+                    groupAchievementReq.getPercentage().equals(groupAchievement.getPercentage());
             groupAchievementReq.setPercentage(groupAchievementReq.getPercentage());
         }
+        User currentUser = securityUtil.getCurrentUser();
+        groupAchievement.setUpdatedBy(currentUser);
 
         groupAchievement = groupAchievementRepository.save(groupAchievement);
         if (shouldUpdateAssSum) {
             entityManager.flush();
             assessmentSummarySvc.recalculateAllAssessmentSummaries();
         }
+
         return convertToDto(groupAchievement);
     }
 
@@ -116,7 +114,7 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
         entityManager.flush();
         assessmentSummarySvc.recalculateAllAssessmentSummaries();
 
-        return ResponseEntity.ok().build().hasBody();
+        return true;
     }
 
     public GroupAchievementDto convertToDto(GroupAchievement data) {

@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.achievement.AchievementDto;
 import ogya.lokakarya.be.dto.achievement.AchievementReq;
 import ogya.lokakarya.be.entity.Achievement;
 import ogya.lokakarya.be.entity.GroupAchievement;
+import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.AchievementRepository;
 import ogya.lokakarya.be.repository.GroupAchievementRepository;
@@ -38,17 +38,22 @@ public class AchievementServiceImpl implements AchievementService {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private SecurityUtil securityUtil;
+
     @Transactional
     @Override
     public AchievementDto create(AchievementReq data) {
         LOG.info("Start service: create achievement");
-        Optional<GroupAchievement> groupAchievementOpt = groupAchievementRepository
-                .findById(data.getGroupAchievementId());
+        Optional<GroupAchievement> groupAchievementOpt =
+                groupAchievementRepository.findById(data.getGroupAchievementId());
         if (groupAchievementOpt.isEmpty()) {
             throw ResponseException.groupAchievementNotFound(data.getGroupAchievementId());
         }
         Achievement dataEntity = data.toEntity();
         dataEntity.setGroupAchievement(groupAchievementOpt.get());
+        User currentUser = securityUtil.getCurrentUser();
+        dataEntity.setCreatedBy(currentUser);
         Achievement createdData = achievementRepository.save(dataEntity);
 
         entityManager.flush();
@@ -71,36 +76,42 @@ public class AchievementServiceImpl implements AchievementService {
 
     @Override
     public AchievementDto getAchievementsById(UUID id) {
-        Optional<Achievement> listData;
-        try {
-            listData = achievementRepository.findById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+        Optional<Achievement> achievementOpt = achievementRepository.findById(id);
+        if (achievementOpt.isEmpty()) {
+            throw ResponseException.achievementNotFound(id);
         }
-        Achievement data = listData.get();
+        Achievement data = achievementOpt.get();
         return convertToDto(data);
     }
 
     @Override
     public AchievementDto updateAchievementById(UUID id, AchievementReq achievementReq) {
-        Optional<Achievement> listData = achievementRepository.findById(id);
-        if (listData.isPresent()) {
-            Achievement achievement = listData.get();
-            if (!achievement.getName().isBlank()) {
-                Optional<GroupAchievement> findGroupAchievement = groupAchievementRepository
-                        .findById(achievementReq.getGroupAchievementId());
-                if (findGroupAchievement.isPresent()) {
-                    achievement.setGroupAchievement(findGroupAchievement.get());
-                    achievement.setName(achievementReq.getAchievementName());
-                    achievement.setEnabled(achievementReq.getEnabled());
-                }
-            }
-            AchievementDto achievementDto = convertToDto(achievement);
-            achievementRepository.save(achievement);
-            return achievementDto;
+        Optional<Achievement> achievementOpt = achievementRepository.findById(id);
+        if (achievementOpt.isEmpty()) {
+            throw ResponseException.achievementNotFound(id);
         }
-        return null;
+        Achievement achievement = achievementOpt.get();
+        if (achievementReq.getAchievementName() != null) {
+            achievement.setName(achievementReq.getAchievementName());
+        }
+        if (achievementReq.getEnabled() != null) {
+            achievement.setEnabled(achievementReq.getEnabled());
+        }
+        if (achievementReq.getGroupAchievementId() != null) {
+
+            Optional<GroupAchievement> groupAchievementOpt =
+                    groupAchievementRepository.findById(achievementReq.getGroupAchievementId());
+
+            if (groupAchievementOpt.isEmpty()) {
+                throw ResponseException
+                        .groupAchievementNotFound(achievementReq.getGroupAchievementId());
+            }
+            achievement.setGroupAchievement(groupAchievementOpt.get());
+        }
+        User currentUser = securityUtil.getCurrentUser();
+        achievement.setUpdatedBy(currentUser);
+        achievement = achievementRepository.save(achievement);
+        return convertToDto(achievement);
     }
 
     @Transactional
@@ -120,7 +131,6 @@ public class AchievementServiceImpl implements AchievementService {
     }
 
     public AchievementDto convertToDto(Achievement data) {
-        AchievementDto result = new AchievementDto(data, true);
-        return result;
+        return new AchievementDto(data, true);
     }
 }
