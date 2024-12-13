@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.config.security.SecurityUtil;
@@ -13,6 +12,7 @@ import ogya.lokakarya.be.dto.role.RoleDto;
 import ogya.lokakarya.be.dto.role.RoleReq;
 import ogya.lokakarya.be.entity.Role;
 import ogya.lokakarya.be.entity.User;
+import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.RoleRepository;
 import ogya.lokakarya.be.service.RoleService;
 
@@ -48,47 +48,42 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleDto getRoleById(UUID id) {
-        Optional<Role> listData;
-        try {
-            listData = roleRepository.findById(id);
-            System.out.println(listData);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+        Optional<Role> roleOpt = roleRepository.findById(id);
+        if (roleOpt.isEmpty()) {
+            throw ResponseException.roleNotFound(id);
         }
-        Role data = listData.get();
+        Role data = roleOpt.get();
         return convertToDto(data);
     }
 
     @Override
     public RoleDto updateRoleById(UUID id, RoleReq createRole) {
-        Optional<Role> listData = roleRepository.findById(id);
-        if (listData.isPresent()) {
-            Role role = listData.get();
-            if (!createRole.getRoleName().isBlank()) {
-                role.setRoleName(createRole.getRoleName());
-            }
-            roleRepository.save(role);
-            RoleDto roleDto = convertToDto(role);
-            return roleDto;
+        Optional<Role> roleOpt = roleRepository.findById(id);
+        if (roleOpt.isEmpty()) {
+            throw ResponseException.roleNotFound(id);
         }
-        return null;
+        Role role = roleOpt.get();
+        User currentUser = securityUtil.getCurrentUser();
+        if (createRole.getRoleName() != null) {
+            role.setRoleName(createRole.getRoleName());
+        }
+        role.setUpdatedBy(currentUser);
+        role = roleRepository.save(role);
+        return convertToDto(role);
     }
 
     @Override
     public boolean deleteRoleById(UUID id) {
-        Optional<Role> listData = roleRepository.findById(id);
-        if (listData.isPresent()) {
-            roleRepository.delete(listData.get());
-            return ResponseEntity.ok().build().hasBody();
-        } else {
-            return ResponseEntity.notFound().build().hasBody();
+        Optional<Role> roleOpt = roleRepository.findById(id);
+        if (roleOpt.isEmpty()) {
+            throw ResponseException.roleNotFound(id);
         }
+        roleRepository.delete(roleOpt.get());
+        return true;
     }
 
 
     private RoleDto convertToDto(Role data) {
-        RoleDto result = new RoleDto(data, true, true, true);
-        return result;
+        return new RoleDto(data, true, true, true);
     }
 }

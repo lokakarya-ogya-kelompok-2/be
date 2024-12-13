@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.config.security.SecurityUtil;
@@ -14,6 +13,7 @@ import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionFilter;
 import ogya.lokakarya.be.dto.empsuggestion.EmpSuggestionReq;
 import ogya.lokakarya.be.entity.EmpSuggestion;
 import ogya.lokakarya.be.entity.User;
+import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.EmpSuggestionRepository;
 import ogya.lokakarya.be.service.EmpSuggestionService;
 
@@ -63,51 +63,46 @@ public class EmpSuggestionServiceImpl implements EmpSuggestionService {
 
     @Override
     public EmpSuggestionDto getEmpSuggestionById(UUID id) {
-        System.out.println("QUERYING FOR: " + id.toString());
-        Optional<EmpSuggestion> listData;
-        try {
-            listData = empSuggestionRepository.findById(id);
-            System.out.println(listData);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+        Optional<EmpSuggestion> empSuggestionOpt = empSuggestionRepository.findById(id);
+        if (empSuggestionOpt.isEmpty()) {
+            throw ResponseException.empSuggestionNotFound(id);
         }
-        if (listData.isEmpty()) {
-            return null;
-        }
-        EmpSuggestion data = listData.get();
+        EmpSuggestion data = empSuggestionOpt.get();
         return convertToDto(data);
     }
 
     @Override
     public EmpSuggestionDto updateEmpSuggestionById(UUID id, EmpSuggestionReq empSuggestionReq) {
-        Optional<EmpSuggestion> listData = empSuggestionRepository.findById(id);
-        if (listData.isPresent()) {
-            EmpSuggestion empSuggestion = listData.get();
-            if (!empSuggestionReq.getSuggestion().isBlank()) {
-                empSuggestion.setSuggestion(empSuggestionReq.getSuggestion());
-                empSuggestion.setAssessmentYear(empSuggestionReq.getAssessmentYear());
-            }
-            EmpSuggestionDto empSuggestionDto = convertToDto(empSuggestion);
-            empSuggestionRepository.save(empSuggestion);
-            return empSuggestionDto;
+        Optional<EmpSuggestion> empSuggestionOpt = empSuggestionRepository.findById(id);
+        if (empSuggestionOpt.isEmpty()) {
+            throw ResponseException.empSuggestionNotFound(id);
         }
-        return null;
+        EmpSuggestion empSuggestion = empSuggestionOpt.get();
+        if (empSuggestionReq.getSuggestion() != null) {
+            empSuggestion.setSuggestion(empSuggestionReq.getSuggestion());
+        }
+        if (empSuggestion.getAssessmentYear() != null) {
+            empSuggestion.setAssessmentYear(empSuggestionReq.getAssessmentYear());
+        }
+        User currentUser = securityUtil.getCurrentUser();
+        empSuggestion.setUpdatedBy(currentUser);
+
+        empSuggestion = empSuggestionRepository.save(empSuggestion);
+        return convertToDto(empSuggestion);
+
     }
 
     @Override
     public boolean deleteEmpSuggestionById(UUID id) {
-        Optional<EmpSuggestion> listData = empSuggestionRepository.findById(id);
-        if (listData.isPresent()) {
-            empSuggestionRepository.delete(listData.get());
-            return ResponseEntity.ok().build().hasBody();
-        } else {
-            return ResponseEntity.notFound().build().hasBody();
+        Optional<EmpSuggestion> empSuggestionOpt = empSuggestionRepository.findById(id);
+        if (empSuggestionOpt.isEmpty()) {
+            throw ResponseException.empSuggestionNotFound(id);
         }
+        empSuggestionRepository.delete(empSuggestionOpt.get());
+        return true;
     }
 
     private EmpSuggestionDto convertToDto(EmpSuggestion data) {
-        EmpSuggestionDto result = new EmpSuggestionDto(data, true, true);
-        return result;
+        return new EmpSuggestionDto(data, true, true);
     }
 }

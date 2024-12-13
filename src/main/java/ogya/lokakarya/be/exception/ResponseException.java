@@ -33,7 +33,7 @@ public class ResponseException extends RuntimeException {
     }
 
     public static ResponseException devPlanNotFound(UUID id) {
-        return notFoundResponse("DevPlan", id);
+        return notFoundResponse("Development Plan", id);
     }
 
 
@@ -47,6 +47,18 @@ public class ResponseException extends RuntimeException {
 
     public static ResponseException empAttitudeSkillNotFound(UUID id) {
         return notFoundResponse("Employee Attitude Skill", id);
+    }
+
+    public static ResponseException empDevPlanNotFound(UUID id) {
+        return notFoundResponse("Employee Development Plan", id);
+    }
+
+    public static ResponseException empSuggestionNotFound(UUID id) {
+        return notFoundResponse("Employee Suggestion", id);
+    }
+
+    public static ResponseException empAchievementNotFound(UUID id) {
+        return notFoundResponse("Employee Achievement", id);
     }
 
     public static ResponseException attitudeSkillNotFound(UUID id) {
@@ -67,5 +79,9 @@ public class ResponseException extends RuntimeException {
 
     public static ResponseException assessmentSummaryNotFound(UUID id) {
         return notFoundResponse("Assessment Summary", id);
+    }
+
+    public static ResponseException menuNotFound(UUID id) {
+        return notFoundResponse("Menu", id);
     }
 }

@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -55,15 +54,22 @@ public class EmpAchievementSkillServiceImpl implements EmpAchievementSkillServic
 
     @Override
     public EmpAchievementSkillDto create(EmpAchievementSkillReq data) {
-        User currentUser = securityUtil.getCurrentUser();
         Optional<Achievement> findAchievement =
                 achievementRepository.findById(data.getAchievementId());
         if (findAchievement.isEmpty()) {
             throw ResponseException.achievementNotFound(data.getAchievementId());
         }
         EmpAchievementSkill dataEntity = data.toEntity();
-        dataEntity.setUser(currentUser);
+        if (data.getUserId() != null) {
+            Optional<User> userOpt = userRepository.findById(data.getUserId());
+            if (userOpt.isEmpty()) {
+                throw ResponseException.userNotFound(data.getUserId());
+            }
+            dataEntity.setUser(userOpt.get());
+        }
         dataEntity.setAchievement(findAchievement.get());
+        User currentUser = securityUtil.getCurrentUser();
+        dataEntity.setCreatedBy(currentUser);
         EmpAchievementSkill createdData = empAchievementSkillRepository.save(dataEntity);
         return new EmpAchievementSkillDto(createdData, true, false);
     }
@@ -78,53 +84,65 @@ public class EmpAchievementSkillServiceImpl implements EmpAchievementSkillServic
 
     @Override
     public EmpAchievementSkillDto getAchievementSkillById(UUID id) {
-        Optional<EmpAchievementSkill> listData;
-        try {
-            listData = empAchievementSkillRepository.findById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+        Optional<EmpAchievementSkill> empAchievementOpt =
+                empAchievementSkillRepository.findById(id);
+        if (empAchievementOpt.isEmpty()) {
+            throw ResponseException.empAchievementNotFound(id);
         }
-        EmpAchievementSkill data = listData.get();
+        EmpAchievementSkill data = empAchievementOpt.get();
         return convertToDto(data);
     }
 
     @Override
     public EmpAchievementSkillDto updateAchievementSkillById(UUID id,
             EmpAchievementSkillReq empAchievementSkillReq) {
-        Optional<EmpAchievementSkill> listData = empAchievementSkillRepository.findById(id);
-        if (listData.isPresent()) {
-            EmpAchievementSkill empAchievementSkill = listData.get();
-            if (!empAchievementSkillReq.getNotes().isBlank()) {
-                Optional<User> findUser =
-                        userRepository.findById(empAchievementSkillReq.getUserId());
-                Optional<Achievement> findAchievement =
-                        achievementRepository.findById(empAchievementSkillReq.getAchievementId());
-                if (findUser.isPresent() && findAchievement.isPresent()) {
-                    empAchievementSkill.setAchievement(findAchievement.get());
-                    empAchievementSkill.setUser(findUser.get());
-                    empAchievementSkill.setNotes(empAchievementSkillReq.getNotes());
-                    empAchievementSkill.setScore(empAchievementSkillReq.getScore());
-                    empAchievementSkill
-                            .setAssessmentYear(empAchievementSkillReq.getAssessmentYear());
-                }
-            }
-            EmpAchievementSkillDto achievementSkillDto = convertToDto(empAchievementSkill);
-            empAchievementSkillRepository.save(empAchievementSkill);
-            return achievementSkillDto;
+        Optional<EmpAchievementSkill> empAchievementOpt =
+                empAchievementSkillRepository.findById(id);
+        if (empAchievementOpt.isEmpty()) {
+            throw ResponseException.empAchievementNotFound(id);
         }
-        return null;
+        EmpAchievementSkill empAchievementSkill = empAchievementOpt.get();
+        if (empAchievementSkillReq.getNotes() != null) {
+            empAchievementSkill.setNotes(empAchievementSkillReq.getNotes());
+        }
+        if (empAchievementSkillReq.getScore() != null) {
+            empAchievementSkill.setScore(empAchievementSkillReq.getScore());
+        }
+        if (empAchievementSkillReq.getAssessmentYear() != null) {
+            empAchievementSkill.setAssessmentYear(empAchievementSkillReq.getAssessmentYear());
+        }
+        if (empAchievementSkillReq.getUserId() != null) {
+            Optional<User> userOpt = userRepository.findById(empAchievementSkillReq.getUserId());
+            if (userOpt.isEmpty()) {
+                throw ResponseException.userNotFound(empAchievementSkillReq.getUserId());
+            }
+            empAchievementSkill.setUser(userOpt.get());
+        }
+        if (empAchievementSkillReq.getAchievementId() != null) {
+            Optional<Achievement> achievementOpt =
+                    achievementRepository.findById(empAchievementSkillReq.getAchievementId());
+            if (achievementOpt.isEmpty()) {
+                throw ResponseException
+                        .achievementNotFound(empAchievementSkillReq.getAchievementId());
+            }
+            empAchievementSkill.setAchievement(achievementOpt.get());
+        }
+        User currentUser = securityUtil.getCurrentUser();
+        empAchievementSkill.setUpdatedBy(currentUser);
+
+        empAchievementSkill = empAchievementSkillRepository.save(empAchievementSkill);
+        return convertToDto(empAchievementSkill);
     }
 
     @Override
     public boolean deleteAchievementSkillById(UUID id) {
-        Optional<EmpAchievementSkill> listData = empAchievementSkillRepository.findById(id);
-        if (listData.isPresent()) {
-            empAchievementSkillRepository.delete(listData.get());
-            return ResponseEntity.ok().build().hasBody();
-        } else {
-            return ResponseEntity.notFound().build().hasBody();
+        Optional<EmpAchievementSkill> empAchievementOpt =
+                empAchievementSkillRepository.findById(id);
+        if (empAchievementOpt.isEmpty()) {
+            throw ResponseException.empAchievementNotFound(id);
         }
+        empAchievementSkillRepository.delete(empAchievementOpt.get());
+        return true;
     }
 
     public EmpAchievementSkillDto convertToDto(EmpAchievementSkill data) {
@@ -181,9 +199,6 @@ public class EmpAchievementSkillServiceImpl implements EmpAchievementSkillServic
             assessmentSummaries.add(assessmentSummaryEntity);
         });
 
-        System.out.println("INI ENTITY-NYA: " + assessmentSummaries.getFirst());
-        System.out.println(assessmentSummaries.size() + " ADA BERAPA??");
-        // ini kalo ga dikomen malah error ??? kalo dikomen ttp kesimpen??????
         assessmentSummaryRepo.saveAll(assessmentSummaries);
 
         return empAchievementSkillEntities.stream()
