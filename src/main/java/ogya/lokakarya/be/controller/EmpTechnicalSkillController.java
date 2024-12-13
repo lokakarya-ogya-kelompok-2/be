@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillDto;
@@ -21,8 +22,9 @@ import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillFilter;
 import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillReq;
 import ogya.lokakarya.be.service.EmpTechnicalSkillService;
 
-@RequestMapping("/emp-technical-skills")
+@SecurityRequirement(name = "bearerAuth")
 @RestController
+@RequestMapping("/emp-technical-skills")
 public class EmpTechnicalSkillController {
         @Autowired
         private EmpTechnicalSkillService empTechnicalSkillService;
