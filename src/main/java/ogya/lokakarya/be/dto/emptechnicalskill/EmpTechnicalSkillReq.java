@@ -19,10 +19,6 @@ import ogya.lokakarya.be.entity.EmpTechnicalSkill;
 @Data
 @ToString
 public class EmpTechnicalSkillReq {
-    // @NotNull(message = "User ID x be null")
-    // @JsonProperty("user_id")
-    // private UUID userId;
-
     @NotNull(message = "Technical skill ID cannot be null")
     @JsonProperty("technical_skill_id")
     private UUID technicalSkillId;

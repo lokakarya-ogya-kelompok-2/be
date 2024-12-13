@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillDto;
 import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillReq;
 import ogya.lokakarya.be.entity.GroupAttitudeSkill;
+import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.GroupAttitudeSkillRepository;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
@@ -30,10 +30,15 @@ public class GroupAttitudeSKillServiceImpl implements GroupAttitudeSkillService 
     @Autowired
     private AssessmentSummaryService assessmentSummarySvc;
 
+    @Autowired
+    private SecurityUtil securityUtil;
+
     @Transactional
     @Override
     public GroupAttitudeSkillDto create(GroupAttitudeSkillReq data) {
         GroupAttitudeSkill groupAttitudeSkillEntity = data.toEntity();
+        User currentUser = securityUtil.getCurrentUser();
+        groupAttitudeSkillEntity.setCreatedBy(currentUser);
         groupAttitudeSkillEntity = groupAttitudeSkillRepository.save(groupAttitudeSkillEntity);
         if (groupAttitudeSkillEntity.getPercentage() > 0) {
             entityManager.flush();
@@ -55,15 +60,13 @@ public class GroupAttitudeSKillServiceImpl implements GroupAttitudeSkillService 
 
     @Override
     public GroupAttitudeSkillDto getGroupAttitudeSkillById(UUID id) {
-        Optional<GroupAttitudeSkill> listData;
-        try {
-            listData = groupAttitudeSkillRepository.findById(id);
-            System.out.println(listData);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+        Optional<GroupAttitudeSkill> groupAttitudeSkillOpt =
+                groupAttitudeSkillRepository.findById(id);
+        if (groupAttitudeSkillOpt.isEmpty()) {
+            throw ResponseException.groupAttitudeSkillNotFound(id);
         }
-        GroupAttitudeSkill data = listData.get();
+
+        GroupAttitudeSkill data = groupAttitudeSkillOpt.get();
         return convertToDto(data);
     }
 
@@ -71,7 +74,8 @@ public class GroupAttitudeSKillServiceImpl implements GroupAttitudeSkillService 
     @Override
     public GroupAttitudeSkillDto updateGroupAttitudeSkillById(UUID id,
             GroupAttitudeSkillReq groupAttitudeSkillReq) {
-        Optional<GroupAttitudeSkill> groupAttitudeSkillOpt = groupAttitudeSkillRepository.findById(id);
+        Optional<GroupAttitudeSkill> groupAttitudeSkillOpt =
+                groupAttitudeSkillRepository.findById(id);
         if (groupAttitudeSkillOpt.isEmpty()) {
             throw ResponseException.groupAttitudeSkillNotFound(id);
         }
@@ -84,11 +88,14 @@ public class GroupAttitudeSKillServiceImpl implements GroupAttitudeSkillService 
             groupAttitudeSkill.setEnabled(groupAttitudeSkillReq.getEnabled());
         }
         if (groupAttitudeSkillReq.getPercentage() != null) {
-            shouldUpdateAssSum = groupAttitudeSkillReq.getPercentage().equals(groupAttitudeSkill.getPercentage());
+            shouldUpdateAssSum = groupAttitudeSkillReq.getPercentage()
+                    .equals(groupAttitudeSkill.getPercentage());
             groupAttitudeSkill.setPercentage(groupAttitudeSkillReq.getPercentage());
         }
-        groupAttitudeSkill = groupAttitudeSkillRepository.save(groupAttitudeSkill);
+        User currentUser = securityUtil.getCurrentUser();
+        groupAttitudeSkill.setUpdatedBy(currentUser);
 
+        groupAttitudeSkill = groupAttitudeSkillRepository.save(groupAttitudeSkill);
         if (shouldUpdateAssSum) {
             entityManager.flush();
             assessmentSummarySvc.recalculateAllAssessmentSummaries();
@@ -100,7 +107,8 @@ public class GroupAttitudeSKillServiceImpl implements GroupAttitudeSkillService 
     @Transactional
     @Override
     public boolean deleteGroupAttitudeSkillById(UUID id) {
-        Optional<GroupAttitudeSkill> groupAttitudeSkillOpt = groupAttitudeSkillRepository.findById(id);
+        Optional<GroupAttitudeSkill> groupAttitudeSkillOpt =
+                groupAttitudeSkillRepository.findById(id);
         if (groupAttitudeSkillOpt.isEmpty()) {
             throw ResponseException.groupAttitudeSkillNotFound(id);
         }

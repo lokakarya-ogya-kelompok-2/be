@@ -1,9 +1,7 @@
 package ogya.lokakarya.be.dto.attitudeskill;
 
 import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -27,7 +25,7 @@ public class AttitudeSkillReq {
 
     @NotNull(message = "Group ID cannot be null")
     @JsonProperty("group_id")
-    private UUID groupAttitudeSkill;
+    private UUID groupAttitudeSkillId;
 
     @NotNull(message = "Enabled status must be provided")
     @JsonProperty("enabled")
@@ -37,7 +35,6 @@ public class AttitudeSkillReq {
         AttitudeSkill attitudeSkilll = new AttitudeSkill();
         attitudeSkilll.setName(attitudeSkill);
         attitudeSkilll.setEnabled(enabled);
-        // attitudeSkilll.setGroupAttitudeSkill(groupAttitudeSkill);
         return attitudeSkilll;
     }
 }
