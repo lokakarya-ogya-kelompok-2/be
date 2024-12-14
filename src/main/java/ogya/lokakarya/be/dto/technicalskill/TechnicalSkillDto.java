@@ -36,16 +36,17 @@ public class TechnicalSkillDto {
     @JsonProperty("updated_by")
     private UserDto updatedBy;
 
-    public TechnicalSkillDto(TechnicalSkill technicalSkill) {
+    public TechnicalSkillDto(TechnicalSkill technicalSkill, boolean withCreatedBy,
+            boolean withUpdatedBy) {
         setId(technicalSkill.getId());
         setTechnicalSKill(technicalSkill.getName());
         setEnabled(technicalSkill.getEnabled());
         setCreatedAt(technicalSkill.getCreatedAt());
-        if (technicalSkill.getCreatedBy() != null) {
+        if (withCreatedBy && technicalSkill.getCreatedBy() != null) {
             setCreatedBy(new UserDto(technicalSkill.getCreatedBy(), false, false, false));
         }
         setUpdatedAt(technicalSkill.getUpdatedAt());
-        if (technicalSkill.getUpdatedBy() != null) {
+        if (withUpdatedBy && technicalSkill.getUpdatedBy() != null) {
             setUpdatedBy(new UserDto(technicalSkill.getUpdatedBy(), false, false, false));
         }
     }

@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillDto;
 import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillReq;
 import ogya.lokakarya.be.entity.TechnicalSkill;
+import ogya.lokakarya.be.entity.User;
+import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.TechnicalSkillRepository;
 import ogya.lokakarya.be.service.TechnicalSkillService;
 
@@ -18,10 +20,16 @@ public class TechnicalSkillServiceImpl implements TechnicalSkillService {
     @Autowired
     private TechnicalSkillRepository technicalSkillRepository;
 
+    @Autowired
+    private SecurityUtil securityUtil;
+
     @Override
     public TechnicalSkillDto create(TechnicalSkillReq data) {
-        TechnicalSkill createdtechnicalSkill = technicalSkillRepository.save(data.toEntity());
-        return new TechnicalSkillDto(createdtechnicalSkill);
+        TechnicalSkill technicalSkill = data.toEntity();
+        User currentUser = securityUtil.getCurrentUser();
+        technicalSkill.setCreatedBy(currentUser);
+        technicalSkill = technicalSkillRepository.save(technicalSkill);
+        return new TechnicalSkillDto(technicalSkill, true, false);
     }
 
     @Override
@@ -37,50 +45,45 @@ public class TechnicalSkillServiceImpl implements TechnicalSkillService {
 
     @Override
     public TechnicalSkillDto gettechnicalSkillById(UUID id) {
-        Optional<TechnicalSkill> listData;
-        try {
-            listData = technicalSkillRepository.findById(id);
-            System.out.println(listData);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+        Optional<TechnicalSkill> technicalSkillOpt = technicalSkillRepository.findById(id);
+        if (technicalSkillOpt.isEmpty()) {
+            throw ResponseException.technicalSkillNotFound(id);
         }
-        TechnicalSkill data = listData.get();
+        TechnicalSkill data = technicalSkillOpt.get();
         return convertToDto(data);
     }
 
     @Override
     public TechnicalSkillDto updateTechnicalSkillById(UUID id,
             TechnicalSkillReq technicalSkillReq) {
-        Optional<TechnicalSkill> listData = technicalSkillRepository.findById(id);
-        if (listData.isPresent()) {
-            TechnicalSkill technicalSkill = listData.get();
-            if (!technicalSkillReq.getTechnicalSKill().isBlank()) {
-                technicalSkill.setName(technicalSkillReq.getTechnicalSKill());
-            }
-            if (technicalSkillReq.getEnabled() != null) {
-                technicalSkill.setEnabled(technicalSkillReq.getEnabled());
-            }
-            technicalSkillRepository.save(technicalSkill);
-            TechnicalSkillDto technicalSkillDto = convertToDto(technicalSkill);
-            return technicalSkillDto;
+        Optional<TechnicalSkill> technicalSkillOpt = technicalSkillRepository.findById(id);
+        if (technicalSkillOpt.isEmpty()) {
+            throw ResponseException.technicalSkillNotFound(id);
         }
-        return null;
+        TechnicalSkill technicalSkill = technicalSkillOpt.get();
+        if (technicalSkillReq.getTechnicalSKill() != null) {
+            technicalSkill.setName(technicalSkillReq.getTechnicalSKill());
+        }
+        if (technicalSkillReq.getEnabled() != null) {
+            technicalSkill.setEnabled(technicalSkillReq.getEnabled());
+        }
+        User currentUser = securityUtil.getCurrentUser();
+        technicalSkill.setUpdatedBy(currentUser);
+        technicalSkill = technicalSkillRepository.save(technicalSkill);
+        return new TechnicalSkillDto(technicalSkill, true, true);
     }
 
     @Override
     public boolean deleteTechnicalSkillById(UUID id) {
-        Optional<TechnicalSkill> listData = technicalSkillRepository.findById(id);
-        if (listData.isPresent()) {
-            technicalSkillRepository.delete(listData.get());
-            return ResponseEntity.ok().build().hasBody();
-        } else {
-            return ResponseEntity.notFound().build().hasBody();
+        Optional<TechnicalSkill> technicalSkillOpt = technicalSkillRepository.findById(id);
+        if (technicalSkillOpt.isEmpty()) {
+            throw ResponseException.technicalSkillNotFound(id);
         }
+        technicalSkillRepository.delete(technicalSkillOpt.get());
+        return false;
     }
 
     private TechnicalSkillDto convertToDto(TechnicalSkill data) {
-        TechnicalSkillDto result = new TechnicalSkillDto(data);
-        return result;
+        return new TechnicalSkillDto(data, true, true);
     }
 }
