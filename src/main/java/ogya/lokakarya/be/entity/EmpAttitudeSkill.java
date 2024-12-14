@@ -2,10 +2,8 @@ package ogya.lokakarya.be.entity;
 
 import java.util.Date;
 import java.util.UUID;
-
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -22,7 +20,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "TBL_EMP_ATTITUDE_SKILL", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "ATTITUDE_SKILL_ID", "USER_ID", "ASSESSMENT_YEAR" }) })
+        @UniqueConstraint(columnNames = {"ATTITUDE_SKILL_ID", "USER_ID", "ASSESSMENT_YEAR"})})
 public class EmpAttitudeSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -30,7 +28,7 @@ public class EmpAttitudeSkill {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "attitude_skill_id")
+    @JoinColumn(name = "ATTITUDE_SKILL_ID")
     private AttitudeSkill attitudeSkill;
 
     @ManyToOne
