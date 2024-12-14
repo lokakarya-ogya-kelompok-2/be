@@ -54,7 +54,8 @@ public class EmpTechnicalSkillDto {
             setUser(new UserDto(empTechnicalSkill.getUser(), false, false, false));
         }
         if (empTechnicalSkill.getTechnicalSkill() != null) {
-            setTechnicalSkill(new TechnicalSkillDto(empTechnicalSkill.getTechnicalSkill()));
+            setTechnicalSkill(
+                    new TechnicalSkillDto(empTechnicalSkill.getTechnicalSkill(), false, false));
         }
         setDetail(empTechnicalSkill.getTechnicalSkilLDetail());
         setScore(empTechnicalSkill.getScore());
