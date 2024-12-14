@@ -36,7 +36,7 @@ public class GroupAttitudeSkillDto {
     @JsonProperty("created_by")
     private UserDto createdBy;
 
-    @JsonProperty("update_at")
+    @JsonProperty("updated_at")
     private Date updatedAt;
 
     @JsonProperty("updated_by")

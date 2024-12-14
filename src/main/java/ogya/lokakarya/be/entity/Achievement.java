@@ -3,10 +3,9 @@ package ogya.lokakarya.be.entity;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,15 +16,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "TBL_ACHIEVEMENT", uniqueConstraints = {
-        @UniqueConstraint(name = "UK_ACHIEVEMENT_NAME_GROUP_ID", columnNames = { "ACHIEVEMENT", "GROUP_ID" })
-})
+@Table(name = "TBL_ACHIEVEMENT",
+        uniqueConstraints = {@UniqueConstraint(name = "UK_ACHIEVEMENT_NAME_GROUP_ID",
+                columnNames = {"ACHIEVEMENT", "GROUP_ID"})})
 public class Achievement {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -36,7 +36,8 @@ public class Achievement {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "GROUP_ID", foreignKey = @ForeignKey(name = "FK_ACHIEVEMENT_GROUP_ACHIEVEMENT"))
+    @JoinColumn(name = "GROUP_ID",
+            foreignKey = @ForeignKey(name = "FK_ACHIEVEMENT_GROUP_ACHIEVEMENT"))
     private GroupAchievement groupAchievement;
 
     @Column(name = "ENABLED")
@@ -58,6 +59,11 @@ public class Achievement {
     @JoinColumn(name = "UPDATED_BY")
     private User updatedBy;
 
-    @OneToMany(mappedBy = "achievement", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "achievement", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<EmpAchievementSkill> empAchievementSkills;
+
+    @PreUpdate
+    private void fillUpdatedAt() {
+        updatedAt = new Date();
+    }
 }

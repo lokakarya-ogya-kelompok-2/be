@@ -147,15 +147,17 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     public AssessmentSummaryDto calculateAssessmentSummary(UUID userId, Integer year) {
         Integer totalWeight = 0;
 
-        HashMap<UUID, SummaryData> groupAttitudeSkillIdToSummaryData = new HashMap<>();
+        Map<UUID, Object> idToGroup = new HashMap<>();
 
         // attitude skills mbuh mumet
-        Map<UUID, Object> idToGroup = new HashMap<>();
+        Map<UUID, GroupAttitudeSkill> attitudeGroupIdToEntity = new HashMap<>();
+        HashMap<UUID, SummaryData> groupAttitudeSkillIdToSummaryData = new HashMap<>();
         List<GroupAttitudeSkill> groupAttitudeSkills = groupAttitudeSkillRepo.findAll();
         for (GroupAttitudeSkill group : groupAttitudeSkills) {
             if (group.getAttitudeSkills() != null) {
                 group.getAttitudeSkills().forEach(attS -> idToGroup.put(attS.getId(), group));
             }
+            attitudeGroupIdToEntity.put(group.getId(), group);
             totalWeight += group.getPercentage();
         }
 
@@ -165,29 +167,29 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         List<EmpAttitudeSkill> empAttitudeSkillsEntity =
                 empAttitudeSkillRepo.findAllByFilter(filterAS);
 
-        Map<GroupAttitudeSkill, List<EmpAttitudeSkill>> userEmpAttitudeSkillGrouped =
-                new HashMap<>();
+        Map<UUID, List<EmpAttitudeSkill>> userEmpAttitudeSkillGrouped = new HashMap<>();
         empAttitudeSkillsEntity.forEach(empAS -> {
             GroupAttitudeSkill group =
                     (GroupAttitudeSkill) idToGroup.get(empAS.getAttitudeSkill().getId());
 
-            if (!userEmpAttitudeSkillGrouped.containsKey(group)) {
-                userEmpAttitudeSkillGrouped.put(group, new ArrayList<>());
+            if (!userEmpAttitudeSkillGrouped.containsKey(group.getId())) {
+                userEmpAttitudeSkillGrouped.put(group.getId(), new ArrayList<>());
             }
-            var curr = userEmpAttitudeSkillGrouped.get(group);
+            var curr = userEmpAttitudeSkillGrouped.get(group.getId());
             curr.add(empAS);
-            userEmpAttitudeSkillGrouped.put(group, curr);
+            userEmpAttitudeSkillGrouped.put(group.getId(), curr);
         });
 
         // achievements mbuh juga
-        idToGroup.clear();
+        Map<UUID, GroupAchievement> achievementGroupIdtoEntity = new HashMap<>();
 
-        HashMap<UUID, SummaryData> groupAchievementToSummaryData = new HashMap<>();
+        Map<UUID, SummaryData> groupAchievementToSummaryData = new HashMap<>();
         List<GroupAchievement> groupAchievements = groupAchievementRepo.findAll();
         for (GroupAchievement group : groupAchievements) {
             if (group.getAchievements() != null) {
                 group.getAchievements().forEach(attS -> idToGroup.put(attS.getId(), group));
             }
+            achievementGroupIdtoEntity.put(group.getId(), group);
 
             totalWeight += group.getPercentage();
         }
@@ -197,17 +199,17 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         filterAc.setYears(List.of(year));
         List<EmpAchievementSkill> empAchievementEntities =
                 empAchievementSkillRepo.findAllByFilter(filterAc);
-        Map<GroupAchievement, List<EmpAchievementSkill>> userEmpAchievementGrouped =
-                new HashMap<>();
+
+        Map<UUID, List<EmpAchievementSkill>> userEmpAchievementGrouped = new HashMap<>();
         empAchievementEntities.forEach(empAc -> {
             GroupAchievement group =
                     (GroupAchievement) idToGroup.get(empAc.getAchievement().getId());
-            if (!userEmpAchievementGrouped.containsKey(group)) {
-                userEmpAchievementGrouped.put(group, new ArrayList<>());
+            if (!userEmpAchievementGrouped.containsKey(group.getId())) {
+                userEmpAchievementGrouped.put(group.getId(), new ArrayList<>());
             }
-            var curr = userEmpAchievementGrouped.get(group);
+            var curr = userEmpAchievementGrouped.get(group.getId());
             curr.add(empAc);
-            userEmpAchievementGrouped.put(group, curr);
+            userEmpAchievementGrouped.put(group.getId(), curr);
         });
 
         for (GroupAchievement group : groupAchievements) {
@@ -249,9 +251,9 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
 
         Double finalScore = 0d;
 
-        for (Map.Entry<GroupAttitudeSkill, List<EmpAttitudeSkill>> entry : userEmpAttitudeSkillGrouped
+        for (Map.Entry<UUID, List<EmpAttitudeSkill>> entry : userEmpAttitudeSkillGrouped
                 .entrySet()) {
-            GroupAttitudeSkill group = entry.getKey();
+            GroupAttitudeSkill group = attitudeGroupIdToEntity.get(entry.getKey());
             List<EmpAttitudeSkill> empASs = entry.getValue();
 
             Integer currGroupWeight = group.getPercentage();
@@ -274,9 +276,9 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             groupAttitudeSkillIdToSummaryData.put(group.getId(), summaryData);
         }
 
-        for (Map.Entry<GroupAchievement, List<EmpAchievementSkill>> entry : userEmpAchievementGrouped
+        for (Map.Entry<UUID, List<EmpAchievementSkill>> entry : userEmpAchievementGrouped
                 .entrySet()) {
-            GroupAchievement group = entry.getKey();
+            GroupAchievement group = achievementGroupIdtoEntity.get(entry.getKey());
             List<EmpAchievementSkill> empAcs = entry.getValue();
 
             Integer currGroupWeight = group.getPercentage();
