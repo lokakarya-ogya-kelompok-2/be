@@ -1,5 +1,15 @@
 package ogya.lokakarya.be.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.config.security.SecurityUtil;
@@ -17,18 +27,6 @@ import ogya.lokakarya.be.repository.AttitudeSkillRepository;
 import ogya.lokakarya.be.repository.EmpAttitudeSkillRepository;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import ogya.lokakarya.be.service.EmpAttitudeSkillService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 
 @Service
 public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
@@ -124,43 +122,53 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
 
     @Override
     public EmpAttitudeSkillDto getEmpAttitudeSkillById(UUID id) {
-        Optional<EmpAttitudeSkill> listData;
-        try {
-            listData = empAttitudeSkillRepository.findById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+        Optional<EmpAttitudeSkill> empAttitudeSkillOpt = empAttitudeSkillRepository.findById(id);
+        if (empAttitudeSkillOpt.isEmpty()) {
+            throw ResponseException.empAttitudeSkillNotFound(id);
         }
-        EmpAttitudeSkill data = listData.get();
+        EmpAttitudeSkill data = empAttitudeSkillOpt.get();
         return new EmpAttitudeSkillDto(data, true, true);
     }
 
     @Override
     public EmpAttitudeSkillDto updateEmpAttitudeSkillById(UUID id,
             EmpAttitudeSkillReq empAttitudeSkillReq) {
-        Optional<EmpAttitudeSkill> listData = empAttitudeSkillRepository.findById(id);
-        if (listData.isPresent()) {
-            EmpAttitudeSkill empAttitudeSkill = listData.get();
-            if (empAttitudeSkillReq.getScore() != null) {
-                empAttitudeSkill.setScore(empAttitudeSkillReq.getScore());
-                empAttitudeSkill.setAssessmentYear(empAttitudeSkillReq.getAssessmentYear());
-            }
-            EmpAttitudeSkillDto empAttitudeSkillDto = convertToDto(empAttitudeSkill);
-            empAttitudeSkillRepository.save(empAttitudeSkill);
-            return empAttitudeSkillDto;
+        Optional<EmpAttitudeSkill> empAttitudeSkillOpt = empAttitudeSkillRepository.findById(id);
+        if (empAttitudeSkillOpt.isEmpty()) {
+            throw ResponseException.empAttitudeSkillNotFound(id);
         }
-        return null;
+        EmpAttitudeSkill empAttitudeSkill = empAttitudeSkillOpt.get();
+        User currentUser = securityUtil.getCurrentUser();
+        if (empAttitudeSkill.getCreatedBy() != null
+                && !empAttitudeSkill.getCreatedBy().equals(currentUser)) {
+            throw ResponseException.unauthorized();
+        }
+        if (empAttitudeSkillReq.getScore() != null) {
+            empAttitudeSkill.setScore(empAttitudeSkillReq.getScore());
+        }
+        if (empAttitudeSkillReq.getAssessmentYear() != null) {
+            empAttitudeSkill.setAssessmentYear(empAttitudeSkillReq.getAssessmentYear());
+        }
+        empAttitudeSkill.setUpdatedBy(currentUser);
+        empAttitudeSkill = empAttitudeSkillRepository.save(empAttitudeSkill);
+        return convertToDto(empAttitudeSkill);
+
     }
 
     @Override
     public boolean deleteEmpAttitudeSkillById(UUID id) {
-        Optional<EmpAttitudeSkill> listData = empAttitudeSkillRepository.findById(id);
-        if (listData.isPresent()) {
-            empAttitudeSkillRepository.delete(listData.get());
-            return ResponseEntity.ok().build().hasBody();
-        } else {
-            return ResponseEntity.notFound().build().hasBody();
+        Optional<EmpAttitudeSkill> empAttitudeSkillOpt = empAttitudeSkillRepository.findById(id);
+        if (empAttitudeSkillOpt.isEmpty()) {
+            throw ResponseException.empAttitudeSkillNotFound(id);
         }
+        EmpAttitudeSkill empAttitudeSkill = empAttitudeSkillOpt.get();
+        User currentUser = securityUtil.getCurrentUser();
+        if (empAttitudeSkill.getCreatedBy() != null
+                && !empAttitudeSkill.getCreatedBy().equals(currentUser)) {
+            throw ResponseException.unauthorized();
+        }
+        empAttitudeSkillRepository.delete(empAttitudeSkill);
+        return true;
     }
 
     public EmpAttitudeSkillDto convertToDto(EmpAttitudeSkill data) {
