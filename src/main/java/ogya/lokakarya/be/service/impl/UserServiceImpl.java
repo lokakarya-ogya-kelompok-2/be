@@ -92,11 +92,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> list(UserFilter filter) {
-        if (filter.getMaxJoinDate() != null && filter.getMinJoinDate() != null
-                && filter.getMinJoinDate().isAfter(filter.getMaxJoinDate())) {
-            throw new ResponseException("max_join_date can't be less than min_join_date!",
-                    HttpStatus.BAD_REQUEST);
-        }
+        filter.validate();
         List<User> userEntities = userRepo.findAllByFilter(filter);
         return userEntities.stream().map(user -> new UserDto(user, filter.getWithCreatedBy(),
                 filter.getWithUpdatedBy(), filter.getWithRoles())).toList();

@@ -45,17 +45,17 @@ public class GroupAttitudeSkillDto {
     @JsonProperty("attitude_skills")
     private List<AttitudeSkillDto> attitudeSkills;
 
-    public GroupAttitudeSkillDto(GroupAttitudeSkill groupAttitudeSkill,
-            boolean withAttitudeSkills) {
+    public GroupAttitudeSkillDto(GroupAttitudeSkill groupAttitudeSkill, boolean withCreatedBy,
+            boolean withUpdatedBy, boolean withAttitudeSkills) {
         setId(groupAttitudeSkill.getId());
         setGroupName(groupAttitudeSkill.getGroupName());
         setPercentage(groupAttitudeSkill.getPercentage());
         setEnabled(groupAttitudeSkill.getEnabled());
         setCreatedAt(groupAttitudeSkill.getCreatedAt());
-        if (groupAttitudeSkill.getCreatedBy() != null)
+        if (withCreatedBy && groupAttitudeSkill.getCreatedBy() != null)
             setCreatedBy(new UserDto(groupAttitudeSkill.getCreatedBy(), false, false, false));
         setUpdatedAt(groupAttitudeSkill.getUpdatedAt());
-        if (groupAttitudeSkill.getUpdatedBy() != null)
+        if (withUpdatedBy && groupAttitudeSkill.getUpdatedBy() != null)
             setUpdatedBy(new UserDto(groupAttitudeSkill.getUpdatedBy(), false, false, false));
         List<AttitudeSkillDto> attitudeSkillDtos = new ArrayList<>();
         if (withAttitudeSkills && groupAttitudeSkill.getAttitudeSkills() != null) {

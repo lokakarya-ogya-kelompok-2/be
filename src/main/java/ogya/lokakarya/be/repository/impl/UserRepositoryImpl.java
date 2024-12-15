@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -18,6 +19,7 @@ import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.entity.UserRole;
 import ogya.lokakarya.be.repository.FilterRepository;
 
+@Repository
 public class UserRepositoryImpl implements FilterRepository<User, UserFilter> {
 
     @Autowired

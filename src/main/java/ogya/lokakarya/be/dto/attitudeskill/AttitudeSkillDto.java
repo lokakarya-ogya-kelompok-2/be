@@ -44,8 +44,8 @@ public class AttitudeSkillDto {
             boolean withCreatedBy, boolean withUpdatedBy) {
         setId(attitudeSkill.getId());
         if (withGroupAttitudeSkill && attitudeSkill.getGroupAttitudeSkill() != null) {
-            setGroupAttitudeSkill(
-                    new GroupAttitudeSkillDto(attitudeSkill.getGroupAttitudeSkill(), false));
+            setGroupAttitudeSkill(new GroupAttitudeSkillDto(attitudeSkill.getGroupAttitudeSkill(),
+                    false, false, false));
         }
         setAttitudeSkill(attitudeSkill.getName());
         setEnabled(attitudeSkill.getEnabled());
