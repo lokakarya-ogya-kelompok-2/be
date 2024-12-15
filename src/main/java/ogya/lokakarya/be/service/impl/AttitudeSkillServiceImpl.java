@@ -54,14 +54,14 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
         entityManager.flush();
         assessmentSummarySvc.recalculateAllAssessmentSummaries();
 
-        return new AttitudeSkillDto(createdData, true, true, false);
+        return new AttitudeSkillDto(createdData, true, false, true);
     }
 
     @Override
     public List<AttitudeSkillDto> getAllAttitudeSkills(AttitudeSkillFilter filter) {
         List<AttitudeSkill> attitudeSkills = attitudeSkillRepository.findAllByFilter(filter);
         return attitudeSkills.stream().map(attitudeSkill -> new AttitudeSkillDto(attitudeSkill,
-                filter.getWithGroup(), filter.getWithCreatedBy(), filter.getWithUpdatedBy()))
+                filter.getWithCreatedBy(), filter.getWithUpdatedBy(), filter.getWithGroup()))
                 .toList();
     }
 

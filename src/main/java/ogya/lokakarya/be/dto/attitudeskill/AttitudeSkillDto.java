@@ -40,8 +40,8 @@ public class AttitudeSkillDto {
     @JsonProperty("updated_by")
     private UserDto updatedBy;
 
-    public AttitudeSkillDto(AttitudeSkill attitudeSkill, boolean withGroupAttitudeSkill,
-            boolean withCreatedBy, boolean withUpdatedBy) {
+    public AttitudeSkillDto(AttitudeSkill attitudeSkill, boolean withCreatedBy,
+            boolean withUpdatedBy, boolean withGroupAttitudeSkill) {
         setId(attitudeSkill.getId());
         if (withGroupAttitudeSkill && attitudeSkill.getGroupAttitudeSkill() != null) {
             setGroupAttitudeSkill(new GroupAttitudeSkillDto(attitudeSkill.getGroupAttitudeSkill(),

@@ -1,6 +1,5 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -13,6 +12,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.achievement.AchievementDto;
+import ogya.lokakarya.be.dto.achievement.AchievementFilter;
 import ogya.lokakarya.be.dto.achievement.AchievementReq;
 import ogya.lokakarya.be.entity.Achievement;
 import ogya.lokakarya.be.entity.GroupAchievement;
@@ -64,14 +64,11 @@ public class AchievementServiceImpl implements AchievementService {
     }
 
     @Override
-    public List<AchievementDto> getAllAchievements() {
-        List<AchievementDto> listResult = new ArrayList<>();
-        List<Achievement> achievementsList = achievementRepository.findAll();
-        for (Achievement achievement : achievementsList) {
-            AchievementDto result = convertToDto(achievement);
-            listResult.add(result);
-        }
-        return listResult;
+    public List<AchievementDto> getAllAchievements(AchievementFilter filter) {
+        List<Achievement> achievements = achievementRepository.findAllByFilter(filter);
+        return achievements.stream().map(achievement -> new AchievementDto(achievement,
+                filter.getWithCreatedBy(), filter.getWithUpdatedBy(), filter.getWithGroup()))
+                .toList();
     }
 
     @Override
