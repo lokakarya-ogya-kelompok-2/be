@@ -1,16 +1,14 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.devplan.DevPlanDto;
+import ogya.lokakarya.be.dto.devplan.DevPlanFilter;
 import ogya.lokakarya.be.dto.devplan.DevPlanReq;
 import ogya.lokakarya.be.entity.DevPlan;
 import ogya.lokakarya.be.entity.User;
@@ -32,18 +30,14 @@ public class DevPlanServiceImpl implements DevPlanService {
         DevPlan devPlanEntity = data.toEntity();
         devPlanEntity.setCreatedBy(currentUser);
         devPlanEntity = devPlanRepository.save(devPlanEntity);
-        return new DevPlanDto(devPlanEntity);
+        return new DevPlanDto(devPlanEntity, true, false);
     }
 
     @Override
-    public List<DevPlanDto> getAllDevPlans() {
-        List<DevPlanDto> listResult = new ArrayList<>();
-        List<DevPlan> devPlanList = devPlanRepository.findAll();
-        for (DevPlan devPlan : devPlanList) {
-            DevPlanDto result = convertToDto(devPlan);
-            listResult.add(result);
-        }
-        return listResult;
+    public List<DevPlanDto> getAllDevPlans(DevPlanFilter filter) {
+        List<DevPlan> devPlans = devPlanRepository.findAllByFilter(filter);
+        return devPlans.stream().map(devPlan -> new DevPlanDto(devPlan, filter.getWithCreatedBy(),
+                filter.getWithUpdatedBy())).toList();
     }
 
     @Override
@@ -86,6 +80,6 @@ public class DevPlanServiceImpl implements DevPlanService {
     }
 
     private DevPlanDto convertToDto(DevPlan data) {
-        return new DevPlanDto(data);
+        return new DevPlanDto(data, true, true);
     }
 }

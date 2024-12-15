@@ -5,17 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.user.UserChangePasswordDto;
 import ogya.lokakarya.be.dto.user.UserDto;
+import ogya.lokakarya.be.dto.user.UserFilter;
 import ogya.lokakarya.be.dto.user.UserReq;
 import ogya.lokakarya.be.dto.user.UserUpdateDto;
 import ogya.lokakarya.be.entity.Division;
@@ -92,11 +91,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> list() {
-        List<User> userEntities = userRepo.findAll();
-        List<UserDto> users = new ArrayList<>(userEntities.size());
-        userEntities.forEach(user -> users.add(new UserDto(user, true, true, true)));
-        return users;
+    public List<UserDto> list(UserFilter filter) {
+        filter.validate();
+        List<User> userEntities = userRepo.findAllByFilter(filter);
+        return userEntities.stream().map(user -> new UserDto(user, filter.getWithCreatedBy(),
+                filter.getWithUpdatedBy(), filter.getWithRoles())).toList();
     }
 
     @Override

@@ -1,9 +1,10 @@
 package ogya.lokakarya.be.repository;
 
-import ogya.lokakarya.be.entity.GroupAttitudeSkill;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.UUID;
+import org.springframework.data.jpa.repository.JpaRepository;
+import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillFilter;
+import ogya.lokakarya.be.entity.GroupAttitudeSkill;
 
-public interface GroupAttitudeSkillRepository extends JpaRepository<GroupAttitudeSkill, UUID> {
+public interface GroupAttitudeSkillRepository extends JpaRepository<GroupAttitudeSkill, UUID>,
+        FilterRepository<GroupAttitudeSkill, GroupAttitudeSkillFilter> {
 }

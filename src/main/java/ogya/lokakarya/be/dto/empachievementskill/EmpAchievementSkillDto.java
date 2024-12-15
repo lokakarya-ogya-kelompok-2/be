@@ -55,7 +55,8 @@ public class EmpAchievementSkillDto {
             setUser(new UserDto(achievementSkill.getUser(), false, false, false));
         }
         if (achievementSkill.getAchievement() != null) {
-            setAchievement(new AchievementDto(achievementSkill.getAchievement(), true));
+            setAchievement(
+                    new AchievementDto(achievementSkill.getAchievement(), false, false, true));
         }
         setNotes(achievementSkill.getNotes());
         setScore(achievementSkill.getScore());

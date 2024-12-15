@@ -60,6 +60,7 @@ public class GroupAchievementDto {
             setUpdatedBy(new UserDto(groupAchievement.getUpdatedBy(), false, false, false));
         if (withAchievements && groupAchievement.getAchievements() != null)
             setAchievements(groupAchievement.getAchievements().stream()
-                    .map(achievement -> new AchievementDto(achievement, false)).toList());
+                    .map(achievement -> new AchievementDto(achievement, false, false, false))
+                    .toList());
     }
 }

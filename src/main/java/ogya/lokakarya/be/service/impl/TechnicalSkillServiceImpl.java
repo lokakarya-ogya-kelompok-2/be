@@ -1,6 +1,5 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -8,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillDto;
+import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillFilter;
 import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillReq;
 import ogya.lokakarya.be.entity.TechnicalSkill;
 import ogya.lokakarya.be.entity.User;
@@ -33,14 +33,10 @@ public class TechnicalSkillServiceImpl implements TechnicalSkillService {
     }
 
     @Override
-    public List<TechnicalSkillDto> getAlltechnicalSkills() {
-        List<TechnicalSkillDto> listResult = new ArrayList<>();
-        List<TechnicalSkill> technicalSkillList = technicalSkillRepository.findAll();
-        for (TechnicalSkill technicalSkill : technicalSkillList) {
-            TechnicalSkillDto result = convertToDto(technicalSkill);
-            listResult.add(result);
-        }
-        return listResult;
+    public List<TechnicalSkillDto> getAlltechnicalSkills(TechnicalSkillFilter filter) {
+        List<TechnicalSkill> technicalSkills = technicalSkillRepository.findAllByFilter(filter);
+        return technicalSkills.stream().map(technicalSkill -> new TechnicalSkillDto(technicalSkill,
+                filter.getWithCreatedBy(), filter.getWithUpdatedBy())).toList();
     }
 
     @Override

@@ -1,6 +1,5 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -10,6 +9,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.groupachievement.GroupAchievementDto;
+import ogya.lokakarya.be.dto.groupachievement.GroupAchievementFilter;
 import ogya.lokakarya.be.dto.groupachievement.GroupAchievementReq;
 import ogya.lokakarya.be.entity.GroupAchievement;
 import ogya.lokakarya.be.entity.User;
@@ -47,14 +47,15 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
     }
 
     @Override
-    public List<GroupAchievementDto> getAllGroupAchievements() {
-        List<GroupAchievementDto> listResult = new ArrayList<>();
-        List<GroupAchievement> groupAchievementList = groupAchievementRepository.findAll();
-        for (GroupAchievement groupAchievement : groupAchievementList) {
-            GroupAchievementDto result = convertToDto(groupAchievement);
-            listResult.add(result);
-        }
-        return listResult;
+    public List<GroupAchievementDto> getAllGroupAchievements(GroupAchievementFilter filter) {
+        filter.validate();
+        List<GroupAchievement> groupAchievements =
+                groupAchievementRepository.findAllByFilter(filter);
+        return groupAchievements.stream()
+                .map(groupAchievement -> new GroupAchievementDto(groupAchievement,
+                        filter.getWithCreatedBy(), filter.getWithUpdatedBy(),
+                        filter.getWithAchievements()))
+                .toList();
     }
 
     @Override

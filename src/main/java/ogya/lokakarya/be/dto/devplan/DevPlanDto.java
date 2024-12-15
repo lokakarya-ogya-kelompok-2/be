@@ -36,16 +36,16 @@ public class DevPlanDto {
     @JsonProperty("updated_by")
     private UserDto updatedBy;
 
-    public DevPlanDto(DevPlan devPlan) {
+    public DevPlanDto(DevPlan devPlan, boolean withCreatedBy, boolean withUpdatedBy) {
         setId(devPlan.getId());
         setPlan(devPlan.getPlan());
         setEnabled(devPlan.isEnabled());
         setCreatedAt(devPlan.getCreatedAt());
-        if (devPlan.getCreatedBy() != null) {
+        if (withCreatedBy && devPlan.getCreatedBy() != null) {
             setCreatedBy(new UserDto(devPlan.getCreatedBy(), false, false, false));
         }
         setUpdatedAt(devPlan.getUpdatedAt());
-        if (devPlan.getUpdatedBy() != null) {
+        if (withUpdatedBy && devPlan.getUpdatedBy() != null) {
             setUpdatedBy(new UserDto(devPlan.getUpdatedBy(), false, false, false));
         }
     }

@@ -1,6 +1,5 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -13,6 +12,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.achievement.AchievementDto;
+import ogya.lokakarya.be.dto.achievement.AchievementFilter;
 import ogya.lokakarya.be.dto.achievement.AchievementReq;
 import ogya.lokakarya.be.entity.Achievement;
 import ogya.lokakarya.be.entity.GroupAchievement;
@@ -60,18 +60,15 @@ public class AchievementServiceImpl implements AchievementService {
         assessmentSummarySvc.recalculateAllAssessmentSummaries();
 
         LOG.info("End service: create achievement");
-        return new AchievementDto(createdData, false);
+        return new AchievementDto(createdData, true, false, true);
     }
 
     @Override
-    public List<AchievementDto> getAllAchievements() {
-        List<AchievementDto> listResult = new ArrayList<>();
-        List<Achievement> achievementsList = achievementRepository.findAll();
-        for (Achievement achievement : achievementsList) {
-            AchievementDto result = convertToDto(achievement);
-            listResult.add(result);
-        }
-        return listResult;
+    public List<AchievementDto> getAllAchievements(AchievementFilter filter) {
+        List<Achievement> achievements = achievementRepository.findAllByFilter(filter);
+        return achievements.stream().map(achievement -> new AchievementDto(achievement,
+                filter.getWithCreatedBy(), filter.getWithUpdatedBy(), filter.getWithGroup()))
+                .toList();
     }
 
     @Override
@@ -131,6 +128,6 @@ public class AchievementServiceImpl implements AchievementService {
     }
 
     public AchievementDto convertToDto(Achievement data) {
-        return new AchievementDto(data, true);
+        return new AchievementDto(data, true, true, true);
     }
 }

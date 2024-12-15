@@ -1,6 +1,5 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -11,6 +10,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillDto;
+import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillFilter;
 import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillReq;
 import ogya.lokakarya.be.entity.GroupAttitudeSkill;
 import ogya.lokakarya.be.entity.User;
@@ -20,7 +20,7 @@ import ogya.lokakarya.be.service.AssessmentSummaryService;
 import ogya.lokakarya.be.service.GroupAttitudeSkillService;
 
 @Service
-public class GroupAttitudeSKillServiceImpl implements GroupAttitudeSkillService {
+public class GroupAttitudeSkillServiceImpl implements GroupAttitudeSkillService {
     @Autowired
     private GroupAttitudeSkillRepository groupAttitudeSkillRepository;
 
@@ -44,18 +44,19 @@ public class GroupAttitudeSKillServiceImpl implements GroupAttitudeSkillService 
             entityManager.flush();
             assessmentSummarySvc.recalculateAllAssessmentSummaries();
         }
-        return new GroupAttitudeSkillDto(groupAttitudeSkillEntity, false);
+        return new GroupAttitudeSkillDto(groupAttitudeSkillEntity, true, false, false);
     }
 
     @Override
-    public List<GroupAttitudeSkillDto> getAllGroupAttitudeSkills() {
-        List<GroupAttitudeSkillDto> listResult = new ArrayList<>();
-        List<GroupAttitudeSkill> groupAttitudeSkillList = groupAttitudeSkillRepository.findAll();
-        for (GroupAttitudeSkill groupAttitudeSkill : groupAttitudeSkillList) {
-            GroupAttitudeSkillDto result = convertToDto(groupAttitudeSkill);
-            listResult.add(result);
-        }
-        return listResult;
+    public List<GroupAttitudeSkillDto> getAllGroupAttitudeSkills(GroupAttitudeSkillFilter filter) {
+        filter.validate();
+        List<GroupAttitudeSkill> groupAttitudeSkills =
+                groupAttitudeSkillRepository.findAllByFilter(filter);
+        return groupAttitudeSkills.stream()
+                .map(groupAttitudeSkill -> new GroupAttitudeSkillDto(groupAttitudeSkill,
+                        filter.getWithCreatedBy(), filter.getWithUpdatedBy(),
+                        filter.getWithAttitudeSkills()))
+                .toList();
     }
 
     @Override
@@ -122,6 +123,6 @@ public class GroupAttitudeSKillServiceImpl implements GroupAttitudeSkillService 
     }
 
     private GroupAttitudeSkillDto convertToDto(GroupAttitudeSkill data) {
-        return new GroupAttitudeSkillDto(data, true);
+        return new GroupAttitudeSkillDto(data, true, true, false);
     }
 }

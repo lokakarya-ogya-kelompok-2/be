@@ -4,13 +4,14 @@ import java.util.List;
 import java.util.UUID;
 import ogya.lokakarya.be.dto.user.UserChangePasswordDto;
 import ogya.lokakarya.be.dto.user.UserDto;
+import ogya.lokakarya.be.dto.user.UserFilter;
 import ogya.lokakarya.be.dto.user.UserReq;
 import ogya.lokakarya.be.dto.user.UserUpdateDto;
 
 public interface UserService {
     UserDto create(UserReq data);
 
-    List<UserDto> list();
+    List<UserDto> list(UserFilter filter);
 
     UserDto get(UUID id);
 
