@@ -33,9 +33,9 @@ public class GroupAttitudeSkillRepositoryImpl
 
         List<Predicate> predicates = new ArrayList<>();
 
-        if (filter.getGroupNameContains() != null) {
+        if (filter.getNameContains() != null) {
             predicates.add(cb.like(cb.lower(root.get("groupName")),
-                    "%" + filter.getGroupNameContains().toLowerCase() + "%"));
+                    "%" + filter.getNameContains().toLowerCase() + "%"));
         }
         if (filter.getMinWeight() != null && filter.getMaxWeight() != null) {
             predicates.add(cb.between(root.get("percentage"), filter.getMinWeight(),

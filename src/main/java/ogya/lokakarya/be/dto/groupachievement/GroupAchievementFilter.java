@@ -6,7 +6,7 @@ import ogya.lokakarya.be.exception.ResponseException;
 
 @Data
 public class GroupAchievementFilter {
-    private String groupNameContains;
+    private String nameContains;
     private Integer minWeight;
     private Integer maxWeight;
     private Boolean enabledOnly = false;

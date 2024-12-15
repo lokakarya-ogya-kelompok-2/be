@@ -115,7 +115,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}/reset-password")
-    public ResponseEntity<ResponseDto<String>> postMethodName(@PathVariable UUID id) {
+    public ResponseEntity<ResponseDto<String>> resetPassword(@PathVariable UUID id) {
         var generatedPassword = userSvc.resetPassword(id);
         return ResponseDto.<String>builder().success(true).content(generatedPassword)
                 .message("Reset password successful!").build().toResponse(HttpStatus.OK);

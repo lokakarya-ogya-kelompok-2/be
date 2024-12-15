@@ -41,8 +41,7 @@ public class GroupAttitudeSkillController {
 
         @GetMapping
         public ResponseEntity<ResponseDto<List<GroupAttitudeSkillDto>>> getAllGroupAttitudeSkills(
-                        @RequestParam(name = "group_name_contains",
-                                        required = false) String groupNameContains,
+                        @RequestParam(name = "name_contains", required = false) String nameContains,
                         @RequestParam(name = "min_weight", required = false) Integer minWeight,
                         @RequestParam(name = "max_weight", required = false) Integer maxWeight,
                         @RequestParam(name = "enabled_only", required = false,
@@ -56,7 +55,7 @@ public class GroupAttitudeSkillController {
 
                 System.out.println("Get All Group Attitude Skills");
                 GroupAttitudeSkillFilter filter = new GroupAttitudeSkillFilter();
-                filter.setGroupNameContains(groupNameContains);
+                filter.setNameContains(nameContains);
                 filter.setMinWeight(minWeight);
                 filter.setMaxWeight(maxWeight);
                 filter.setEnabledOnly(enabledOnly);
