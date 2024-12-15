@@ -8,6 +8,6 @@ import lombok.Data;
 public class MenuFilter {
     private UUID userId;
     private List<String> roleNames;
-    private Boolean withCreatedBy;
-    private Boolean withUpdatedBy;
+    private Boolean withCreatedBy = false;
+    private Boolean withUpdatedBy = false;
 }
