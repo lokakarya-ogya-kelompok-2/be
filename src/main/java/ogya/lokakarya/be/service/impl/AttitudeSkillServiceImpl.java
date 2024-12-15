@@ -1,6 +1,5 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -11,6 +10,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillDto;
+import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillFilter;
 import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillReq;
 import ogya.lokakarya.be.entity.AttitudeSkill;
 import ogya.lokakarya.be.entity.GroupAttitudeSkill;
@@ -58,14 +58,11 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
     }
 
     @Override
-    public List<AttitudeSkillDto> getAllAttitudeSkills() {
-        List<AttitudeSkillDto> listResult = new ArrayList<>();
-        List<AttitudeSkill> attitudeSkillList = attitudeSkillRepository.findAll();
-        for (AttitudeSkill attitudeSkill : attitudeSkillList) {
-            AttitudeSkillDto result = convertToDto(attitudeSkill);
-            listResult.add(result);
-        }
-        return listResult;
+    public List<AttitudeSkillDto> getAllAttitudeSkills(AttitudeSkillFilter filter) {
+        List<AttitudeSkill> attitudeSkills = attitudeSkillRepository.findAllByFilter(filter);
+        return attitudeSkills.stream().map(attitudeSkill -> new AttitudeSkillDto(attitudeSkill,
+                filter.getWithGroup(), filter.getWithCreatedBy(), filter.getWithUpdatedBy()))
+                .toList();
     }
 
     @Override
