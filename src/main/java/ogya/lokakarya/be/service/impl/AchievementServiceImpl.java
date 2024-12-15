@@ -60,7 +60,7 @@ public class AchievementServiceImpl implements AchievementService {
         assessmentSummarySvc.recalculateAllAssessmentSummaries();
 
         LOG.info("End service: create achievement");
-        return new AchievementDto(createdData, false);
+        return new AchievementDto(createdData, true, false, true);
     }
 
     @Override
@@ -131,6 +131,6 @@ public class AchievementServiceImpl implements AchievementService {
     }
 
     public AchievementDto convertToDto(Achievement data) {
-        return new AchievementDto(data, true);
+        return new AchievementDto(data, true, true, true);
     }
 }

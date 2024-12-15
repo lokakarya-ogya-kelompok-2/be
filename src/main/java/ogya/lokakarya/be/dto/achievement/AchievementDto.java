@@ -2,9 +2,7 @@ package ogya.lokakarya.be.dto.achievement;
 
 import java.util.Date;
 import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -45,7 +43,8 @@ public class AchievementDto {
     @JsonProperty("updated_by")
     private UserDto updatedBy;
 
-    public AchievementDto(Achievement achievement, boolean withGroupAchievement) {
+    public AchievementDto(Achievement achievement, boolean withCreatedBy, boolean withUpdatedBy,
+            boolean withGroupAchievement) {
         setId(achievement.getId());
         setAchievement(achievement.getName());
         if (withGroupAchievement && achievement.getGroupAchievement() != null) {
@@ -54,10 +53,10 @@ public class AchievementDto {
         }
         setEnabled(achievement.getEnabled());
         setCreatedAt(achievement.getCreatedAt());
-        if (achievement.getCreatedBy() != null)
+        if (withCreatedBy && achievement.getCreatedBy() != null)
             setCreatedBy(new UserDto(achievement.getCreatedBy(), false, false, false));
         setUpdatedAt(achievement.getUpdatedAt());
-        if (achievement.getUpdatedBy() != null)
+        if (withUpdatedBy && achievement.getUpdatedBy() != null)
             setUpdatedBy(new UserDto(achievement.getUpdatedBy(), false, false, false));
     }
 }
