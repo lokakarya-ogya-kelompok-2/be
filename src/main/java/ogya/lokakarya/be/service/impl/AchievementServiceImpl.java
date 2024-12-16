@@ -81,6 +81,7 @@ public class AchievementServiceImpl implements AchievementService {
         return convertToDto(data);
     }
 
+    @Transactional
     @Override
     public AchievementDto updateAchievementById(UUID id, AchievementReq achievementReq) {
         Optional<Achievement> achievementOpt = achievementRepository.findById(id);
@@ -92,13 +93,14 @@ public class AchievementServiceImpl implements AchievementService {
             achievement.setName(achievementReq.getAchievementName());
         }
         if (achievementReq.getEnabled() != null) {
+            if (!achievementReq.getEnabled().equals(achievement.getEnabled())) {
+                assessmentSummarySvc.recalculateAllAssessmentSummaries();
+            }
             achievement.setEnabled(achievementReq.getEnabled());
         }
         if (achievementReq.getGroupAchievementId() != null) {
-
             Optional<GroupAchievement> groupAchievementOpt =
                     groupAchievementRepository.findById(achievementReq.getGroupAchievementId());
-
             if (groupAchievementOpt.isEmpty()) {
                 throw ResponseException
                         .groupAchievementNotFound(achievementReq.getGroupAchievementId());
@@ -108,6 +110,7 @@ public class AchievementServiceImpl implements AchievementService {
         User currentUser = securityUtil.getCurrentUser();
         achievement.setUpdatedBy(currentUser);
         achievement = achievementRepository.save(achievement);
+
         return convertToDto(achievement);
     }
 

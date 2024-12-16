@@ -10,4 +10,5 @@ public class EmpAttitudeSkillFilter {
     private List<Integer> years;
     private Boolean withCreatedBy = false;
     private Boolean withUpdatedBy = false;
+    private Boolean enabledOnly = false;
 }

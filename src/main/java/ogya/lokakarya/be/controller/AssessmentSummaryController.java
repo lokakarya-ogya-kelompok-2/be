@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
@@ -20,8 +21,9 @@ import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryReq;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 
 
-@RequestMapping("/assessment-summaries")
+@SecurityRequirement(name = "bearerAuth")
 @RestController
+@RequestMapping("/assessment-summaries")
 public class AssessmentSummaryController {
         @Autowired
         private AssessmentSummaryService assessmentSummaryService;
