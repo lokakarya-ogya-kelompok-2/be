@@ -44,7 +44,7 @@ public class GroupAttitudeSkillServiceImpl implements GroupAttitudeSkillService 
             entityManager.flush();
             assessmentSummarySvc.recalculateAllAssessmentSummaries();
         }
-        return new GroupAttitudeSkillDto(groupAttitudeSkillEntity, true, false, false);
+        return new GroupAttitudeSkillDto(groupAttitudeSkillEntity, true, false, false, false);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class GroupAttitudeSkillServiceImpl implements GroupAttitudeSkillService 
         return groupAttitudeSkills.stream()
                 .map(groupAttitudeSkill -> new GroupAttitudeSkillDto(groupAttitudeSkill,
                         filter.getWithCreatedBy(), filter.getWithUpdatedBy(),
-                        filter.getWithAttitudeSkills()))
+                        filter.getWithAttitudeSkills(), filter.getWithEnabledChildOnly()))
                 .toList();
     }
 
@@ -123,6 +123,6 @@ public class GroupAttitudeSkillServiceImpl implements GroupAttitudeSkillService 
     }
 
     private GroupAttitudeSkillDto convertToDto(GroupAttitudeSkill data) {
-        return new GroupAttitudeSkillDto(data, true, true, false);
+        return new GroupAttitudeSkillDto(data, true, true, false, false);
     }
 }

@@ -48,6 +48,8 @@ public class GroupAttitudeSkillController {
                                         defaultValue = "false") Boolean enabledOnly,
                         @RequestParam(name = "with_attitude_skills", required = false,
                                         defaultValue = "false") Boolean withAttitudeSkills,
+                        @RequestParam(name = "with_enabled_child_only", required = false,
+                                        defaultValue = "false") Boolean withEnabledChildOnly,
                         @RequestParam(name = "with_created_by", required = false,
                                         defaultValue = "false") Boolean withCreatedBy,
                         @RequestParam(name = "with_updated_by", required = false,
@@ -60,6 +62,7 @@ public class GroupAttitudeSkillController {
                 filter.setMaxWeight(maxWeight);
                 filter.setEnabledOnly(enabledOnly);
                 filter.setWithAttitudeSkills(withAttitudeSkills);
+                filter.setWithEnabledChildOnly(withEnabledChildOnly);
                 filter.setWithCreatedBy(withCreatedBy);
                 filter.setWithUpdatedBy(withUpdatedBy);
 

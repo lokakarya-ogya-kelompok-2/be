@@ -13,8 +13,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillFilter;
 import ogya.lokakarya.be.entity.AttitudeSkill;
-import ogya.lokakarya.be.entity.Menu;
-import ogya.lokakarya.be.entity.User;
+import ogya.lokakarya.be.entity.GroupAttitudeSkill;
 import ogya.lokakarya.be.repository.FilterRepository;
 
 @Repository
@@ -24,6 +23,7 @@ public class AttitudeSkillRepositoryImpl
     @Autowired
     private EntityManager entityManager;
 
+    @SuppressWarnings("java:S3776")
     @Override
     public List<AttitudeSkill> findAllByFilter(AttitudeSkillFilter filter) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -35,30 +35,24 @@ public class AttitudeSkillRepositoryImpl
             predicates.add(cb.like(cb.lower(root.get("name")),
                     "%" + filter.getNameContains().toLowerCase() + "%"));
         }
-        if (filter.getWithGroup().booleanValue()) {
-            root.join("groupAttitudeSkill", JoinType.LEFT);
+        if (filter.getGroupIds() != null || filter.getWithGroup().booleanValue()) {
+            Join<AttitudeSkill, GroupAttitudeSkill> attitudeSkillGroupAttitudeSkillJoin =
+                    root.join("groupAttitudeSkill", JoinType.LEFT);
+            if (filter.getGroupIds() != null) {
+                predicates.add(
+                        attitudeSkillGroupAttitudeSkillJoin.get("id").in(filter.getGroupIds()));
+            }
         }
         if (filter.getEnabledOnly().booleanValue()) {
             predicates.add(cb.equal(root.get("enabled"), true));
-        }
-        if (filter.getWithCreatedBy().booleanValue() || filter.getWithUpdatedBy().booleanValue()) {
-            Join<Menu, User> userJoin = null;
-            if (filter.getWithCreatedBy().booleanValue()) {
-                userJoin = root.join("createdBy", JoinType.LEFT);
-            }
-            if (filter.getWithUpdatedBy().booleanValue()) {
-                if (userJoin == null) {
-                    root.join("updatedBy", JoinType.LEFT);
-                } else {
-                    userJoin.join("updatedBy", JoinType.LEFT);
-                }
-            }
         }
 
         if (!predicates.isEmpty()) {
             query.where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
         }
+
         query.select(root).distinct(true);
+
         return entityManager.createQuery(query).getResultList();
     }
 

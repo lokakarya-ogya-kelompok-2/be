@@ -13,7 +13,6 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillFilter;
 import ogya.lokakarya.be.entity.EmpAttitudeSkill;
-import ogya.lokakarya.be.entity.Menu;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.repository.FilterRepository;
 
@@ -28,13 +27,12 @@ public class EmpAttitudeSkillRepositoryImpl
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<EmpAttitudeSkill> query = cb.createQuery(EmpAttitudeSkill.class);
         Root<EmpAttitudeSkill> root = query.from(EmpAttitudeSkill.class);
-
         List<Predicate> predicates = new ArrayList<>();
+
         if (filter.getUserIds() != null) {
             Join<EmpAttitudeSkill, User> attitudeSkillUserJoin = root.join("user", JoinType.LEFT);
             predicates.add(attitudeSkillUserJoin.get("id").in(filter.getUserIds()));
         }
-
         if (filter.getYears() != null) {
             predicates.add(root.get("assessmentYear").in(filter.getYears()));
         }
@@ -43,22 +41,7 @@ public class EmpAttitudeSkillRepositoryImpl
             query.where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
         }
 
-        if (filter.getWithCreatedBy().booleanValue() || filter.getWithUpdatedBy().booleanValue()) {
-            Join<Menu, User> userJoin = null;
-            if (filter.getWithCreatedBy().booleanValue()) {
-                userJoin = root.join("createdBy", JoinType.LEFT);
-            }
-            if (filter.getWithUpdatedBy().booleanValue()) {
-                if (userJoin == null) {
-                    root.join("updatedBy", JoinType.LEFT);
-                } else {
-                    userJoin.join("updatedBy", JoinType.LEFT);
-                }
-            }
-        }
-
-        query.distinct(true);
-        query.select(root);
+        query.select(root).distinct(true);
 
         return entityManager.createQuery(query).getResultList();
     }

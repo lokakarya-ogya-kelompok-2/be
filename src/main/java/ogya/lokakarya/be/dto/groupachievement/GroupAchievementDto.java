@@ -47,7 +47,7 @@ public class GroupAchievementDto {
     private List<AchievementDto> achievements;
 
     public GroupAchievementDto(GroupAchievement groupAchievement, boolean withCreatedBy,
-            boolean withUpdatedBy, boolean withAchievements) {
+            boolean withUpdatedBy, boolean withAchievements, boolean withEnabledChildOnly) {
         setId(groupAchievement.getId());
         setGroupName(groupAchievement.getGroupName());
         setPercentage(groupAchievement.getPercentage());
@@ -59,8 +59,11 @@ public class GroupAchievementDto {
         if (withUpdatedBy && groupAchievement.getUpdatedBy() != null)
             setUpdatedBy(new UserDto(groupAchievement.getUpdatedBy(), false, false, false));
         if (withAchievements && groupAchievement.getAchievements() != null)
-            setAchievements(groupAchievement.getAchievements().stream()
-                    .map(achievement -> new AchievementDto(achievement, false, false, false))
-                    .toList());
+            setAchievements(groupAchievement.getAchievements().stream().filter(achievement -> {
+                if (withEnabledChildOnly) {
+                    return achievement.getEnabled().booleanValue();
+                }
+                return true;
+            }).map(achievement -> new AchievementDto(achievement, false, false, false)).toList());
     }
 }

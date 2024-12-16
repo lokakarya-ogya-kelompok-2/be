@@ -47,6 +47,8 @@ public class GroupAchievementController {
                     defaultValue = "false") Boolean enabledOnly,
             @RequestParam(name = "with_achievements", required = false,
                     defaultValue = "false") Boolean withAchievements,
+            @RequestParam(name = "with_enabled_child_only", required = false,
+                    defaultValue = "false") Boolean withEnabledChildOnly,
             @RequestParam(name = "with_created_by", required = false,
                     defaultValue = "false") Boolean withCreatedBy,
             @RequestParam(name = "with_updated_by", required = false,
@@ -58,6 +60,7 @@ public class GroupAchievementController {
         filter.setMaxWeight(maxWeight);
         filter.setEnabledOnly(enabledOnly);
         filter.setWithAchievements(withAchievements);
+        filter.setWithEnabledChildOnly(withEnabledChildOnly);
         filter.setWithCreatedBy(withCreatedBy);
         filter.setWithUpdatedBy(withUpdatedBy);
 

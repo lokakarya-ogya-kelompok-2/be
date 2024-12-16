@@ -49,7 +49,7 @@ public class AchievementDto {
         setAchievement(achievement.getName());
         if (withGroupAchievement && achievement.getGroupAchievement() != null) {
             setGroupAchievement(new GroupAchievementDto(achievement.getGroupAchievement(), false,
-                    false, false));
+                    false, false, false));
         }
         setEnabled(achievement.getEnabled());
         setCreatedAt(achievement.getCreatedAt());
