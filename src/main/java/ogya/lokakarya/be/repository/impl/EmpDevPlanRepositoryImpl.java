@@ -14,7 +14,6 @@ import jakarta.persistence.criteria.Root;
 import ogya.lokakarya.be.dto.empdevplan.EmpDevPlanFilter;
 import ogya.lokakarya.be.entity.EmpDevPlan;
 import ogya.lokakarya.be.entity.EmpTechnicalSkill;
-import ogya.lokakarya.be.entity.Menu;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.repository.FilterRepository;
 
@@ -28,13 +27,12 @@ public class EmpDevPlanRepositoryImpl implements FilterRepository<EmpDevPlan, Em
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<EmpDevPlan> query = cb.createQuery(EmpDevPlan.class);
         Root<EmpDevPlan> root = query.from(EmpDevPlan.class);
-
         List<Predicate> predicates = new ArrayList<>();
+
         if (filter.getUserIds() != null) {
             Join<EmpTechnicalSkill, User> techSkillUserJoin = root.join("user", JoinType.LEFT);
             predicates.add(techSkillUserJoin.get("id").in(filter.getUserIds()));
         }
-
         if (filter.getYears() != null) {
             predicates.add(root.get("assessmentYear").in(filter.getYears()));
         }
@@ -43,22 +41,7 @@ public class EmpDevPlanRepositoryImpl implements FilterRepository<EmpDevPlan, Em
             query.where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
         }
 
-        if (filter.getWithCreatedBy().booleanValue() || filter.getWithUpdatedBy().booleanValue()) {
-            Join<Menu, User> userJoin = null;
-            if (filter.getWithCreatedBy().booleanValue()) {
-                userJoin = root.join("createdBy", JoinType.LEFT);
-            }
-            if (filter.getWithUpdatedBy().booleanValue()) {
-                if (userJoin == null) {
-                    root.join("updatedBy", JoinType.LEFT);
-                } else {
-                    userJoin.join("updatedBy", JoinType.LEFT);
-                }
-            }
-        }
-
-        query.distinct(true);
-        query.select(root);
+        query.select(root).distinct(true);
 
         return entityManager.createQuery(query).getResultList();
     }

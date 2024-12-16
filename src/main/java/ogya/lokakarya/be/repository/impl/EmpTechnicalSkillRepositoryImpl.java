@@ -13,7 +13,6 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillFilter;
 import ogya.lokakarya.be.entity.EmpTechnicalSkill;
-import ogya.lokakarya.be.entity.Menu;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.repository.FilterRepository;
 
@@ -29,13 +28,12 @@ public class EmpTechnicalSkillRepositoryImpl
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<EmpTechnicalSkill> query = cb.createQuery(EmpTechnicalSkill.class);
         Root<EmpTechnicalSkill> root = query.from(EmpTechnicalSkill.class);
-
         List<Predicate> predicates = new ArrayList<>();
+
         if (filter.getUserIds() != null) {
             Join<EmpTechnicalSkill, User> techSkillUserJoin = root.join("user", JoinType.LEFT);
             predicates.add(techSkillUserJoin.get("id").in(filter.getUserIds()));
         }
-
         if (filter.getYears() != null) {
             predicates.add(root.get("assessmentYear").in(filter.getYears()));
         }
@@ -44,22 +42,7 @@ public class EmpTechnicalSkillRepositoryImpl
             query.where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
         }
 
-        if (filter.getWithCreatedBy().booleanValue() || filter.getWithUpdatedBy().booleanValue()) {
-            Join<Menu, User> userJoin = null;
-            if (filter.getWithCreatedBy().booleanValue()) {
-                userJoin = root.join("createdBy", JoinType.LEFT);
-            }
-            if (filter.getWithUpdatedBy().booleanValue()) {
-                if (userJoin == null) {
-                    root.join("updatedBy", JoinType.LEFT);
-                } else {
-                    userJoin.join("updatedBy", JoinType.LEFT);
-                }
-            }
-        }
-
-        query.distinct(true);
-        query.select(root);
+        query.select(root).distinct(true);
 
         return entityManager.createQuery(query).getResultList();
     }

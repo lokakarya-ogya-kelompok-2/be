@@ -14,9 +14,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import ogya.lokakarya.be.dto.user.UserFilter;
 import ogya.lokakarya.be.entity.Division;
-import ogya.lokakarya.be.entity.Menu;
 import ogya.lokakarya.be.entity.User;
-import ogya.lokakarya.be.entity.UserRole;
 import ogya.lokakarya.be.repository.FilterRepository;
 
 @Repository
@@ -32,7 +30,6 @@ public class UserRepositoryImpl implements FilterRepository<User, UserFilter> {
         CriteriaQuery<User> query = cb.createQuery(User.class);
         Root<User> root = query.from(User.class);
         Join<User, Division> userDivisionJoin = root.join("division", JoinType.LEFT);
-
         List<Predicate> predicates = new ArrayList<>();
 
         if (filter.getUsernameContains() != null) {
@@ -71,27 +68,11 @@ public class UserRepositoryImpl implements FilterRepository<User, UserFilter> {
         if (filter.getEnabledOnly().booleanValue()) {
             predicates.add(cb.equal(root.get("enabled"), true));
         }
-        if (filter.getWithRoles().booleanValue()) {
-            Join<User, UserRole> userRoleJoin = root.join("userRoles", JoinType.LEFT);
-            userRoleJoin.join("role", JoinType.LEFT);
-        }
-        if (filter.getWithCreatedBy().booleanValue() || filter.getWithUpdatedBy().booleanValue()) {
-            Join<Menu, User> userJoin = null;
-            if (filter.getWithCreatedBy().booleanValue()) {
-                userJoin = root.join("createdBy", JoinType.LEFT);
-            }
-            if (filter.getWithUpdatedBy().booleanValue()) {
-                if (userJoin == null) {
-                    root.join("updatedBy", JoinType.LEFT);
-                } else {
-                    userJoin.join("updatedBy", JoinType.LEFT);
-                }
-            }
-        }
 
         if (!predicates.isEmpty()) {
             query.where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
         }
+
         query.select(root).distinct(true);
 
         return entityManager.createQuery(query).getResultList();
