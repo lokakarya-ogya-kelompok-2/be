@@ -1,6 +1,5 @@
 package ogya.lokakarya.be.dto.groupattitudeskill;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -46,7 +45,7 @@ public class GroupAttitudeSkillDto {
     private List<AttitudeSkillDto> attitudeSkills;
 
     public GroupAttitudeSkillDto(GroupAttitudeSkill groupAttitudeSkill, boolean withCreatedBy,
-            boolean withUpdatedBy, boolean withAttitudeSkills) {
+            boolean withUpdatedBy, boolean withAttitudeSkills, boolean withEnabledChildOnly) {
         setId(groupAttitudeSkill.getId());
         setGroupName(groupAttitudeSkill.getGroupName());
         setPercentage(groupAttitudeSkill.getPercentage());
@@ -57,11 +56,15 @@ public class GroupAttitudeSkillDto {
         setUpdatedAt(groupAttitudeSkill.getUpdatedAt());
         if (withUpdatedBy && groupAttitudeSkill.getUpdatedBy() != null)
             setUpdatedBy(new UserDto(groupAttitudeSkill.getUpdatedBy(), false, false, false));
-        List<AttitudeSkillDto> attitudeSkillDtos = new ArrayList<>();
         if (withAttitudeSkills && groupAttitudeSkill.getAttitudeSkills() != null) {
-            groupAttitudeSkill.getAttitudeSkills().forEach(attitudeSkill -> attitudeSkillDtos
-                    .add(new AttitudeSkillDto(attitudeSkill, false, false, false)));
+            setAttitudeSkills(
+                    groupAttitudeSkill.getAttitudeSkills().stream().filter(attitudeSkill -> {
+                        if (withEnabledChildOnly) {
+                            return attitudeSkill.getEnabled().booleanValue();
+                        }
+                        return true;
+                    }).map(attitudeSkill -> new AttitudeSkillDto(attitudeSkill, false, false,
+                            false)).toList());
         }
-        setAttitudeSkills(attitudeSkillDtos);
     }
 }

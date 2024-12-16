@@ -42,6 +42,7 @@ public class AttitudeSkillController {
         @GetMapping
         public ResponseEntity<ResponseDto<List<AttitudeSkillDto>>> getAllAttitudeSKills(
                         @RequestParam(name = "name_contains", required = false) String nameContains,
+                        @RequestParam(name = "group_ids", required = false) List<UUID> groupIds,
                         @RequestParam(name = "enabled_only", required = false,
                                         defaultValue = "false") Boolean enabledOnly,
                         @RequestParam(name = "with_group", required = false,
@@ -52,6 +53,7 @@ public class AttitudeSkillController {
                                         defaultValue = "false") Boolean withUpdatedBy) {
                 AttitudeSkillFilter filter = new AttitudeSkillFilter();
                 filter.setNameContains(nameContains);
+                filter.setGroupIds(groupIds);
                 filter.setEnabledOnly(enabledOnly);
                 filter.setWithGroup(withGroup);
                 filter.setWithCreatedBy(withCreatedBy);

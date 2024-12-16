@@ -45,9 +45,6 @@ public class GroupAchievementRepositoryImpl
         } else if (filter.getMaxWeight() != null) {
             predicates.add(cb.lessThanOrEqualTo(root.get("percentage"), filter.getMaxWeight()));
         }
-        if (filter.getWithAchievements().booleanValue()) {
-            root.join("achievements", JoinType.LEFT);
-        }
         if (filter.getEnabledOnly().booleanValue()) {
             predicates.add(cb.equal(root.get("enabled"), true));
         }

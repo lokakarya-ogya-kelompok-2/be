@@ -13,6 +13,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillFilter;
 import ogya.lokakarya.be.entity.AttitudeSkill;
+import ogya.lokakarya.be.entity.GroupAttitudeSkill;
 import ogya.lokakarya.be.entity.Menu;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.repository.FilterRepository;
@@ -24,6 +25,7 @@ public class AttitudeSkillRepositoryImpl
     @Autowired
     private EntityManager entityManager;
 
+    @SuppressWarnings("java:S3776")
     @Override
     public List<AttitudeSkill> findAllByFilter(AttitudeSkillFilter filter) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -35,8 +37,13 @@ public class AttitudeSkillRepositoryImpl
             predicates.add(cb.like(cb.lower(root.get("name")),
                     "%" + filter.getNameContains().toLowerCase() + "%"));
         }
-        if (filter.getWithGroup().booleanValue()) {
-            root.join("groupAttitudeSkill", JoinType.LEFT);
+        if (filter.getGroupIds() != null || filter.getWithGroup().booleanValue()) {
+            Join<AttitudeSkill, GroupAttitudeSkill> attitudeSkillGroupAttitudeSkillJoin =
+                    root.join("groupAttitudeSkill", JoinType.LEFT);
+            if (filter.getGroupIds() != null) {
+                predicates.add(
+                        attitudeSkillGroupAttitudeSkillJoin.get("id").in(filter.getGroupIds()));
+            }
         }
         if (filter.getEnabledOnly().booleanValue()) {
             predicates.add(cb.equal(root.get("enabled"), true));

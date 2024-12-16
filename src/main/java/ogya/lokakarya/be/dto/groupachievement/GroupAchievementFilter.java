@@ -11,6 +11,7 @@ public class GroupAchievementFilter {
     private Integer maxWeight;
     private Boolean enabledOnly = false;
     private Boolean withAchievements = false;
+    private Boolean withEnabledChildOnly = false;
     private Boolean withCreatedBy = false;
     private Boolean withUpdatedBy = false;
 
@@ -25,6 +26,13 @@ public class GroupAchievementFilter {
         }
         if (minWeight != null && maxWeight != null && minWeight > maxWeight) {
             throw new ResponseException("max_weight can't be less than min_weight",
+                    HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        if (withEnabledChildOnly != null && withEnabledChildOnly.booleanValue()
+                && (withAchievements == null
+                        || (withAchievements != null && !withAchievements.booleanValue()))) {
+            throw new ResponseException(
+                    "with_achievements must be set to true if with_enabled_child_only is true!",
                     HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }

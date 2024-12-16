@@ -45,9 +45,6 @@ public class GroupAttitudeSkillRepositoryImpl
         } else if (filter.getMaxWeight() != null) {
             predicates.add(cb.lessThanOrEqualTo(root.get("percentage"), filter.getMaxWeight()));
         }
-        if (filter.getWithAttitudeSkills().booleanValue()) {
-            root.join("attitudeSkills", JoinType.LEFT);
-        }
         if (filter.getEnabledOnly().booleanValue()) {
             predicates.add(cb.equal(root.get("enabled"), true));
         }

@@ -43,7 +43,7 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
             entityManager.flush();
             assessmentSummarySvc.recalculateAllAssessmentSummaries();
         }
-        return new GroupAchievementDto(groupAchievementEntity, true, false, false);
+        return new GroupAchievementDto(groupAchievementEntity, true, false, false, false);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
         return groupAchievements.stream()
                 .map(groupAchievement -> new GroupAchievementDto(groupAchievement,
                         filter.getWithCreatedBy(), filter.getWithUpdatedBy(),
-                        filter.getWithAchievements()))
+                        filter.getWithAchievements(), filter.getWithEnabledChildOnly()))
                 .toList();
     }
 
@@ -119,6 +119,6 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
     }
 
     public GroupAchievementDto convertToDto(GroupAchievement data) {
-        return new GroupAchievementDto(data, true, true, true);
+        return new GroupAchievementDto(data, true, true, true, false);
     }
 }
