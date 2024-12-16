@@ -75,6 +75,7 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
         return convertToDto(data);
     }
 
+    @Transactional
     @Override
     public AttitudeSkillDto updateAttitudeSkillById(UUID id, AttitudeSkillReq attitudeSkillReq) {
         Optional<AttitudeSkill> attitudeSkillOpt = attitudeSkillRepository.findById(id);
@@ -87,6 +88,10 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
             attitudeSkill.setName(attitudeSkillReq.getAttitudeSkill());
         }
         if (attitudeSkillReq.getEnabled() != null) {
+            attitudeSkill = attitudeSkillRepository.save(attitudeSkill);
+            if (!attitudeSkillReq.getEnabled().equals(attitudeSkill.getEnabled())) {
+                assessmentSummarySvc.recalculateAllAssessmentSummaries();
+            }
             attitudeSkill.setEnabled(attitudeSkillReq.getEnabled());
         }
         if (attitudeSkillReq.getGroupAttitudeSkillId() != null) {
@@ -101,10 +106,9 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
         }
         User currentUser = securityUtil.getCurrentUser();
         attitudeSkill.setUpdatedBy(currentUser);
-
         attitudeSkill = attitudeSkillRepository.save(attitudeSkill);
-        return convertToDto(attitudeSkill);
 
+        return convertToDto(attitudeSkill);
     }
 
     @Transactional

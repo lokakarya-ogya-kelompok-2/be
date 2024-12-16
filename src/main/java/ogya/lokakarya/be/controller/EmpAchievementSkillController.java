@@ -53,6 +53,8 @@ public class EmpAchievementSkillController {
         public ResponseEntity<ResponseDto<List<EmpAchievementSkillDto>>> getAllAchievementSkills(
                         @RequestParam(name = "user_ids", required = false) List<UUID> userIds,
                         @RequestParam(required = false) List<Integer> years,
+                        @RequestParam(name = "enabled_only", required = false,
+                                        defaultValue = "false") Boolean enabledOnly,
                         @RequestParam(name = "with_created_by", required = false,
                                         defaultValue = "false") Boolean withCreatedBy,
                         @RequestParam(name = "with_updated_by", required = false,
@@ -61,6 +63,7 @@ public class EmpAchievementSkillController {
                 EmpAchievementSkillFilter filter = new EmpAchievementSkillFilter();
                 filter.setUserIds(userIds);
                 filter.setYears(years);
+                filter.setEnabledOnly(enabledOnly);
                 filter.setWithCreatedBy(withCreatedBy);
                 filter.setWithUpdatedBy(withUpdatedBy);
                 List<EmpAchievementSkillDto> response =

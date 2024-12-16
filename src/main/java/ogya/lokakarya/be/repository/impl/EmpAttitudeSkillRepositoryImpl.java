@@ -12,7 +12,9 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillFilter;
+import ogya.lokakarya.be.entity.AttitudeSkill;
 import ogya.lokakarya.be.entity.EmpAttitudeSkill;
+import ogya.lokakarya.be.entity.GroupAttitudeSkill;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.repository.FilterRepository;
 
@@ -35,6 +37,14 @@ public class EmpAttitudeSkillRepositoryImpl
         }
         if (filter.getYears() != null) {
             predicates.add(root.get("assessmentYear").in(filter.getYears()));
+        }
+        if (filter.getEnabledOnly().booleanValue()) {
+            Join<EmpAttitudeSkill, AttitudeSkill> empAttitudeSkillAttitudeSkillJoin =
+                    root.join("attitudeSkill", JoinType.LEFT);
+            Join<AttitudeSkill, GroupAttitudeSkill> attitudeSkillGroupAttitudeSkillJoin =
+                    empAttitudeSkillAttitudeSkillJoin.join("groupAttitudeSkill", JoinType.LEFT);
+            predicates.add(cb.equal(empAttitudeSkillAttitudeSkillJoin.get("enabled"), true));
+            predicates.add(cb.equal(attitudeSkillGroupAttitudeSkillJoin.get("enabled"), true));
         }
 
         if (!predicates.isEmpty()) {

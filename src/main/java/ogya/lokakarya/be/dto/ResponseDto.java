@@ -49,4 +49,8 @@ public class ResponseDto<T> {
     public ResponseEntity<ResponseDto<T>> toResponse(HttpStatus httpStatus) {
         return new ResponseEntity<>(this, httpStatus);
     }
+
+    @Builder.Default
+    @JsonProperty("total_rows")
+    private Integer totalRows = 0;
 }

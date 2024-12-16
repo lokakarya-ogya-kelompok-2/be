@@ -12,7 +12,9 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillFilter;
+import ogya.lokakarya.be.entity.Achievement;
 import ogya.lokakarya.be.entity.EmpAchievementSkill;
+import ogya.lokakarya.be.entity.GroupAchievement;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.repository.FilterRepository;
 
@@ -33,6 +35,14 @@ public class EmpAchievementSkillRepositoryImpl
         if (filter.getUserIds() != null) {
             Join<EmpAchievementSkill, User> achievementUserJoin = root.join("user", JoinType.LEFT);
             predicates.add(achievementUserJoin.get("id").in(filter.getUserIds()));
+        }
+        if (filter.getEnabledOnly().booleanValue()) {
+            Join<EmpAchievementSkill, Achievement> empAchievementAchievementJoin =
+                    root.join("achievement", JoinType.LEFT);
+            Join<Achievement, GroupAchievement> achievementGroupAchievementJoin =
+                    empAchievementAchievementJoin.join("groupAchievement", JoinType.LEFT);
+            predicates.add(cb.equal(empAchievementAchievementJoin.get("enabled"), true));
+            predicates.add(cb.equal(achievementGroupAchievementJoin.get("enabled"), true));
         }
         if (filter.getYears() != null) {
             predicates.add(root.get("assessmentYear").in(filter.getYears()));

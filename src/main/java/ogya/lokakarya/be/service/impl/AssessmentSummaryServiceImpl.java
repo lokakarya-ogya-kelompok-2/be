@@ -14,6 +14,8 @@ import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryReq;
 import ogya.lokakarya.be.dto.assessmentsummary.SummaryData;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillFilter;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillFilter;
+import ogya.lokakarya.be.dto.groupachievement.GroupAchievementFilter;
+import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillFilter;
 import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.AssessmentSummary;
 import ogya.lokakarya.be.entity.EmpAchievementSkill;
@@ -152,7 +154,12 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         // attitude skills mbuh mumet
         Map<UUID, GroupAttitudeSkill> attitudeGroupIdToEntity = new HashMap<>();
         HashMap<UUID, SummaryData> groupAttitudeSkillIdToSummaryData = new HashMap<>();
-        List<GroupAttitudeSkill> groupAttitudeSkills = groupAttitudeSkillRepo.findAll();
+        GroupAttitudeSkillFilter gasFilter = new GroupAttitudeSkillFilter();
+        gasFilter.setEnabledOnly(true);
+        gasFilter.setWithAttitudeSkills(true);
+        gasFilter.setWithEnabledChildOnly(true);
+        List<GroupAttitudeSkill> groupAttitudeSkills =
+                groupAttitudeSkillRepo.findAllByFilter(gasFilter);
         for (GroupAttitudeSkill group : groupAttitudeSkills) {
             if (group.getAttitudeSkills() != null) {
                 group.getAttitudeSkills().forEach(attS -> idToGroup.put(attS.getId(), group));
@@ -161,14 +168,18 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             totalWeight += group.getPercentage();
         }
 
-        EmpAttitudeSkillFilter filterAS = new EmpAttitudeSkillFilter();
-        filterAS.setUserIds(List.of(userId));
-        filterAS.setYears(List.of(year));
+        EmpAttitudeSkillFilter easFilter = new EmpAttitudeSkillFilter();
+        easFilter.setUserIds(List.of(userId));
+        easFilter.setYears(List.of(year));
+        easFilter.setEnabledOnly(true);
         List<EmpAttitudeSkill> empAttitudeSkillsEntity =
-                empAttitudeSkillRepo.findAllByFilter(filterAS);
+                empAttitudeSkillRepo.findAllByFilter(easFilter);
 
         Map<UUID, List<EmpAttitudeSkill>> userEmpAttitudeSkillGrouped = new HashMap<>();
         empAttitudeSkillsEntity.forEach(empAS -> {
+            System.out.println(
+                    "AS ID => " + empAS.getAttitudeSkill().getId() + "MAP CONTAINS GROUP ?? "
+                            + idToGroup.containsKey(empAS.getAttitudeSkill().getId()));
             GroupAttitudeSkill group =
                     (GroupAttitudeSkill) idToGroup.get(empAS.getAttitudeSkill().getId());
 
@@ -184,7 +195,11 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         Map<UUID, GroupAchievement> achievementGroupIdtoEntity = new HashMap<>();
 
         Map<UUID, SummaryData> groupAchievementToSummaryData = new HashMap<>();
-        List<GroupAchievement> groupAchievements = groupAchievementRepo.findAll();
+        GroupAchievementFilter gaFilter = new GroupAchievementFilter();
+        gaFilter.setEnabledOnly(true);
+        gaFilter.setWithAchievements(true);
+        gaFilter.setWithEnabledChildOnly(true);
+        List<GroupAchievement> groupAchievements = groupAchievementRepo.findAllByFilter(gaFilter);
         for (GroupAchievement group : groupAchievements) {
             if (group.getAchievements() != null) {
                 group.getAchievements().forEach(attS -> idToGroup.put(attS.getId(), group));
@@ -194,11 +209,12 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             totalWeight += group.getPercentage();
         }
 
-        EmpAchievementSkillFilter filterAc = new EmpAchievementSkillFilter();
-        filterAc.setUserIds(List.of(userId));
-        filterAc.setYears(List.of(year));
+        EmpAchievementSkillFilter eacFilter = new EmpAchievementSkillFilter();
+        eacFilter.setUserIds(List.of(userId));
+        eacFilter.setYears(List.of(year));
+        eacFilter.setEnabledOnly(true);
         List<EmpAchievementSkill> empAchievementEntities =
-                empAchievementSkillRepo.findAllByFilter(filterAc);
+                empAchievementSkillRepo.findAllByFilter(eacFilter);
 
         Map<UUID, List<EmpAchievementSkill>> userEmpAchievementGrouped = new HashMap<>();
         empAchievementEntities.forEach(empAc -> {

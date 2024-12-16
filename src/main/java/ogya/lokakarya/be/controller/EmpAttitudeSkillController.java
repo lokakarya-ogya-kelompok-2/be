@@ -52,6 +52,8 @@ public class EmpAttitudeSkillController {
     public ResponseEntity<ResponseDto<List<EmpAttitudeSkillDto>>> getAllEmpAttitudeSkills(
             @RequestParam(name = "user_ids", required = false) List<UUID> userIds,
             @RequestParam(name = "years", required = false) List<Integer> years,
+            @RequestParam(name = "enabled_only", required = false,
+                    defaultValue = "false") Boolean enabledOnly,
             @RequestParam(name = "with_created_by", required = false,
                     defaultValue = "false") Boolean withCreatedBy,
             @RequestParam(name = "with_updated_by", required = false,
@@ -60,12 +62,13 @@ public class EmpAttitudeSkillController {
         EmpAttitudeSkillFilter filter = new EmpAttitudeSkillFilter();
         filter.setUserIds(userIds);
         filter.setYears(years);
+        filter.setEnabledOnly(enabledOnly);
         filter.setWithCreatedBy(withCreatedBy);
         filter.setWithUpdatedBy(withUpdatedBy);
-        List<EmpAttitudeSkillDto> response =
+        List<EmpAttitudeSkillDto> data =
                 empAttitudeSkillService.getAllEmpAttitudeSkills(filter);
-        return ResponseDto.<List<EmpAttitudeSkillDto>>builder().content(response)
-                .message("Get emp attitude skills successful!").success(true).build()
+        return ResponseDto.<List<EmpAttitudeSkillDto>>builder().content(data)
+                .message("Get emp attitude skills successful!").success(true).totalRows(data.size()).build()
                 .toResponse(HttpStatus.OK);
     }
 
