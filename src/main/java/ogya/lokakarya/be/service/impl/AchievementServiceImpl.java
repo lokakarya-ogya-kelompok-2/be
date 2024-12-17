@@ -88,14 +88,16 @@ public class AchievementServiceImpl implements AchievementService {
         if (achievementOpt.isEmpty()) {
             throw ResponseException.achievementNotFound(id);
         }
+
+        boolean shouldRecalculateAllAssSum = false;
+
         Achievement achievement = achievementOpt.get();
         if (achievementReq.getAchievementName() != null) {
             achievement.setName(achievementReq.getAchievementName());
         }
         if (achievementReq.getEnabled() != null) {
-            if (!achievementReq.getEnabled().equals(achievement.getEnabled())) {
-                assessmentSummarySvc.recalculateAllAssessmentSummaries();
-            }
+            shouldRecalculateAllAssSum =
+                    !achievementReq.getEnabled().equals(achievement.getEnabled());
             achievement.setEnabled(achievementReq.getEnabled());
         }
         if (achievementReq.getGroupAchievementId() != null) {
@@ -110,6 +112,10 @@ public class AchievementServiceImpl implements AchievementService {
         User currentUser = securityUtil.getCurrentUser();
         achievement.setUpdatedBy(currentUser);
         achievement = achievementRepository.save(achievement);
+        if (shouldRecalculateAllAssSum) {
+            entityManager.flush();
+            this.assessmentSummarySvc.recalculateAllAssessmentSummaries();
+        }
 
         return convertToDto(achievement);
     }
