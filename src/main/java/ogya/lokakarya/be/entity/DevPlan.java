@@ -1,12 +1,5 @@
 package ogya.lokakarya.be.entity;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,6 +14,12 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
