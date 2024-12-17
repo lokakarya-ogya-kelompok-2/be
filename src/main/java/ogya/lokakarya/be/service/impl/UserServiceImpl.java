@@ -136,6 +136,9 @@ public class UserServiceImpl implements UserService {
         if (data.getJoinDate() != null) {
             user.setJoinDate(Date.valueOf(data.getJoinDate()));
         }
+        if (data.getEnabled() != null) {
+            user.setEnabled(data.getEnabled());
+        }
 
         if (data.getDivisionId() != null) {
             Optional<Division> divisionOpt = divisionRepo.findById(data.getDivisionId());

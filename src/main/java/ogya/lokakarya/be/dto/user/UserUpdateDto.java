@@ -51,6 +51,9 @@ public class UserUpdateDto {
     @Size(min = 1, message = "can't be empty")
     private Set<UUID> roles;
 
+    @NotNull
+    private Boolean enabled;
+
     public User toEntity() {
         User user = new User();
         user.setUsername(username);
@@ -58,6 +61,7 @@ public class UserUpdateDto {
         user.setPosition(position);
         user.setEmployeeStatus(employeeStatus);
         user.setEmailAddress(email);
+        user.setEnabled(enabled);
         user.setJoinDate(Date.valueOf(joinDate));
         return user;
     }
