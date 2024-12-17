@@ -40,8 +40,8 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
     @Transactional
     @Override
     public AttitudeSkillDto create(AttitudeSkillReq data) {
-        Optional<GroupAttitudeSkill> groupAttitudeOpt =
-                groupAttitudeSkillRepository.findById(data.getGroupAttitudeSkillId());
+        Optional<GroupAttitudeSkill> groupAttitudeOpt = groupAttitudeSkillRepository
+                .findById(data.getGroupAttitudeSkillId());
         if (groupAttitudeOpt.isEmpty()) {
             throw ResponseException.groupAttitudeSkillNotFound(data.getGroupAttitudeSkillId());
         }
@@ -88,7 +88,6 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
             attitudeSkill.setName(attitudeSkillReq.getAttitudeSkill());
         }
         if (attitudeSkillReq.getEnabled() != null) {
-            attitudeSkill = attitudeSkillRepository.save(attitudeSkill);
             if (!attitudeSkillReq.getEnabled().equals(attitudeSkill.getEnabled())) {
                 assessmentSummarySvc.recalculateAllAssessmentSummaries();
             }
