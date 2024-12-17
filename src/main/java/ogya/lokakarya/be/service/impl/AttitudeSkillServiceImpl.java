@@ -40,8 +40,8 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
     @Transactional
     @Override
     public AttitudeSkillDto create(AttitudeSkillReq data) {
-        Optional<GroupAttitudeSkill> groupAttitudeOpt = groupAttitudeSkillRepository
-                .findById(data.getGroupAttitudeSkillId());
+        Optional<GroupAttitudeSkill> groupAttitudeOpt =
+                groupAttitudeSkillRepository.findById(data.getGroupAttitudeSkillId());
         if (groupAttitudeOpt.isEmpty()) {
             throw ResponseException.groupAttitudeSkillNotFound(data.getGroupAttitudeSkillId());
         }
@@ -83,14 +83,15 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
             throw ResponseException.attitudeSkillNotFound(id);
         }
 
+        boolean shouldRecalculateAllAssSum = false;
+
         AttitudeSkill attitudeSkill = attitudeSkillOpt.get();
         if (attitudeSkillReq.getAttitudeSkill() != null) {
             attitudeSkill.setName(attitudeSkillReq.getAttitudeSkill());
         }
         if (attitudeSkillReq.getEnabled() != null) {
-            if (!attitudeSkillReq.getEnabled().equals(attitudeSkill.getEnabled())) {
-                assessmentSummarySvc.recalculateAllAssessmentSummaries();
-            }
+            shouldRecalculateAllAssSum =
+                    !attitudeSkillReq.getEnabled().equals(attitudeSkill.getEnabled());
             attitudeSkill.setEnabled(attitudeSkillReq.getEnabled());
         }
         if (attitudeSkillReq.getGroupAttitudeSkillId() != null) {
@@ -106,6 +107,10 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
         User currentUser = securityUtil.getCurrentUser();
         attitudeSkill.setUpdatedBy(currentUser);
         attitudeSkill = attitudeSkillRepository.save(attitudeSkill);
+        if (shouldRecalculateAllAssSum) {
+            entityManager.flush();
+            this.assessmentSummarySvc.recalculateAllAssessmentSummaries();
+        }
 
         return convertToDto(attitudeSkill);
     }
