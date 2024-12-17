@@ -17,7 +17,9 @@ import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillFilter;
 import ogya.lokakarya.be.dto.groupachievement.GroupAchievementFilter;
 import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillFilter;
 import ogya.lokakarya.be.dto.user.UserDto;
+import ogya.lokakarya.be.entity.Achievement;
 import ogya.lokakarya.be.entity.AssessmentSummary;
+import ogya.lokakarya.be.entity.AttitudeSkill;
 import ogya.lokakarya.be.entity.EmpAchievementSkill;
 import ogya.lokakarya.be.entity.EmpAttitudeSkill;
 import ogya.lokakarya.be.entity.GroupAchievement;
@@ -177,9 +179,6 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
 
         Map<UUID, List<EmpAttitudeSkill>> userEmpAttitudeSkillGrouped = new HashMap<>();
         empAttitudeSkillsEntity.forEach(empAS -> {
-            System.out.println(
-                    "AS ID => " + empAS.getAttitudeSkill().getId() + "MAP CONTAINS GROUP ?? "
-                            + idToGroup.containsKey(empAS.getAttitudeSkill().getId()));
             GroupAttitudeSkill group =
                     (GroupAttitudeSkill) idToGroup.get(empAS.getAttitudeSkill().getId());
 
@@ -274,7 +273,10 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
 
             Integer currGroupWeight = group.getPercentage();
             Integer childCount =
-                    group.getAttitudeSkills() != null ? group.getAttitudeSkills().size() : 0;
+                    group.getAttitudeSkills() != null
+                            ? group.getAttitudeSkills().stream().filter(AttitudeSkill::getEnabled)
+                                    .toList().size()
+                            : 0;
 
             Double currGroupPct = (currGroupWeight.doubleValue() / totalWeight.doubleValue());
             Integer totalScore = 0;
@@ -299,7 +301,10 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
 
             Integer currGroupWeight = group.getPercentage();
             Integer childCount =
-                    group.getAchievements() != null ? group.getAchievements().size() : 0;
+                    group.getAchievements() != null
+                            ? group.getAchievements().stream().filter(Achievement::getEnabled)
+                                    .toList().size()
+                            : 0;
 
             Double currGroupPct = currGroupWeight.doubleValue() / totalWeight.doubleValue();
             Integer totalScore = 0;

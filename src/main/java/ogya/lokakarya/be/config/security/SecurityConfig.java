@@ -58,7 +58,7 @@ public class SecurityConfig {
                         .requestMatchers("/emp-achievement-skills/**").authenticated()
                         .requestMatchers("/emp-suggestions/**").authenticated()
                         .requestMatchers("/technical-skills/**").authenticated()
-                        .requestMatchers("/group-achevements/**").authenticated()
+                        .requestMatchers("/group-achievements/**").authenticated()
                         .requestMatchers("/group-attitude-skills/**").authenticated().anyRequest()
                         .permitAll())
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/**")
