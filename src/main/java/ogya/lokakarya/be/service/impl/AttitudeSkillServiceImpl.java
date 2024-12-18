@@ -1,13 +1,8 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillDto;
 import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillFilter;
@@ -20,7 +15,15 @@ import ogya.lokakarya.be.repository.AttitudeSkillRepository;
 import ogya.lokakarya.be.repository.GroupAttitudeSkillRepository;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import ogya.lokakarya.be.service.AttitudeSkillService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Slf4j
 @Service
 public class AttitudeSkillServiceImpl implements AttitudeSkillService {
     @Autowired
@@ -40,6 +43,7 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
     @Transactional
     @Override
     public AttitudeSkillDto create(AttitudeSkillReq data) {
+        log.info("Starting AttitudeSkillServiceImpl.create");
         Optional<GroupAttitudeSkill> groupAttitudeOpt =
                 groupAttitudeSkillRepository.findById(data.getGroupAttitudeSkillId());
         if (groupAttitudeOpt.isEmpty()) {
@@ -50,16 +54,17 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
         User currentUser = securityUtil.getCurrentUser();
         dataEntity.setCreatedBy(currentUser);
         AttitudeSkill createdData = attitudeSkillRepository.save(dataEntity);
-
         entityManager.flush();
         assessmentSummarySvc.recalculateAllAssessmentSummaries();
-
+        log.info("Ending AttitudeSkillServiceImpl.create");
         return new AttitudeSkillDto(createdData, true, false, true);
     }
 
     @Override
     public List<AttitudeSkillDto> getAllAttitudeSkills(AttitudeSkillFilter filter) {
+        log.info("Starting AttitudeSkillServiceImpl.getAllAttitudeSkills");
         List<AttitudeSkill> attitudeSkills = attitudeSkillRepository.findAllByFilter(filter);
+        log.info("Ending AttitudeSkillServiceImpl.getAllAttitudeSkills");
         return attitudeSkills.stream().map(attitudeSkill -> new AttitudeSkillDto(attitudeSkill,
                 filter.getWithCreatedBy(), filter.getWithUpdatedBy(), filter.getWithGroup()))
                 .toList();
@@ -67,24 +72,25 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
 
     @Override
     public AttitudeSkillDto getAttitudeSkillById(UUID id) {
+        log.info("Starting AttitudeSkillServiceImpl.getAttitudeSkillById");
         Optional<AttitudeSkill> attitudeSkillOpt = attitudeSkillRepository.findById(id);
         if (attitudeSkillOpt.isEmpty()) {
             throw ResponseException.attitudeSkillNotFound(id);
         }
         AttitudeSkill data = attitudeSkillOpt.get();
+        log.info("Ending AttitudeSkillServiceImpl.getAttitudeSkillById");
         return convertToDto(data);
     }
 
     @Transactional
     @Override
     public AttitudeSkillDto updateAttitudeSkillById(UUID id, AttitudeSkillReq attitudeSkillReq) {
+        log.info("Starting AttitudeSkillServiceImpl.updateAttitudeSkillById");
         Optional<AttitudeSkill> attitudeSkillOpt = attitudeSkillRepository.findById(id);
         if (attitudeSkillOpt.isEmpty()) {
             throw ResponseException.attitudeSkillNotFound(id);
         }
-
         boolean shouldRecalculateAllAssSum = false;
-
         AttitudeSkill attitudeSkill = attitudeSkillOpt.get();
         if (attitudeSkillReq.getAttitudeSkill() != null) {
             attitudeSkill.setName(attitudeSkillReq.getAttitudeSkill());
@@ -102,7 +108,6 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
                         .groupAttitudeSkillNotFound(attitudeSkillReq.getGroupAttitudeSkillId());
             }
             attitudeSkill.setGroupAttitudeSkill(groupAttitudeSkillOpt.get());
-
         }
         User currentUser = securityUtil.getCurrentUser();
         attitudeSkill.setUpdatedBy(currentUser);
@@ -111,22 +116,22 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
             entityManager.flush();
             this.assessmentSummarySvc.recalculateAllAssessmentSummaries();
         }
-
+        log.info("Ending AttitudeSkillServiceImpl.updateAttitudeSkillById");
         return convertToDto(attitudeSkill);
     }
 
     @Transactional
     @Override
     public boolean deleteAttitudeSkillById(UUID id) {
+        log.info("Starting AttitudeSkillServiceImpl.deleteAttitudeSkillById");
         Optional<AttitudeSkill> attitudeSkillOpt = attitudeSkillRepository.findById(id);
         if (attitudeSkillOpt.isEmpty()) {
             throw ResponseException.attitudeSkillNotFound(id);
         }
         attitudeSkillRepository.delete(attitudeSkillOpt.get());
-
         entityManager.flush();
         assessmentSummarySvc.recalculateAllAssessmentSummaries();
-
+        log.info("Ending AttitudeSkillServiceImpl.deleteAttitudeSkillById");
         return ResponseEntity.ok().build().hasBody();
     }
 

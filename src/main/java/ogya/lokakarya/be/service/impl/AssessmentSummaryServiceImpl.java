@@ -1,15 +1,7 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryFilter;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryReq;
@@ -35,7 +27,18 @@ import ogya.lokakarya.be.repository.GroupAchievementRepository;
 import ogya.lokakarya.be.repository.GroupAttitudeSkillRepository;
 import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+@Slf4j
 @Service
 public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     @Autowired
@@ -59,6 +62,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
 
     @Override
     public AssessmentSummaryDto create(AssessmentSummaryReq data) {
+        log.info("Starting AssessmentSummaryServiceImpl.getAchievementsById");
         Optional<User> userOpt = userRepository.findById(data.getUserId());
         if (userOpt.isEmpty()) {
             throw ResponseException.userNotFound(data.getUserId());
@@ -66,13 +70,16 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         AssessmentSummary dataEntity = data.toEntity();
         dataEntity.setUser(userOpt.get());
         dataEntity = assessmentSummaryRepository.save(dataEntity);
+        log.info("Ending AssessmentSummaryServiceImpl.getAchievementsById");
         return new AssessmentSummaryDto(dataEntity, true, false);
     }
 
     @Override
     public List<AssessmentSummaryDto> getAllAssessmentSummaries(AssessmentSummaryFilter filter) {
+        log.info("Starting AssessmentSummaryServiceImpl.getAllAssessmentSummaries");
         List<AssessmentSummary> assessmentSummaries =
                 assessmentSummaryRepository.findAllByFilter(filter);
+        log.info("Ending AssessmentSummaryServiceImpl.getAllAssessmentSummaries");
         return assessmentSummaries.stream()
                 .map(assessmentSummary -> new AssessmentSummaryDto(assessmentSummary,
                         filter.getWithCreatedBy(), filter.getWithUpdatedBy()))
@@ -81,16 +88,19 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
 
     @Override
     public AssessmentSummaryDto getAssessmentSummaryById(UUID id) {
+        log.info("Starting AssessmentSummaryServiceImpl.getAssessmentSummaryById");
         Optional<AssessmentSummary> assessmentSummaryOpt = assessmentSummaryRepository.findById(id);
         if (assessmentSummaryOpt.isEmpty()) {
             throw ResponseException.assessmentSummaryNotFound(id);
         }
+        log.info("Ending AssessmentSummaryServiceImpl.getAssessmentSummaryById");
         return new AssessmentSummaryDto(assessmentSummaryOpt.get(), true, true);
     }
 
     @Override
     public AssessmentSummaryDto updateAssessmentSummaryById(UUID id,
             AssessmentSummaryReq assessmentSummaryReq) {
+        log.info("Starting AssessmentSummaryServiceImpl.updateAssessmentSummaryById");
         Optional<AssessmentSummary> assessmentSummaryOpt = assessmentSummaryRepository.findById(id);
         if (assessmentSummaryOpt.isEmpty()) {
             throw ResponseException.assessmentSummaryNotFound(id);
@@ -112,20 +122,20 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         if (assessmentSummaryReq.getYear() != null) {
             assessmentSummary.setYear(assessmentSummaryReq.getYear());
         }
-
         assessmentSummary = assessmentSummaryRepository.save(assessmentSummary);
-
+        log.info("Ending AssessmentSummaryServiceImpl.updateAssessmentSummaryById");
         return convertToDto(assessmentSummary);
     }
 
     @Override
     public boolean deleteAssessmentSummaryById(UUID id) {
+        log.info("Starting AssessmentSummaryServiceImpl.deleteAssessmentSummaryById");
         Optional<AssessmentSummary> assessmentSummaryOpt = assessmentSummaryRepository.findById(id);
         if (assessmentSummaryOpt.isEmpty()) {
             throw ResponseException.assessmentSummaryNotFound(id);
         }
-
         assessmentSummaryRepository.delete(assessmentSummaryOpt.get());
+        log.info("Ending AssessmentSummaryServiceImpl.deleteAssessmentSummaryById");
         return true;
     }
 
@@ -137,10 +147,12 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     @Override
     public AssessmentSummaryDto calculateAssessmentSummaryButValidateTheUserIdFirstBeforeCalculating(
             UUID userId, Integer year) {
+        log.info("Starting AssessmentSummaryServiceImpl.calculateAssessmentSummaryButValidateTheUserIdFirstBeforeCalculating");
         Optional<User> userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty()) {
             throw ResponseException.userNotFound(userId);
         }
+        log.info("Ending AssessmentSummaryServiceImpl.calculateAssessmentSummaryButValidateTheUserIdFirstBeforeCalculating");
         return calculateAssessmentSummary(userId, year);
     }
 
@@ -148,10 +160,9 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     @Transactional
     @Override
     public AssessmentSummaryDto calculateAssessmentSummary(UUID userId, Integer year) {
+        log.info("Starting AssessmentSummaryServiceImpl.calculateAssessmentSummary");
         Integer totalWeight = 0;
-
         Map<UUID, Object> idToGroup = new HashMap<>();
-
         // attitude skills mbuh mumet
         Map<UUID, GroupAttitudeSkill> attitudeGroupIdToEntity = new HashMap<>();
         HashMap<UUID, SummaryData> groupAttitudeSkillIdToSummaryData = new HashMap<>();
@@ -331,13 +342,14 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
                 .setAchievements(groupAchievementToSummaryData.values().stream().toList());
         assessmentSummaryDto
                 .setAttitudeSkills(groupAttitudeSkillIdToSummaryData.values().stream().toList());
-
+        log.info("Ending AssessmentSummaryServiceImpl.calculateAssessmentSummary");
         return assessmentSummaryDto;
     }
 
     @Transactional
     @Override
     public void recalculateAllAssessmentSummaries() {
+        log.info("Starting AssessmentSummaryServiceImpl.recalculateAllAssessmentSummaries");
         List<AssessmentSummary> assessmentSummaries = assessmentSummaryRepository.findAll();
         for (AssessmentSummary assessmentSummary : assessmentSummaries) {
             var newAssessmentSummary = calculateAssessmentSummary(
@@ -345,6 +357,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             assessmentSummary.setScore(newAssessmentSummary.getScore());
         }
         assessmentSummaryRepository.saveAll(assessmentSummaries);
+        log.info("Starting AssessmentSummaryServiceImpl.recalculateAllAssessmentSummaries");
     }
 
 }

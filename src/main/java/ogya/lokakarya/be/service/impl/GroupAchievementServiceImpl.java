@@ -1,12 +1,8 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.groupachievement.GroupAchievementDto;
 import ogya.lokakarya.be.dto.groupachievement.GroupAchievementFilter;
@@ -17,7 +13,13 @@ import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.GroupAchievementRepository;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import ogya.lokakarya.be.service.GroupAchievementService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+@Slf4j
 @Service
 public class GroupAchievementServiceImpl implements GroupAchievementService {
     @Autowired
@@ -35,6 +37,7 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
     @Transactional
     @Override
     public GroupAchievementDto create(GroupAchievementReq data) {
+        log.info("Starting GroupAchievementServiceImpl.create");
         User currentUser = securityUtil.getCurrentUser();
         GroupAchievement groupAchievementEntity = data.toEntity();
         groupAchievementEntity.setCreatedBy(currentUser);
@@ -43,14 +46,17 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
             entityManager.flush();
             assessmentSummarySvc.recalculateAllAssessmentSummaries();
         }
+        log.info("Ending GroupAchievementServiceImpl.create");
         return new GroupAchievementDto(groupAchievementEntity, true, false, false, false);
     }
 
     @Override
     public List<GroupAchievementDto> getAllGroupAchievements(GroupAchievementFilter filter) {
+        log.info("Starting GroupAchievementServiceImpl.getAllGroupAchievements");
         filter.validate();
         List<GroupAchievement> groupAchievements =
                 groupAchievementRepository.findAllByFilter(filter);
+        log.info("Ending GroupAchievementServiceImpl.getAllGroupAchievements");
         return groupAchievements.stream()
                 .map(groupAchievement -> new GroupAchievementDto(groupAchievement,
                         filter.getWithCreatedBy(), filter.getWithUpdatedBy(),
@@ -60,11 +66,13 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
 
     @Override
     public GroupAchievementDto getGroupAchievementById(UUID id) {
+        log.info("Starting GroupAchievementServiceImpl.getGroupAchievementById");
         Optional<GroupAchievement> groupAchievementOpt = groupAchievementRepository.findById(id);
         if (groupAchievementOpt.isEmpty()) {
             throw ResponseException.groupAchievementNotFound(id);
         }
         GroupAchievement data = groupAchievementOpt.get();
+        log.info("Ending GroupAchievementServiceImpl.getGroupAchievementById");
         return convertToDto(data);
     }
 
@@ -72,6 +80,7 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
     @Override
     public GroupAchievementDto updateGroupAchievementById(UUID id,
             GroupAchievementReq groupAchievementReq) {
+        log.info("Starting GroupAchievementServiceImpl.updateGroupAchievementById");
         Optional<GroupAchievement> groupAchievementOpt = groupAchievementRepository.findById(id);
         if (groupAchievementOpt.isEmpty()) {
             throw ResponseException.groupAchievementNotFound(id);
@@ -99,22 +108,22 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
             entityManager.flush();
             assessmentSummarySvc.recalculateAllAssessmentSummaries();
         }
-
+        log.info("Ending GroupAchievementServiceImpl.updateGroupAchievementById");
         return convertToDto(groupAchievement);
     }
 
     @Transactional
     @Override
     public boolean deleteGroupAchievementById(UUID id) {
+        log.info("Starting GroupAchievementServiceImpl.deleteGroupAchievementById");
         Optional<GroupAchievement> groupAchievementOpt = groupAchievementRepository.findById(id);
         if (groupAchievementOpt.isEmpty()) {
             throw ResponseException.groupAchievementNotFound(id);
         }
         groupAchievementRepository.delete(groupAchievementOpt.get());
-
         entityManager.flush();
         assessmentSummarySvc.recalculateAllAssessmentSummaries();
-
+        log.info("Ending GroupAchievementServiceImpl.deleteGroupAchievementById");
         return true;
     }
 
