@@ -59,7 +59,7 @@ public class EmpDevPlanServiceImpl implements EmpDevPlanService {
 
         // Konversi entitas ke DTO untuk response
         return empDevPlanEntities.stream()
-                .map(empDevPlan -> new EmpDevPlanDto(empDevPlan, true, true)).toList();
+                .map(empDevPlan -> new EmpDevPlanDto(empDevPlan, true, false)).toList();
     }
 
     @Override
@@ -74,15 +74,15 @@ public class EmpDevPlanServiceImpl implements EmpDevPlanService {
         dataEntity.setUser(currentUser);
         dataEntity.setDevPlan(findDevPlan.get());
         EmpDevPlan createdData = empDevPlanRepository.save(dataEntity);
-        return new EmpDevPlanDto(createdData, true, true);
+        return new EmpDevPlanDto(createdData, true, false);
     }
 
     @Override
     public List<EmpDevPlanDto> getAllEmpDevPlans(EmpDevPlanFilter filter) {
         List<EmpDevPlan> empDevPlanEntities = empDevPlanRepository.findAllByFilter(filter);
 
-        return empDevPlanEntities.stream()
-                .map(empDevPlan -> new EmpDevPlanDto(empDevPlan, true, true)).toList();
+        return empDevPlanEntities.stream().map(empDevPlan -> new EmpDevPlanDto(empDevPlan,
+                filter.getWithCreatedBy(), filter.getWithUpdatedBy())).toList();
     }
 
     @Override
