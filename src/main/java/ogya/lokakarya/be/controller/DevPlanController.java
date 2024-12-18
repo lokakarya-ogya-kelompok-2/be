@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.devplan.DevPlanDto;
 import ogya.lokakarya.be.dto.devplan.DevPlanFilter;
 import ogya.lokakarya.be.dto.devplan.DevPlanReq;
 import ogya.lokakarya.be.service.DevPlanService;
 
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/dev-plans")
@@ -31,7 +33,9 @@ public class DevPlanController {
 
     @PostMapping
     public ResponseEntity<ResponseDto<DevPlanDto>> create(@RequestBody @Valid DevPlanReq data) {
-        var createdDevPlan = devPlanService.create(data);
+            log.info("Starting DevPlanController.create");
+            var createdDevPlan = devPlanService.create(data);
+            log.info("Ending DevPlanController.create");
         return ResponseDto.<DevPlanDto>builder().success(true).content(createdDevPlan)
                 .message("Create dev plan successful!").build().toResponse(HttpStatus.CREATED);
     }
@@ -44,20 +48,25 @@ public class DevPlanController {
             @RequestParam(name = "with_created_by", required = false,
                     defaultValue = "false") Boolean withCreatedBy,
             @RequestParam(name = "with_updated_by", required = false,
-                    defaultValue = "false") Boolean withUpdatedBy) {
+                                    defaultValue = "false") Boolean withUpdatedBy) {
+            log.info("Starting DevPlanController.list");
         DevPlanFilter filter = new DevPlanFilter();
         filter.setNameContains(nameContains);
         filter.setEnabledOnly(enabledOnly);
         filter.setWithCreatedBy(withCreatedBy);
         filter.setWithUpdatedBy(withUpdatedBy);
+
         List<DevPlanDto> devPlans = devPlanService.getAllDevPlans(filter);
+        log.info("Ending DevPlanController.list");
         return ResponseDto.<List<DevPlanDto>>builder().success(true).content(devPlans)
                 .message("List all dev plan successful!").build().toResponse(HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto<DevPlanDto>> getById(@PathVariable UUID id) {
-        DevPlanDto devPlan = devPlanService.getDevPlanById(id);
+            log.info("Starting DevPlanController.get for id = {}", id);
+            DevPlanDto devPlan = devPlanService.getDevPlanById(id);
+            log.info("Ending DevPlanController.get for id = {}", id);
         return ResponseDto.<DevPlanDto>builder().success(true).content(devPlan)
                 .message(String.format("Get dev plan with id %s successful!", id)).build()
                 .toResponse(HttpStatus.OK);
@@ -65,8 +74,10 @@ public class DevPlanController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDto<DevPlanDto>> updateById(@PathVariable UUID id,
-            @RequestBody @Valid DevPlanReq devPlanReq) {
-        DevPlanDto updatedDevPlan = devPlanService.updateDevPlanById(id, devPlanReq);
+                    @RequestBody @Valid DevPlanReq devPlanReq) {
+            log.info("Starting DevPlanController.update for id = {}", id);
+            DevPlanDto updatedDevPlan = devPlanService.updateDevPlanById(id, devPlanReq);
+            log.info("Ending DevPlanController.update for id = {}", id);
         return ResponseDto.<DevPlanDto>builder().success(true).content(updatedDevPlan)
                 .message(String.format("Update dev plan with id %s successful!", id)).build()
                 .toResponse(HttpStatus.OK);
@@ -74,7 +85,9 @@ public class DevPlanController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto<Void>> deleteById(@PathVariable UUID id) {
-        devPlanService.deleteDevPlanById(id);
+            log.info("Starting DevPlanController.delete for id = {}", id);
+            devPlanService.deleteDevPlanById(id);
+            log.info("Ending DevPlanController.delete for id = {}", id);
         return ResponseDto.<Void>builder().success(true)
                 .message(String.format("Delete dev plan with id %s successful!", id)).build()
                 .toResponse(HttpStatus.OK);

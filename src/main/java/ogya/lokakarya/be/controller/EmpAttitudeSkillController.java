@@ -16,23 +16,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillDto;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillFilter;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillReq;
 import ogya.lokakarya.be.service.EmpAttitudeSkillService;
 
-@RequestMapping("/emp-attitude-skills")
-@RestController
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
+@RestController
+@RequestMapping("/emp-attitude-skills")
 public class EmpAttitudeSkillController {
     @Autowired
     EmpAttitudeSkillService empAttitudeSkillService;
 
     @PostMapping
     public ResponseEntity<ResponseDto<EmpAttitudeSkillDto>> create(
-            @RequestBody @Valid EmpAttitudeSkillReq data) {
-        var createdEmpAttitudeSkill = empAttitudeSkillService.create(data);
+                    @RequestBody @Valid EmpAttitudeSkillReq data) {
+            log.info("Starting EmpAttitudeSkillController.create");
+            var createdEmpAttitudeSkill = empAttitudeSkillService.create(data);
+            log.info("Ending EmpAttitudeSkillController.create");
         return ResponseDto.<EmpAttitudeSkillDto>builder().content(createdEmpAttitudeSkill)
                 .message("Create emp attitude skill successful!").success(true).build()
                 .toResponse(HttpStatus.CREATED);
@@ -41,8 +45,9 @@ public class EmpAttitudeSkillController {
     @PostMapping("/bulk-create")
     public ResponseEntity<ResponseDto<List<EmpAttitudeSkillDto>>> createBulk(
             @RequestBody @Valid List<EmpAttitudeSkillReq> data) {
-        System.out.println("Data: " + data);
-        var createdEmpAttitudeSkill = empAttitudeSkillService.createBulkEmpAttitudeSkill(data);
+            log.info("Starting EmpAttitudeSkillController.createBulk");
+            var createdEmpAttitudeSkill = empAttitudeSkillService.createBulkEmpAttitudeSkill(data);
+            log.info("Ending EmpAttitudeSkillController.createBulk");
         return ResponseDto.<List<EmpAttitudeSkillDto>>builder().success(true)
                 .message("Create all emp technical skills successful!")
                 .content(createdEmpAttitudeSkill).build().toResponse(HttpStatus.CREATED);
@@ -58,24 +63,28 @@ public class EmpAttitudeSkillController {
                     defaultValue = "false") Boolean withCreatedBy,
             @RequestParam(name = "with_updated_by", required = false,
                     defaultValue = "false") Boolean withUpdatedBy) {
-        System.out.println("Get All Emp Attitude Skill");
+                        log.info("Starting EmpAttitudeSkillController.list");
         EmpAttitudeSkillFilter filter = new EmpAttitudeSkillFilter();
         filter.setUserIds(userIds);
         filter.setYears(years);
         filter.setEnabledOnly(enabledOnly);
         filter.setWithCreatedBy(withCreatedBy);
         filter.setWithUpdatedBy(withUpdatedBy);
+
         List<EmpAttitudeSkillDto> data =
-                empAttitudeSkillService.getAllEmpAttitudeSkills(filter);
-        return ResponseDto.<List<EmpAttitudeSkillDto>>builder().content(data)
+                        empAttitudeSkillService.getAllEmpAttitudeSkills(filter);
+                        log.info("Ending EmpAttitudeSkillController.list");
+                return ResponseDto.<List<EmpAttitudeSkillDto>>builder().content(data)
                 .message("Get emp attitude skills successful!").success(true).build()
                 .toResponse(HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto<EmpAttitudeSkillDto>> getEmpAttitudeSkillById(
-            @PathVariable UUID id) {
-        EmpAttitudeSkillDto response = empAttitudeSkillService.getEmpAttitudeSkillById(id);
+                    @PathVariable UUID id) {
+            log.info("Starting EmpAttitudeSkillController.get for id = {}", id);
+            EmpAttitudeSkillDto response = empAttitudeSkillService.getEmpAttitudeSkillById(id);
+            log.info("Ending EmpAttitudeSkillController.get for id = {}", id);
         return ResponseDto.<EmpAttitudeSkillDto>builder().content(response)
                 .message(String.format("Get emp attitude skill with id %s successful!", id))
                 .success(true).build().toResponse(HttpStatus.OK);
@@ -83,17 +92,25 @@ public class EmpAttitudeSkillController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDto<EmpAttitudeSkillDto>> updateEmpAttitudeSkillById(
-            @PathVariable UUID id, @RequestBody @Valid EmpAttitudeSkillReq empAttitudeSkillReq) {
+                    @PathVariable UUID id,
+                    @RequestBody @Valid EmpAttitudeSkillReq empAttitudeSkillReq) {
+            log.info("Starting EmpAttitudeSkillController.update for id = {}", id);
         EmpAttitudeSkillDto res =
-                empAttitudeSkillService.updateEmpAttitudeSkillById(id, empAttitudeSkillReq);
+                        empAttitudeSkillService.updateEmpAttitudeSkillById(id, empAttitudeSkillReq);
+        log.info("Ending EmpAttitudeSkillController.update for id = {}", id);
         return ResponseDto.<EmpAttitudeSkillDto>builder().content(res)
                 .message(String.format("Update emp attitude skill with id %s successful!", id))
                 .success(true).build().toResponse(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> deleteEmpAttitudeSkillById(@PathVariable UUID id) {
-        boolean res = empAttitudeSkillService.deleteEmpAttitudeSkillById(id);
-        return new ResponseEntity<>(res, HttpStatus.OK);
+    public ResponseEntity<ResponseDto<Void>> deleteEmpAttitudeSkillById(@PathVariable UUID id) {
+            log.info("Starting EmpattitudeSkillController.delete for id = {}", id);
+            empAttitudeSkillService.deleteEmpAttitudeSkillById(id);
+            log.info("Ending EmpAttitudeSkillController.delete for id = {}", id);
+            return ResponseDto.<Void>builder().success(true)
+                            .message(String.format(
+                                            "Delete emp attitude skill with id %s successful!", id))
+                            .build().toResponse(HttpStatus.OK);
     }
 }

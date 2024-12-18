@@ -15,35 +15,43 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.division.DivisionDto;
 import ogya.lokakarya.be.dto.division.DivisionReq;
 import ogya.lokakarya.be.service.DivisionService;
 
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
-@RequestMapping("/divisions")
 @RestController
+@RequestMapping("/divisions")
 public class DivisionController {
     @Autowired
     DivisionService divisionService;
 
     @PostMapping
     public ResponseEntity<ResponseDto<DivisionDto>> create(@RequestBody @Valid DivisionReq data) {
+        log.info("Starting DivisionController.create");
         var createdDivision = divisionService.create(data);
+        log.info("Ending DivisionController.create");
         return ResponseDto.<DivisionDto>builder().success(true).content(createdDivision)
                 .message("Create division successful!").build().toResponse(HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<ResponseDto<List<DivisionDto>>> getAllDivisions() {
+        log.info("Starting DivisionController.list");
         List<DivisionDto> divisions = divisionService.getAllDivisions();
+        log.info("Ending DivisionController.list");
         return ResponseDto.<List<DivisionDto>>builder().success(true).content(divisions)
                 .message("List all division successful!").build().toResponse(HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto<DivisionDto>> getDivisionById(@PathVariable UUID id) {
+        log.info("Starting DivisionController.get for id = {}", id);
         DivisionDto division = divisionService.getDivisionById(id);
+        log.info("Ending DivisionController.get for id = {}", id);
         return ResponseDto.<DivisionDto>builder().success(true).content(division)
                 .message(String.format("Get division with id %s successful!", id)).build()
                 .toResponse(HttpStatus.OK);
@@ -52,7 +60,9 @@ public class DivisionController {
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDto<DivisionDto>> updateDivisionById(@PathVariable UUID id,
             @RequestBody @Valid DivisionReq divisionReq) {
+        log.info("Starting DivisionController.update for id = {}", id);
         DivisionDto updatedDivision = divisionService.updateDivisionById(id, divisionReq);
+        log.info("Ending DivisionController.update for id = {}", id);
         return ResponseDto.<DivisionDto>builder().success(true).content(updatedDivision)
                 .message(String.format("Update division with id %s successful!", id)).build()
                 .toResponse(HttpStatus.OK);
@@ -60,7 +70,9 @@ public class DivisionController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto<Void>> deleteDivisionById(@PathVariable UUID id) {
+        log.info("Starting DivisionController.delete for id = {}", id);
         divisionService.deleteDivisionById(id);
+        log.info("Ending DivisionController.delete for id = {}", id);
         return ResponseDto.<Void>builder().success(true)
                 .message(String.format("Delete division with id %s successful!", id)).build()
                 .toResponse(HttpStatus.OK);

@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillDto;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillFilter;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillReq;
 import ogya.lokakarya.be.service.EmpAchievementSkillService;
 
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/emp-achievement-skills")
@@ -32,7 +34,9 @@ public class EmpAchievementSkillController {
         @PostMapping
         public ResponseEntity<ResponseDto<EmpAchievementSkillDto>> create(
                         @RequestBody @Valid EmpAchievementSkillReq data) {
+                log.info("Starting EmpAchievementSkillController.create");
                 var createdAchievementSkill = achievementSkillService.create(data);
+                log.info("Ending EmpAchievementSkillController.create");
                 return ResponseDto.<EmpAchievementSkillDto>builder()
                                 .content(createdAchievementSkill)
                                 .message("Create emp achievement skill successful!").success(true)
@@ -40,9 +44,11 @@ public class EmpAchievementSkillController {
         }
 
         @PostMapping("/bulk-create")
-        public ResponseEntity<ResponseDto<List<EmpAchievementSkillDto>>> create(
+        public ResponseEntity<ResponseDto<List<EmpAchievementSkillDto>>> createBulk(
                         @RequestBody @Valid List<EmpAchievementSkillReq> data) {
+                log.info("Starting EmpAchievementSkillController.createBulk");
                 var createdAchievementSkill = achievementSkillService.createBulk(data);
+                log.info("Ending EmpAchievementSkillController.createBulk");
                 return ResponseDto.<List<EmpAchievementSkillDto>>builder()
                                 .content(createdAchievementSkill)
                                 .message("Create emp achievement skill successful!").success(true)
@@ -59,15 +65,17 @@ public class EmpAchievementSkillController {
                                         defaultValue = "false") Boolean withCreatedBy,
                         @RequestParam(name = "with_updated_by", required = false,
                                         defaultValue = "false") Boolean withUpdatedBy) {
-                System.out.println("Get All Achievement Skill");
+                log.info("Starting EmpAchievementSkillController.list");
                 EmpAchievementSkillFilter filter = new EmpAchievementSkillFilter();
                 filter.setUserIds(userIds);
                 filter.setYears(years);
                 filter.setEnabledOnly(enabledOnly);
                 filter.setWithCreatedBy(withCreatedBy);
                 filter.setWithUpdatedBy(withUpdatedBy);
+
                 List<EmpAchievementSkillDto> response =
                                 achievementSkillService.getAllAchievementSkills(filter);
+                log.info("Ending EmpAchievementSkillController.list");
                 return ResponseDto.<List<EmpAchievementSkillDto>>builder().content(response)
                                 .message("Get emp achievement skills successful!").success(true)
                                 .build().toResponse(HttpStatus.OK);
@@ -76,8 +84,10 @@ public class EmpAchievementSkillController {
         @GetMapping("/{id}")
         public ResponseEntity<ResponseDto<EmpAchievementSkillDto>> getAchievementSkillById(
                         @PathVariable UUID id) {
+                log.info("Starting EmpAchievementSkillController.get for id = {}", id);
                 EmpAchievementSkillDto response =
                                 achievementSkillService.getAchievementSkillById(id);
+                log.info("Ending EmpAchievementSkillController.get for id = {}", id);
                 return ResponseDto.<EmpAchievementSkillDto>builder().content(response)
                                 .message(String.format(
                                                 "Get emp achievement skill with id %s successful!",
@@ -89,8 +99,10 @@ public class EmpAchievementSkillController {
         public ResponseEntity<ResponseDto<EmpAchievementSkillDto>> updateAchievementSkillById(
                         @PathVariable UUID id,
                         @RequestBody @Valid EmpAchievementSkillReq empAchievementSkillReq) {
+                log.info("Starting EmpAchievementSkillController.update for id = {}", id);
                 EmpAchievementSkillDto res = achievementSkillService.updateAchievementSkillById(id,
                                 empAchievementSkillReq);
+                log.info("Ending EmpAchievementSkillController.update for id = {}", id);
                 return ResponseDto.<EmpAchievementSkillDto>builder().content(res).message(String
                                 .format("Update emp achievement skill with id %s successful!", id))
                                 .success(true).build().toResponse(HttpStatus.OK);
@@ -98,9 +110,11 @@ public class EmpAchievementSkillController {
 
         @DeleteMapping("/{id}")
         public ResponseEntity<ResponseDto<Void>> deleteAchievementSkillById(@PathVariable UUID id) {
+                log.info("Starting EmpAchievementSkillController.delete for id = {}", id);
                 achievementSkillService.deleteAchievementSkillById(id);
+                log.info("Ending EmpAchievementSkillController.delete for id = {}", id);
                 return ResponseDto.<Void>builder().success(true).message(String
-                                .format("Delete achievement skill with id %s successful!", id))
+                                .format("Delete emp achievement skill with id %s successful!", id))
                                 .build().toResponse(HttpStatus.OK);
         }
 }

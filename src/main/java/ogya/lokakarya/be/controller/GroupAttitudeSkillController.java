@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillDto;
 import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillFilter;
 import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillReq;
 import ogya.lokakarya.be.service.GroupAttitudeSkillService;
 
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/group-attitude-skills")
@@ -32,7 +34,9 @@ public class GroupAttitudeSkillController {
         @PostMapping
         public ResponseEntity<ResponseDto<GroupAttitudeSkillDto>> create(
                         @RequestBody @Valid GroupAttitudeSkillReq data) {
+                log.info("Starting GroupAttitudeSkillController.create");
                 var createdGroupAttitudeSill = groupAttitudeSkillService.create(data);
+                log.info("Ending GroupAttitudeSkillController.create");
                 return ResponseDto.<GroupAttitudeSkillDto>builder()
                                 .content(createdGroupAttitudeSill)
                                 .message("Create group attitude skill successful!").success(true)
@@ -55,7 +59,7 @@ public class GroupAttitudeSkillController {
                         @RequestParam(name = "with_updated_by", required = false,
                                         defaultValue = "false") Boolean withUpdatedBy) {
 
-                System.out.println("Get All Group Attitude Skills");
+                log.info("Starting GroupAttitudeSkillController.list");
                 GroupAttitudeSkillFilter filter = new GroupAttitudeSkillFilter();
                 filter.setNameContains(nameContains);
                 filter.setMinWeight(minWeight);
@@ -68,6 +72,7 @@ public class GroupAttitudeSkillController {
 
                 List<GroupAttitudeSkillDto> response =
                                 groupAttitudeSkillService.getAllGroupAttitudeSkills(filter);
+                log.info("Ending GroupAttitudeSkillController.list");
                 return ResponseDto.<List<GroupAttitudeSkillDto>>builder().content(response)
                                 .message("Get all group attitude skill successful!").success(true)
                                 .build().toResponse(HttpStatus.OK);
@@ -76,8 +81,10 @@ public class GroupAttitudeSkillController {
         @GetMapping("/{id}")
         public ResponseEntity<ResponseDto<GroupAttitudeSkillDto>> getGroupAttitudeSkillById(
                         @PathVariable UUID id) {
+                log.info("Starting GroupAttitudeSkillController.get for id = {}", id);
                 GroupAttitudeSkillDto response =
                                 groupAttitudeSkillService.getGroupAttitudeSkillById(id);
+                log.info("Ending GroupAttitudeSkillController.get for id = {}", id);
                 return ResponseDto.<GroupAttitudeSkillDto>builder().content(response).message(String
                                 .format("Get group attitude skill with id %s successful!", id))
                                 .success(true).build().toResponse(HttpStatus.OK);
@@ -87,8 +94,10 @@ public class GroupAttitudeSkillController {
         public ResponseEntity<ResponseDto<GroupAttitudeSkillDto>> updateDivisionById(
                         @PathVariable UUID id,
                         @RequestBody @Valid GroupAttitudeSkillReq groupAttitudeSkillReq) {
+                log.info("Starting GroupAttitudeSkillController.update for id = {}", id);
                 GroupAttitudeSkillDto res = groupAttitudeSkillService
                                 .updateGroupAttitudeSkillById(id, groupAttitudeSkillReq);
+                log.info("Ending GroupAttitudeSkillController.update for id = {}", id);
                 return ResponseDto.<GroupAttitudeSkillDto>builder().content(res).message(String
                                 .format("Update group attitude skill with id %s successful!", id))
                                 .success(true).build().toResponse(HttpStatus.OK);
@@ -96,7 +105,9 @@ public class GroupAttitudeSkillController {
 
         @DeleteMapping("/{id}")
         public ResponseEntity<ResponseDto<Void>> deleteGroupAttitudeById(@PathVariable UUID id) {
+                log.info("Starting GroupAttitudeSkillController.delete for id = {}", id);
                 groupAttitudeSkillService.deleteGroupAttitudeSkillById(id);
+                log.info("Ending GroupAttitudeSkillController.delete for id = {}", id);
                 return ResponseDto.<Void>builder().success(true).message(String
                                 .format("Delete group attitude skill with id %s successful!", id))
                                 .build().toResponse(HttpStatus.OK);

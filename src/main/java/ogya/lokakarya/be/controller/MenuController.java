@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.menu.MenuDto;
 import ogya.lokakarya.be.dto.menu.MenuFilter;
@@ -23,16 +24,19 @@ import ogya.lokakarya.be.dto.menu.MenuReq;
 import ogya.lokakarya.be.service.MenuService;
 
 
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
-@RequestMapping("/menus")
 @RestController
+@RequestMapping("/menus")
 public class MenuController {
         @Autowired
         MenuService menuService;
 
         @PostMapping
         public ResponseEntity<ResponseDto<MenuDto>> create(@RequestBody @Valid MenuReq data) {
+                log.info("Starting MenuController.create");
                 var createMenu = menuService.create(data);
+                log.info("Ending MenuController.create");
                 return ResponseDto.<MenuDto>builder().content(createMenu)
                                 .message("Create menu successful!").success(true).build()
                                 .toResponse(HttpStatus.CREATED);
@@ -46,29 +50,35 @@ public class MenuController {
                                         defaultValue = "false") Boolean withCreatedBy,
                         @RequestParam(name = "with_updated_by", required = false,
                                         defaultValue = "false") Boolean withUpdatedBy) {
-                MenuFilter menuFilter = new MenuFilter();
-                menuFilter.setUserId(userId);
-                menuFilter.setRoleNames(roleNames);
-                menuFilter.setWithCreatedBy(withCreatedBy);
-                menuFilter.setWithUpdatedBy(withUpdatedBy);
-                var menus = menuService.getAllMenus(menuFilter);
-                return ResponseDto.<List<MenuDto>>builder().success(true).content(menus)
+                log.info("Starting MenuController.list");
+                MenuFilter filter = new MenuFilter();
+                filter.setUserId(userId);
+                filter.setRoleNames(roleNames);
+                filter.setWithCreatedBy(withCreatedBy);
+                filter.setWithUpdatedBy(withUpdatedBy);
+                var data = menuService.getAllMenus(filter);
+                log.info("Ending MenuController.list");
+                return ResponseDto.<List<MenuDto>>builder().success(true).content(data)
                                 .message("list menu with filter successful!").build()
                                 .toResponse(HttpStatus.OK);
         }
 
         @GetMapping("/{id}")
         public ResponseEntity<ResponseDto<MenuDto>> getMenuById(@PathVariable UUID id) {
+                log.info("Starting MenuController.get for id = {}", id);
                 MenuDto response = menuService.getMenuById(id);
+                log.info("Ending MenuController.get for id = {}", id);
                 return ResponseDto.<MenuDto>builder().content(response)
                                 .message(String.format("Get menu with id %s successful!", id))
                                 .success(true).build().toResponse(HttpStatus.OK);
         }
 
         @PutMapping("/{id}")
-        public ResponseEntity<ResponseDto<MenuDto>> updateDivisionById(@PathVariable UUID id,
+        public ResponseEntity<ResponseDto<MenuDto>> updateById(@PathVariable UUID id,
                         @RequestBody @Valid MenuReq menuReq) {
+                log.info("Starting MenuController.update for id = {}", id);
                 MenuDto res = menuService.updateMenuById(id, menuReq);
+                log.info("Ending MenuController.update for id = {}", id);
                 return ResponseDto.<MenuDto>builder().content(res)
                                 .message(String.format("Update menu with id %s successful!", id))
                                 .success(true).build().toResponse(HttpStatus.OK);
@@ -76,7 +86,9 @@ public class MenuController {
 
         @DeleteMapping("/{id}")
         public ResponseEntity<ResponseDto<Void>> deleteMenuById(@PathVariable UUID id) {
+                log.info("Starting MenuController.delete for id = {}", id);
                 menuService.deleteMenuById(id);
+                log.info("Ending MenuController.delete for id = {}", id);
                 return ResponseDto.<Void>builder().success(true)
                                 .message(String.format("Delete menu with id %s successful!", id))
                                 .build().toResponse(HttpStatus.OK);
