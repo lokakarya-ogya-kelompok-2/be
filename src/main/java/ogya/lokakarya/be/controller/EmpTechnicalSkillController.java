@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillDto;
 import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillFilter;
 import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillReq;
 import ogya.lokakarya.be.service.EmpTechnicalSkillService;
 
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/emp-technical-skills")
@@ -32,7 +34,9 @@ public class EmpTechnicalSkillController {
         @PostMapping
         public ResponseEntity<ResponseDto<EmpTechnicalSkillDto>> create(
                         @RequestBody @Valid EmpTechnicalSkillReq data) {
+                log.info("Starting EmpTechnicalSkillController.create");
                 var createdEmpTechnicalSkill = empTechnicalSkillService.create(data);
+                log.info("Ending EmpTechnicalSkillController.create");
                 return ResponseDto.<EmpTechnicalSkillDto>builder().content(createdEmpTechnicalSkill)
                                 .message("Create emp technical skill successful!").success(true)
                                 .build().toResponse(HttpStatus.CREATED);
@@ -41,8 +45,9 @@ public class EmpTechnicalSkillController {
         @PostMapping("/bulk-create")
         public ResponseEntity<ResponseDto<List<EmpTechnicalSkillDto>>> createBulk(
                         @RequestBody @Valid List<EmpTechnicalSkillReq> data) {
-                System.out.println("DATA: " + data);
+                log.info("Starting EmpTechnicalSkillController.createBulk");
                 var createdEmpTechSkills = empTechnicalSkillService.createBulk(data);
+                log.info("Ending EmpTechnicalSkillController.createBulk");
                 return ResponseDto.<List<EmpTechnicalSkillDto>>builder().success(true)
                                 .message("Create all emp technical skills successful!")
                                 .content(createdEmpTechSkills).build()
@@ -58,8 +63,7 @@ public class EmpTechnicalSkillController {
                                         defaultValue = "false") Boolean withCreatedBy,
                         @RequestParam(name = "with_updated_by", required = false,
                                         defaultValue = "false") Boolean withUpdatedBy) {
-                System.out.println("Get All Emp Technical Skills");
-
+                log.info("Starting EmpTechnicalSkillController.list");
                 EmpTechnicalSkillFilter filter = new EmpTechnicalSkillFilter();
                 filter.setUserIds(userIds);
                 filter.setYears(years);
@@ -68,6 +72,7 @@ public class EmpTechnicalSkillController {
 
                 List<EmpTechnicalSkillDto> response =
                                 empTechnicalSkillService.getAllEmpTechnicalSkills(filter);
+                log.info("Ending EmpTechnicalSkillController.list");
                 return ResponseDto.<List<EmpTechnicalSkillDto>>builder().content(response)
                                 .message("Get all emp technical skills successful!").success(true)
                                 .build().toResponse(HttpStatus.OK);
@@ -76,8 +81,10 @@ public class EmpTechnicalSkillController {
         @GetMapping("/{id}")
         public ResponseEntity<ResponseDto<EmpTechnicalSkillDto>> getEmpTechnicalSkillById(
                         @PathVariable UUID id) {
+                log.info("Starting EmpTechnicalSkillController.get for id = {}", id);
                 EmpTechnicalSkillDto response =
                                 empTechnicalSkillService.getEmpTechnicalSkillById(id);
+                log.info("Ending EmpTechnicalSkillController.get for id = {}", id);
                 return ResponseDto.<EmpTechnicalSkillDto>builder().content(response).message(
                                 String.format("Get emp technical skill with id %s successful!", id))
                                 .success(true).build().toResponse(HttpStatus.OK);
@@ -87,8 +94,10 @@ public class EmpTechnicalSkillController {
         public ResponseEntity<ResponseDto<EmpTechnicalSkillDto>> updateEmpTechnicalSkillById(
                         @PathVariable UUID id,
                         @RequestBody @Valid EmpTechnicalSkillReq empTechnicalSkillReq) {
+                log.info("Starting EmpTechnicalSkillController.update for id = {}", id);
                 EmpTechnicalSkillDto res = empTechnicalSkillService.updateEmpTechnicalSkillById(id,
                                 empTechnicalSkillReq);
+                log.info("Ending EmpTechnicalSkillController.update for id = {}", id);
                 return ResponseDto.<EmpTechnicalSkillDto>builder().content(res).message(String
                                 .format("Update emp technical skill with id %s successful!", id))
                                 .success(true).build().toResponse(HttpStatus.OK);
@@ -97,9 +106,11 @@ public class EmpTechnicalSkillController {
         @DeleteMapping("/{id}")
         public ResponseEntity<ResponseDto<Void>> deleteEmpTechnicalSkillById(
                         @PathVariable UUID id) {
+                log.info("Starting EmpTechnicalSkillController.delete for id = {}", id);
                 empTechnicalSkillService.deleteEmpTechnicalSkillById(id);
-                return ResponseDto.<Void>builder().success(true).message(
-                                String.format("Delete technical skill with id %s successful!", id))
+                log.info("Ending EmpTechnicalSkillController.delete for id = {}", id);
+                return ResponseDto.<Void>builder().success(true).message(String
+                                .format("Delete emp technical skill with id %s successful!", id))
                                 .build().toResponse(HttpStatus.OK);
         }
 }

@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.groupachievement.GroupAchievementDto;
 import ogya.lokakarya.be.dto.groupachievement.GroupAchievementFilter;
 import ogya.lokakarya.be.dto.groupachievement.GroupAchievementReq;
 import ogya.lokakarya.be.service.GroupAchievementService;
 
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/group-achievements")
@@ -31,8 +33,10 @@ public class GroupAchievementController {
 
     @PostMapping
     public ResponseEntity<ResponseDto<GroupAchievementDto>> create(
-            @RequestBody @Valid GroupAchievementReq data) {
-        var createdGroupAchievement = groupAchievementService.create(data);
+                    @RequestBody @Valid GroupAchievementReq data) {
+            log.info("Starting GroupAchievementController.create");
+            var createdGroupAchievement = groupAchievementService.create(data);
+            log.info("Ending GroupAchievementController.create");
         return ResponseDto.<GroupAchievementDto>builder().content(createdGroupAchievement)
                 .message("Create group achievement successful!").success(true).build()
                 .toResponse(HttpStatus.CREATED);
@@ -53,7 +57,7 @@ public class GroupAchievementController {
                     defaultValue = "false") Boolean withCreatedBy,
             @RequestParam(name = "with_updated_by", required = false,
                     defaultValue = "false") Boolean withUpdatedBy) {
-        System.out.println("Get All group achievements");
+            log.info("Starting GroupAchievementController.list");
         GroupAchievementFilter filter = new GroupAchievementFilter();
         filter.setNameContains(nameContains);
         filter.setMinWeight(minWeight);
@@ -67,6 +71,7 @@ public class GroupAchievementController {
         List<GroupAchievementDto> response =
                 groupAchievementService.getAllGroupAchievements(filter);
         System.out.println(response);
+        log.info("Ending GroupAchievementController.list");
         return ResponseDto.<List<GroupAchievementDto>>builder().content(response)
                 .message("Get all group achievements successful!").success(true).build()
                 .toResponse(HttpStatus.OK);
@@ -74,8 +79,10 @@ public class GroupAchievementController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto<GroupAchievementDto>> getGroupAchievementById(
-            @PathVariable UUID id) {
+                    @PathVariable UUID id) {
+            log.info("Starting GroupAchievementController.get for id = {}", id);
         GroupAchievementDto response = groupAchievementService.getGroupAchievementById(id);
+        log.info("Ending GroupAchievementController.get for id = {}", id);
         return ResponseDto.<GroupAchievementDto>builder().content(response)
                 .message(String.format("Get group achievement with id %s successful!", id))
                 .success(true).build().toResponse(HttpStatus.OK);
@@ -83,17 +90,22 @@ public class GroupAchievementController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDto<GroupAchievementDto>> updateGroupAchievementById(
-            @PathVariable UUID id, @RequestBody @Valid GroupAchievementReq groupAchievementReq) {
+                    @PathVariable UUID id,
+                    @RequestBody @Valid GroupAchievementReq groupAchievementReq) {
+            log.info("Starting GroupAchievementController.update for id = {}", id);
         GroupAchievementDto res =
                 groupAchievementService.updateGroupAchievementById(id, groupAchievementReq);
-        return ResponseDto.<GroupAchievementDto>builder().content(res)
+                log.info("Ending GroupAchievementController.update for id = {}", id);
+                return ResponseDto.<GroupAchievementDto>builder().content(res)
                 .message(String.format("Update group achievement with id %s successful!", id))
                 .success(true).build().toResponse(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto<Void>> deleteGroupAchievementById(@PathVariable UUID id) {
-        groupAchievementService.deleteGroupAchievementById(id);
+            log.info("Starting GroupAchievementController.delete for id = {}", id);
+            groupAchievementService.deleteGroupAchievementById(id);
+            log.info("Ending GroupAchievementController.delete for id = {}", id);
         return ResponseDto.<Void>builder().success(true)
                 .message(String.format("Delete group achievement with id %s successful!", id))
                 .build().toResponse(HttpStatus.OK);

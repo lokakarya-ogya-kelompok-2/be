@@ -1,6 +1,5 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -8,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.division.DivisionDto;
+import ogya.lokakarya.be.dto.division.DivisionFilter;
 import ogya.lokakarya.be.dto.division.DivisionReq;
 import ogya.lokakarya.be.entity.Division;
 import ogya.lokakarya.be.entity.User;
@@ -34,14 +34,10 @@ public class DivisionServiceimpl implements DivisionService {
     }
 
     @Override
-    public List<DivisionDto> getAllDivisions() {
-        List<DivisionDto> listResult = new ArrayList<>();
-        List<Division> divisionList = divisionRepository.findAll();
-        for (Division division : divisionList) {
-            DivisionDto result = convertToDto(division);
-            listResult.add(result);
-        }
-        return listResult;
+    public List<DivisionDto> getAllDivisions(DivisionFilter filter) {
+        List<Division> divisions = divisionRepository.findAllByFilter(filter);
+        return divisions.stream().map(division -> new DivisionDto(division,
+                filter.getWithCreatedBy(), filter.getWithUpdatedBy())).toList();
     }
 
     @Override

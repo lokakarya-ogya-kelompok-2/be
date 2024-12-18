@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryFilter;
@@ -23,6 +24,7 @@ import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryReq;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 
 
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/assessment-summaries")
@@ -33,7 +35,9 @@ public class AssessmentSummaryController {
         @PostMapping
         public ResponseEntity<ResponseDto<AssessmentSummaryDto>> createAssessmentSummary(
                         @RequestBody @Valid AssessmentSummaryReq data) {
+                log.info("Starting AssessmentSummaryController.create");
                 var createdAssessmentSummary = assessmentSummaryService.create(data);
+                log.info("Ending AssessmentSummaryController.create");
                 return ResponseDto.<AssessmentSummaryDto>builder().success(true)
                                 .content(createdAssessmentSummary)
                                 .message("Create assessment summary successful!").build()
@@ -48,13 +52,16 @@ public class AssessmentSummaryController {
                                         defaultValue = "false") Boolean withCreatedBy,
                         @RequestParam(name = "with_updated_by", required = false,
                                         defaultValue = "false") Boolean withUpdatedBy) {
+                log.info("Starting AssessmentSummaryController.list");
                 AssessmentSummaryFilter filter = new AssessmentSummaryFilter();
                 filter.setUserIds(userIds);
                 filter.setYears(years);
                 filter.setWithCreatedBy(withCreatedBy);
                 filter.setWithUpdatedBy(withUpdatedBy);
+
                 List<AssessmentSummaryDto> assessmentSummaries =
                                 assessmentSummaryService.getAllAssessmentSummaries(filter);
+                log.info("Ending AssessmentSummaryController.list");
                 return ResponseDto.<List<AssessmentSummaryDto>>builder().success(true)
                                 .content(assessmentSummaries)
                                 .message("List all assessment summary successful!").build()
@@ -64,8 +71,10 @@ public class AssessmentSummaryController {
         @GetMapping("/{id}")
         public ResponseEntity<ResponseDto<AssessmentSummaryDto>> getAssessmentSummaryById(
                         @PathVariable UUID id) {
+                log.info("Starting AssessmentSummaryController.get for id = {}", id);
                 AssessmentSummaryDto assessmentSummary =
                                 assessmentSummaryService.getAssessmentSummaryById(id);
+                log.info("Ending AssessmentSummaryController.get for id = {}", id);
                 return ResponseDto.<AssessmentSummaryDto>builder().success(true)
                                 .content(assessmentSummary)
                                 .message(String.format(
@@ -78,8 +87,10 @@ public class AssessmentSummaryController {
         public ResponseEntity<ResponseDto<AssessmentSummaryDto>> updateAssessmentSummaryById(
                         @PathVariable UUID id,
                         @RequestBody @Valid AssessmentSummaryReq assessmentSummaryReq) {
+                log.info("Starting AssessmentSummaryController.update for id = {}", id);
                 AssessmentSummaryDto updatedAssessmentSummary = assessmentSummaryService
                                 .updateAssessmentSummaryById(id, assessmentSummaryReq);
+                log.info("Ending AssessmentSummaryController.update for id = {}", id);
                 return ResponseDto.<AssessmentSummaryDto>builder().success(true)
                                 .content(updatedAssessmentSummary)
                                 .message(String.format(
@@ -91,7 +102,9 @@ public class AssessmentSummaryController {
         @DeleteMapping("/{id}")
         public ResponseEntity<ResponseDto<Void>> deleteAssessmentSummaryById(
                         @PathVariable UUID id) {
+                log.info("Starting AssessmentSummaryController.delete for id = {}", id);
                 assessmentSummaryService.deleteAssessmentSummaryById(id);
+                log.info("Ending AssessmentSummaryController.delete for id = {}", id);
                 return ResponseDto.<Void>builder().success(true).message(String
                                 .format("Delete assessment summary with id %s successful!", id))
                                 .build().toResponse(HttpStatus.OK);
@@ -100,9 +113,13 @@ public class AssessmentSummaryController {
         @GetMapping("/calculate/{userId}/{year}")
         public ResponseEntity<ResponseDto<AssessmentSummaryDto>> calculateAssessmentSummary(
                         @PathVariable UUID userId, @PathVariable Integer year) {
+                log.info("Starting AssessmentSummaryController.calculate for userId = {} and year = {}",
+                                userId, year);
                 var assessmentSummary = assessmentSummaryService
                                 .calculateAssessmentSummaryButValidateTheUserIdFirstBeforeCalculating(
                                                 userId, year);
+                log.info("Ending AssessmentSummaryController.calculate for userId = {} and year = {}",
+                                userId, year);
                 return ResponseDto.<AssessmentSummaryDto>builder()
                                 .success(assessmentSummary.getId() != null)
                                 .message(String.format(

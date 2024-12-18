@@ -2,8 +2,6 @@ package ogya.lokakarya.be.controller;
 
 import java.util.List;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,27 +16,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.achievement.AchievementDto;
 import ogya.lokakarya.be.dto.achievement.AchievementFilter;
 import ogya.lokakarya.be.dto.achievement.AchievementReq;
 import ogya.lokakarya.be.service.AchievementService;
 
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/achievements")
 public class AchievementController {
         @Autowired
         AchievementService achievementService;
-        @Autowired
-        private static final Logger LOG = LoggerFactory.getLogger(AchievementController.class);
 
         @PostMapping
         public ResponseEntity<ResponseDto<AchievementDto>> create(
                         @RequestBody @Valid AchievementReq data) {
-                LOG.info("Start method: create achievement");
+                log.info("Starting AchievementController.create");
                 var createdAchievement = achievementService.create(data);
-                LOG.info("end method: create achievement");
+                log.info("Ending AchievementController.create");
                 return ResponseDto.<AchievementDto>builder().success(true)
                                 .content(createdAchievement)
                                 .message("Create achievement successful!").build()
@@ -57,7 +55,7 @@ public class AchievementController {
                                         defaultValue = "false") Boolean withCreatedBy,
                         @RequestParam(name = "with_updated_by", required = false,
                                         defaultValue = "false") Boolean withUpdatedBy) {
-                System.out.println("get All Achievements");
+                log.info("Starting AchievementController.list");
                 AchievementFilter filter = new AchievementFilter();
                 filter.setNameContains(nameContains);
                 filter.setGroupIds(groupIds);
@@ -65,7 +63,9 @@ public class AchievementController {
                 filter.setWithGroup(withGroup);
                 filter.setWithCreatedBy(withCreatedBy);
                 filter.setWithUpdatedBy(withUpdatedBy);
+
                 List<AchievementDto> achievements = achievementService.getAllAchievements(filter);
+                log.info("Ending AchievementController.list");
                 return ResponseDto.<List<AchievementDto>>builder().success(true)
                                 .content(achievements).message("List all achievement successful!")
                                 .build().toResponse(HttpStatus.OK);
@@ -74,8 +74,9 @@ public class AchievementController {
         @GetMapping("/{id}")
         public ResponseEntity<ResponseDto<AchievementDto>> getAchievementById(
                         @PathVariable UUID id) {
-                System.out.println("get Achievement By Id");
+                log.info("Starting AchievementController.get for id = {}", id);
                 AchievementDto achievement = achievementService.getAchievementsById(id);
+                log.info("Ending AchievementController.get for id = {}", id);
                 return ResponseDto.<AchievementDto>builder().success(true).content(achievement)
                                 .message(String.format("Get achievement with id %s successful!",
                                                 id))
@@ -85,8 +86,10 @@ public class AchievementController {
         @PutMapping("/{id}")
         public ResponseEntity<ResponseDto<AchievementDto>> updateAchievementById(
                         @PathVariable UUID id, @RequestBody @Valid AchievementReq achievementReq) {
+                log.info("Starting AchievementController.update for id = {}", id);
                 AchievementDto updatedAchievement =
                                 achievementService.updateAchievementById(id, achievementReq);
+                log.info("Ending AchievementController.update for id = {}");
                 return ResponseDto.<AchievementDto>builder().success(true)
                                 .content(updatedAchievement)
                                 .message(String.format("Update achievement with id %s successful!",
@@ -96,7 +99,9 @@ public class AchievementController {
 
         @DeleteMapping("/{id}")
         public ResponseEntity<ResponseDto<Void>> deleteAchievementById(@PathVariable UUID id) {
+                log.info("Starting AchievementController.delete for id = {}", id);
                 achievementService.deleteAchievementById(id);
+                log.info("Ending AchievementController.delete for id = {}", id);
                 return ResponseDto.<Void>builder().success(true).message(
                                 String.format("Delete achievement with id %s successful!", id))
                                 .build().toResponse(HttpStatus.OK);

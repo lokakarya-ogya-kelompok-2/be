@@ -1,11 +1,8 @@
 package ogya.lokakarya.be.controller;
 
 
-import jakarta.validation.Valid;
-import ogya.lokakarya.be.dto.ResponseDto;
-import ogya.lokakarya.be.dto.role.RoleDto;
-import ogya.lokakarya.be.dto.role.RoleReq;
-import ogya.lokakarya.be.service.RoleService;
+import java.util.List;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,37 +15,46 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import ogya.lokakarya.be.dto.ResponseDto;
+import ogya.lokakarya.be.dto.role.RoleDto;
+import ogya.lokakarya.be.dto.role.RoleReq;
+import ogya.lokakarya.be.service.RoleService;
 
-import java.util.List;
-import java.util.UUID;
-
-@RequestMapping("/roles")
-@RestController
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
+@RestController
+@RequestMapping("/roles")
 public class RoleController {
         @Autowired
         private RoleService roleService;
 
     @PostMapping
     public ResponseEntity<ResponseDto<RoleDto>> create(@RequestBody @Valid RoleReq data) {
-        var createdRole = roleService.create(data);
+            log.info("Starting RoleController.create");
+            var createdRole = roleService.create(data);
+            log.info("Ending RoleController.create");
         return ResponseDto.<RoleDto>builder().content(createdRole)
-                .message("Create Role successful!").success(true).build()
+                .message("Create role successful!").success(true).build()
                 .toResponse(HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<ResponseDto<List<RoleDto>>> getAllUser() {
-        System.out.println("Get All Role");
+    public ResponseEntity<ResponseDto<List<RoleDto>>> list() {
+        log.info("Starting RoleController.list");
         List<RoleDto> response = roleService.getAllRole();
+        log.info("Ending RoleController.list");
         return ResponseDto.<List<RoleDto>>builder().content(response)
-                .message("Get All Role Successful!").success(true).build()
+                .message("Get all role successful!").success(true).build()
                 .toResponse(HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto<RoleDto>> getRoleById(@PathVariable UUID id) {
-        RoleDto response = roleService.getRoleById(id);
+            log.info("Starting RoleController.get for id = {}", id);
+            RoleDto response = roleService.getRoleById(id);
+            log.info("Ending RoleController.get for id = {}", id);
         return ResponseDto.<RoleDto>builder().content(response)
                 .message(String.format("Get role with id %s successful!", id)).success(true).build()
                 .toResponse(HttpStatus.OK);
@@ -56,8 +62,10 @@ public class RoleController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDto<RoleDto>> updateRoleById
-            (@PathVariable UUID id, @RequestBody @Valid RoleReq createRole) {
-    RoleDto res= roleService.updateRoleById(id, createRole);
+    (@PathVariable UUID id, @RequestBody @Valid RoleReq createRole) {
+            log.info("Starting RoleController.update for id = {}", id);
+            RoleDto res = roleService.updateRoleById(id, createRole);
+            log.info("Ending RoleController.update for id = {}", id);
     return ResponseDto.<RoleDto>builder().content(res)
             .message(String.format("Update role with id %s successful!", id)).success(true)
             .build().toResponse(HttpStatus.OK);
@@ -65,7 +73,9 @@ public class RoleController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto<Void>> deleteRoleById(@PathVariable UUID id) {
-    roleService.deleteRoleById(id);
+            log.info("Starting RoleController.delete for id = {}", id);
+            roleService.deleteRoleById(id);
+            log.info("Ending RoleController.delete for id = {}", id);
     return ResponseDto.<Void>builder().success(true)
             .message(String.format("Delete role with id %s successful!", id)).build()
             .toResponse(HttpStatus.OK);

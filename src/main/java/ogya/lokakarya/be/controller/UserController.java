@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.user.UserChangePasswordDto;
 import ogya.lokakarya.be.dto.user.UserDto;
@@ -27,9 +28,10 @@ import ogya.lokakarya.be.service.UserService;
 
 
 
-@RequestMapping("/users")
-@RestController
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
+@RestController
+@RequestMapping("/users")
 public class UserController {
     @Autowired
     private UserService userSvc;
@@ -37,7 +39,9 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<ResponseDto<UserDto>> create(@RequestBody @Valid UserReq data) {
-        var createdUser = userSvc.create(data);
+            log.info("Starting UserController.create");
+            var createdUser = userSvc.create(data);
+            log.info("Ending UserController.create");
         return ResponseDto.<UserDto>builder().success(true).content(createdUser)
                 .message("Create user successful!").build().toResponse(HttpStatus.CREATED);
     }
@@ -60,7 +64,7 @@ public class UserController {
                     defaultValue = "false") Boolean withCreatedBy,
             @RequestParam(name = "with_updated_by", required = false,
                     defaultValue = "false") Boolean withUpdatedBy) {
-
+            log.info("Starting UserController.list");
         UserFilter filter = new UserFilter();
         filter.setUsernameContains(usernameContains);
         filter.setNameContains(nameContains);
@@ -76,13 +80,16 @@ public class UserController {
         filter.setWithUpdatedBy(withUpdatedBy);
 
         List<UserDto> users = userSvc.list(filter);
+        log.info("Ending UserController.list");
         return ResponseDto.<List<UserDto>>builder().success(true).content(users)
                 .message("List users successful!").build().toResponse(HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto<UserDto>> get(@PathVariable UUID id) {
-        var user = userSvc.get(id);
+            log.info("Starting UserController.get for id = {}", id);
+            var user = userSvc.get(id);
+            log.info("Ending UserController.get for id = {}", id);
         return ResponseDto.<UserDto>builder().success(true).content(user)
                 .message(String.format("Get user with id %s successful!", id)).build()
                 .toResponse(HttpStatus.OK);
@@ -90,9 +97,10 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDto<UserDto>> update(@PathVariable UUID id,
-            @RequestBody @Valid UserUpdateDto data) {
+                    @RequestBody @Valid UserUpdateDto data) {
+            log.info("Starting UserController.update for id = {}", id);
         var updatedUser = userSvc.update(id, data);
-
+        log.info("Ending UserController.update for id = {}", id);
         return ResponseDto.<UserDto>builder().success(true).content(updatedUser)
                 .message(String.format("Update user with id %s successful!", id)).build()
                 .toResponse(HttpStatus.OK);
@@ -100,7 +108,9 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto<Void>> delete(@PathVariable UUID id) {
-        userSvc.delete(id);
+            log.info("Starting UserController.delete for id = {}", id);
+            userSvc.delete(id);
+            log.info("Ending UserController.delete for id = {}", id);
         return ResponseDto.<Void>builder().success(true)
                 .message(String.format("Delete user with id %s successful!", id)).build()
                 .toResponse(HttpStatus.OK);
@@ -108,15 +118,19 @@ public class UserController {
 
     @PutMapping("/change-password")
     public ResponseEntity<ResponseDto<UserDto>> changePassword(
-            @RequestBody @Valid UserChangePasswordDto data) {
-        var updatedUser = userSvc.changePassword(data);
+                    @RequestBody @Valid UserChangePasswordDto data) {
+            log.info("Starting UserController.changePassword");
+            var updatedUser = userSvc.changePassword(data);
+            log.info("Ending UserController.changePassword");
         return ResponseDto.<UserDto>builder().success(true).content(updatedUser)
                 .message("Password changed successfuly!").build().toResponse(HttpStatus.OK);
     }
 
     @PostMapping("/{id}/reset-password")
     public ResponseEntity<ResponseDto<String>> resetPassword(@PathVariable UUID id) {
-        var generatedPassword = userSvc.resetPassword(id);
+            log.info("Starting UserController.resetPassword for id = {}", id);
+            var generatedPassword = userSvc.resetPassword(id);
+            log.info("Ending UserController.resetPassword for id = {}", id);
         return ResponseDto.<String>builder().success(true).content(generatedPassword)
                 .message("Reset password successful!").build().toResponse(HttpStatus.OK);
     }

@@ -16,23 +16,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.empdevplan.EmpDevPlanDto;
 import ogya.lokakarya.be.dto.empdevplan.EmpDevPlanFilter;
 import ogya.lokakarya.be.dto.empdevplan.EmpDevPlanReq;
 import ogya.lokakarya.be.service.EmpDevPlanService;
 
-@RequestMapping("/emp-dev-plans")
-@RestController
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
+@RestController
+@RequestMapping("/emp-dev-plans")
 public class EmpDevPlanController {
     @Autowired
     private EmpDevPlanService empDevPlanService;
 
     @PostMapping
     public ResponseEntity<ResponseDto<EmpDevPlanDto>> create(
-            @RequestBody @Valid EmpDevPlanReq data) {
-        var createdEmpDevPlan = empDevPlanService.create(data);
+                    @RequestBody @Valid EmpDevPlanReq data) {
+            log.info("Starting EmpDevPlanController.create");
+            var createdEmpDevPlan = empDevPlanService.create(data);
+            log.info("Ending EmpDevPlanController.create");
         return ResponseDto.<EmpDevPlanDto>builder().content(createdEmpDevPlan)
                 .message("Create emp dev plan successful!").success(true).build()
                 .toResponse(HttpStatus.CREATED);
@@ -40,8 +44,10 @@ public class EmpDevPlanController {
 
     @PostMapping("/bulk-create")
     public ResponseEntity<ResponseDto<List<EmpDevPlanDto>>> createBulk(
-            @RequestBody @Valid List<EmpDevPlanReq> data) {
-        var createdEmpDevPlans = empDevPlanService.createBulkEmpDevPlan(data);
+                    @RequestBody @Valid List<EmpDevPlanReq> data) {
+            log.info("Starting EmpDevPlanController.createBulk");
+            var createdEmpDevPlans = empDevPlanService.createBulkEmpDevPlan(data);
+            log.info("Ending EmpDevPlanController.createBulk");
         return ResponseDto.<List<EmpDevPlanDto>>builder().success(true)
                 .message("Create all emp development plans successful!").content(createdEmpDevPlans)
                 .build().toResponse(HttpStatus.CREATED);
@@ -57,8 +63,7 @@ public class EmpDevPlanController {
                     defaultValue = "false") Boolean withCreatedBy,
             @RequestParam(name = "with_updated_by", required = false,
                     defaultValue = "false") Boolean withUpdatedBy) {
-        System.out.println("Get All Emp Dev Plan");
-
+            log.info("Starting EmpDevPlanController.list");
         EmpDevPlanFilter filter = new EmpDevPlanFilter();
         filter.setUserIds(userIds);
         filter.setYears(years);
@@ -67,14 +72,17 @@ public class EmpDevPlanController {
         filter.setWithUpdatedBy(withUpdatedBy);
 
         List<EmpDevPlanDto> data = empDevPlanService.getAllEmpDevPlans(filter);
-        return ResponseDto.<List<EmpDevPlanDto>>builder().content(data).totalRows(data.size())
+        log.info("Ending EmpDevPlanController.list");
+        return ResponseDto.<List<EmpDevPlanDto>>builder().content(data)
                 .message("Get emp dev plans successful!").success(true).build()
                 .toResponse(HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto<EmpDevPlanDto>> getEmpDevPlanById(@PathVariable UUID id) {
-        EmpDevPlanDto response = empDevPlanService.getEmpDevPlanById(id);
+            log.info("Starting EmpDevPlanController.get for id = {}", id);
+            EmpDevPlanDto response = empDevPlanService.getEmpDevPlanById(id);
+            log.info("Ending EmpDevPlanController.get for id = {}", id);
         return ResponseDto.<EmpDevPlanDto>builder().content(response)
                 .message(String.format("Get emp dev plan with id %s successful!", id)).success(true)
                 .build().toResponse(HttpStatus.OK);
@@ -82,16 +90,22 @@ public class EmpDevPlanController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDto<EmpDevPlanDto>> updateEmpDevPlanById(@PathVariable UUID id,
-            @RequestBody @Valid EmpDevPlanReq empDevPlanReq) {
-        EmpDevPlanDto res = empDevPlanService.updateEmpDevPlanById(id, empDevPlanReq);
+                    @RequestBody @Valid EmpDevPlanReq empDevPlanReq) {
+            log.info("Starting EmpDevPlanController.update for id = {}", id);
+            EmpDevPlanDto res = empDevPlanService.updateEmpDevPlanById(id, empDevPlanReq);
+            log.info("Ending EmpDevPlanController.update for id = {}", id);
         return ResponseDto.<EmpDevPlanDto>builder().content(res)
                 .message(String.format("Update emp dev plan with id %s successful!", id))
                 .success(true).build().toResponse(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> deleteEmpDevPlanById(@PathVariable UUID id) {
-        boolean res = empDevPlanService.deleteEmpDevPlanById(id);
-        return new ResponseEntity<>(res, HttpStatus.OK);
+    public ResponseEntity<ResponseDto<Void>> deleteEmpDevPlanById(@PathVariable UUID id) {
+        log.info("Starting EmpDevPlanController.delete for id = {}", id);
+        empDevPlanService.deleteEmpDevPlanById(id);
+        log.info("Ending EmpDevPlanController.update for id = {}", id);
+        return ResponseDto.<Void>builder().success(true)
+                        .message(String.format("Delete emp dev plan with id %s successful!", id))
+                        .build().toResponse(HttpStatus.OK);
     }
 }
