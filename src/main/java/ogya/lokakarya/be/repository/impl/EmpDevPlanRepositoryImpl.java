@@ -12,8 +12,8 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import ogya.lokakarya.be.dto.empdevplan.EmpDevPlanFilter;
+import ogya.lokakarya.be.entity.DevPlan;
 import ogya.lokakarya.be.entity.EmpDevPlan;
-import ogya.lokakarya.be.entity.EmpTechnicalSkill;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.repository.FilterRepository;
 
@@ -30,11 +30,15 @@ public class EmpDevPlanRepositoryImpl implements FilterRepository<EmpDevPlan, Em
         List<Predicate> predicates = new ArrayList<>();
 
         if (filter.getUserIds() != null) {
-            Join<EmpTechnicalSkill, User> techSkillUserJoin = root.join("user", JoinType.LEFT);
-            predicates.add(techSkillUserJoin.get("id").in(filter.getUserIds()));
+            Join<EmpDevPlan, User> empDevPlanUserJoin = root.join("user", JoinType.LEFT);
+            predicates.add(empDevPlanUserJoin.get("id").in(filter.getUserIds()));
         }
         if (filter.getYears() != null) {
             predicates.add(root.get("assessmentYear").in(filter.getYears()));
+        }
+        if (filter.getEnabledOnly().booleanValue()) {
+            Join<EmpDevPlan, DevPlan> empDevPlanDevPlanJoin = root.join("devPlan", JoinType.LEFT);
+            predicates.add(cb.equal(empDevPlanDevPlanJoin.get("enabled"), true));
         }
 
         if (!predicates.isEmpty()) {
