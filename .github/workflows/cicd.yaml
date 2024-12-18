@@ -50,7 +50,7 @@ jobs:
     - name: Prepare Deployment
       run: |
         mkdir -p deployment-artifacts
-        cp docker-compose.yml Dockerfile deployment-artifacts/
+        cp docker-compose.yaml Dockerfile deployment-artifacts/
 
     - name: Deploy to Server
       uses: appleboy/ssh-action@master
