@@ -1,5 +1,6 @@
 package ogya.lokakarya.be.service.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -322,7 +323,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             groupAchievementToSummaryData.put(group.getId(), summaryData);
         }
 
-        assessmentSummaryDto.setScore((finalScore.intValue()));
+        assessmentSummaryDto.setScore(BigDecimal.valueOf(finalScore));
         assessmentSummaryDto.setYear(year);
         assessmentSummaryDto
                 .setAchievements(groupAchievementToSummaryData.values().stream().toList());
