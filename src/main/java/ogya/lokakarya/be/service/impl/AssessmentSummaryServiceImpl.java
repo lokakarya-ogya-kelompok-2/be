@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
+import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryFilter;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryReq;
 import ogya.lokakarya.be.dto.assessmentsummary.SummaryData;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillFilter;
@@ -65,20 +66,17 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         AssessmentSummary dataEntity = data.toEntity();
         dataEntity.setUser(userOpt.get());
         dataEntity = assessmentSummaryRepository.save(dataEntity);
-        return new AssessmentSummaryDto(dataEntity);
+        return new AssessmentSummaryDto(dataEntity, true, false);
     }
 
     @Override
-    public List<AssessmentSummaryDto> getAllAssessmentSummaries() {
-        List<AssessmentSummaryDto> listResult = new ArrayList<>();
-        List<AssessmentSummary> assessmentSummaryList = assessmentSummaryRepository.findAll();
-        for (AssessmentSummary assessmentSummary : assessmentSummaryList) {
-            calculateAssessmentSummary(assessmentSummary.getUser().getId(),
-                    assessmentSummary.getYear());
-            AssessmentSummaryDto result = convertToDto(assessmentSummary);
-            listResult.add(result);
-        }
-        return listResult;
+    public List<AssessmentSummaryDto> getAllAssessmentSummaries(AssessmentSummaryFilter filter) {
+        List<AssessmentSummary> assessmentSummaries =
+                assessmentSummaryRepository.findAllByFilter(filter);
+        return assessmentSummaries.stream()
+                .map(assessmentSummary -> new AssessmentSummaryDto(assessmentSummary,
+                        filter.getWithCreatedBy(), filter.getWithUpdatedBy()))
+                .toList();
     }
 
     @Override
@@ -87,7 +85,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         if (assessmentSummaryOpt.isEmpty()) {
             throw ResponseException.assessmentSummaryNotFound(id);
         }
-        return new AssessmentSummaryDto(assessmentSummaryOpt.get());
+        return new AssessmentSummaryDto(assessmentSummaryOpt.get(), true, true);
     }
 
     @Override
@@ -132,7 +130,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     }
 
     private AssessmentSummaryDto convertToDto(AssessmentSummary data) {
-        return new AssessmentSummaryDto(data);
+        return new AssessmentSummaryDto(data, true, true);
     }
 
     @Transactional
@@ -244,10 +242,14 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             groupAttitudeSkillIdToSummaryData.put(group.getId(), summaryData);
         }
 
-        Optional<AssessmentSummary> assessmentSummaryOpt =
-                assessmentSummaryRepository.findByUserIdAndYear(userId, year);
+        AssessmentSummaryFilter filter = new AssessmentSummaryFilter();
+        filter.setUserIds(List.of(userId));
+        filter.setYears(List.of(year));
+
+        List<AssessmentSummary> assessmentSummaries =
+                assessmentSummaryRepository.findAllByFilter(filter);
         AssessmentSummary assessmentSummary;
-        if (assessmentSummaryOpt.isEmpty()) {
+        if (assessmentSummaries.isEmpty()) {
             assessmentSummary = new AssessmentSummary();
             Optional<User> userOpt = userRepository.findById(userId);
             if (userOpt.isEmpty()) {
@@ -257,7 +259,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             assessmentSummary.setUser(user);
             assessmentSummary.setStatus(user.getEmployeeStatus());
         } else {
-            assessmentSummary = assessmentSummaryOpt.get();
+            assessmentSummary = assessmentSummaries.getFirst();
         }
 
         AssessmentSummaryDto assessmentSummaryDto = new AssessmentSummaryDto();
