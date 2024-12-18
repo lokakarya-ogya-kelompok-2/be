@@ -12,8 +12,8 @@ on:
         default: false
 
 env:
-  DEPLOY_PATH: ~/myapp
-  COMPOSE_FILE: docker-compose.yml
+  DEPLOY_PATH: ~/lokakarya/be
+  COMPOSE_FILE: docker-compose.yaml
 
 jobs:
   build-and-deploy:
