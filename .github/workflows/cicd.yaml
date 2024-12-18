@@ -93,7 +93,7 @@ jobs:
           docker-compose down
           
           # Start new containers
-          docker-compose up -d
+          docker-compose up
           
           # Clean up unused docker resources
           docker system prune -af --volumes
