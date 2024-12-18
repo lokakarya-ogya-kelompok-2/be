@@ -1,5 +1,6 @@
 package ogya.lokakarya.be.dto.assessmentsummary;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -36,7 +37,7 @@ public class AssessmentSummaryReq {
     @Min(value = 0, message = "Score must be greater than or equal to 0")
     @Max(value = 100, message = "Score must be less than or equal to 100")
     @JsonProperty("score")
-    private Integer score;
+    private BigDecimal score;
 
     @NotNull(message = "Status cannot be null")
     @Min(value = 1, message = "Status must be 1 (kontrak) or 2 (permanen)")
