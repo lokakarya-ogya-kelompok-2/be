@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillDto;
 import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillFilter;
 import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillReq;
 import ogya.lokakarya.be.service.TechnicalSkillService;
 
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/technical-skills")
@@ -31,8 +33,10 @@ public class TechnicalSkillController {
 
     @PostMapping
     public ResponseEntity<ResponseDto<TechnicalSkillDto>> create(
-            @RequestBody @Valid TechnicalSkillReq data) {
-        var createdTechnicalSkill = technicalSkillService.create(data);
+                    @RequestBody @Valid TechnicalSkillReq data) {
+            log.info("Starting TechnicalSkillController.create");
+            var createdTechnicalSkill = technicalSkillService.create(data);
+            log.info("Ending TechnicalSkillController.create");
         return ResponseDto.<TechnicalSkillDto>builder().content(createdTechnicalSkill)
                 .message("Create Technical Skill Succesful").success(true).build()
                 .toResponse(HttpStatus.CREATED);
@@ -47,13 +51,15 @@ public class TechnicalSkillController {
                     defaultValue = "false") Boolean withCreatedBy,
             @RequestParam(name = "with_updated_by", required = false,
                     defaultValue = "false") Boolean withUpdatedBy) {
-        System.out.println("Get All Technical Skill");
+            log.info("Starting TechnicalSkillController.list");
         TechnicalSkillFilter filter = new TechnicalSkillFilter();
         filter.setNameContains(nameContains);
         filter.setEnabledOnly(enabledOnly);
         filter.setWithCreatedBy(withCreatedBy);
         filter.setWithUpdatedBy(withUpdatedBy);
+
         List<TechnicalSkillDto> response = technicalSkillService.getAlltechnicalSkills(filter);
+        log.info("Ending TechnicalSkillController.list");
         return ResponseDto.<List<TechnicalSkillDto>>builder().content(response)
                 .message("Get All Technical Skill successful!").success(true).build()
                 .toResponse(HttpStatus.OK);
@@ -61,8 +67,10 @@ public class TechnicalSkillController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto<TechnicalSkillDto>> getTechnicalSkillById(
-            @PathVariable UUID id) {
-        TechnicalSkillDto response = technicalSkillService.gettechnicalSkillById(id);
+                    @PathVariable UUID id) {
+            log.info("Starting TechnicalSkillController.get for id = {}", id);
+            TechnicalSkillDto response = technicalSkillService.gettechnicalSkillById(id);
+            log.info("Starting TechnicalSkillController.get for id = {}", id);
         return ResponseDto.<TechnicalSkillDto>builder().content(response)
                 .message(String.format("Get Technical Skill with id %s successful!", id))
                 .success(true).build().toResponse(HttpStatus.OK);
@@ -70,9 +78,12 @@ public class TechnicalSkillController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDto<TechnicalSkillDto>> updatetechnicalSkillById(
-            @PathVariable UUID id, @RequestBody @Valid TechnicalSkillReq technicalSkillReq) {
+                    @PathVariable UUID id,
+                    @RequestBody @Valid TechnicalSkillReq technicalSkillReq) {
+            log.info("Starting TechnicalSkillController.update for id = {}", id);
         TechnicalSkillDto res =
-                technicalSkillService.updateTechnicalSkillById(id, technicalSkillReq);
+                        technicalSkillService.updateTechnicalSkillById(id, technicalSkillReq);
+            log.info("Ending TechnicalSkillController.update for id = {}", id);
         return ResponseDto.<TechnicalSkillDto>builder().content(res)
                 .message(String.format("Update user with id %s successful!", id)).success(true)
                 .build().toResponse(HttpStatus.OK);
@@ -80,7 +91,9 @@ public class TechnicalSkillController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto<Void>> deleteTechnicalSkillById(@PathVariable UUID id) {
+        log.info("Starting TechnicalSkillController.delete for id = {}", id);
         technicalSkillService.deleteTechnicalSkillById(id);
+        log.info("Ending TechnicalSkillController.delete for id = {}", id);
         return ResponseDto.<Void>builder().success(true)
                 .message(String.format("Delete technical skill with id %s successful!", id)).build()
                 .toResponse(HttpStatus.OK);

@@ -1,5 +1,6 @@
 package ogya.lokakarya.be.dto;
 
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -46,11 +47,18 @@ public class ResponseDto<T> {
 
     private String message;
 
+    @JsonProperty("total_rows")
+    private Integer totalRows;
+
     public ResponseEntity<ResponseDto<T>> toResponse(HttpStatus httpStatus) {
+        if (content == null) {
+            totalRows = 0;
+        } else if (content instanceof List) {
+            totalRows = ((List<?>) content).size();
+        } else {
+            totalRows = 1;
+        }
         return new ResponseEntity<>(this, httpStatus);
     }
 
-    @Builder.Default
-    @JsonProperty("total_rows")
-    private Integer totalRows = 0;
 }
