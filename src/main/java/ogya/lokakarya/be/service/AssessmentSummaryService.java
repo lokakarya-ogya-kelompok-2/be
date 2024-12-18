@@ -3,6 +3,7 @@ package ogya.lokakarya.be.service;
 import java.util.List;
 import java.util.UUID;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
+import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryFilter;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryReq;
 
 public interface AssessmentSummaryService {
@@ -10,7 +11,7 @@ public interface AssessmentSummaryService {
 
     AssessmentSummaryDto create(AssessmentSummaryReq data);
 
-    List<AssessmentSummaryDto> getAllAssessmentSummaries();
+    List<AssessmentSummaryDto> getAllAssessmentSummaries(AssessmentSummaryFilter filter);
 
     AssessmentSummaryDto getAssessmentSummaryById(UUID id);
 

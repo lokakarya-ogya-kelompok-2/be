@@ -1,5 +1,6 @@
 package ogya.lokakarya.be.dto.assessmentsummary;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -28,7 +29,7 @@ public class AssessmentSummaryDto {
         private Integer year;
 
         @JsonProperty("score")
-        private Integer score;
+        private BigDecimal score;
 
         @JsonProperty("status")
         private Integer status;
@@ -41,18 +42,19 @@ public class AssessmentSummaryDto {
         @JsonProperty("created_at")
         private Date createdAt;
 
-        // @JsonProperty("created_by")
-        // private UserDto createdBy;
+        @JsonProperty("created_by")
+        private UserDto createdBy;
 
         @JsonProperty("updated_at")
         private Date updatedAt;
 
-        // @JsonProperty("updated_by")
-        // private UserDto updatedBy;
+        @JsonProperty("updated_by")
+        private UserDto updatedBy;
 
 
 
-        public AssessmentSummaryDto(AssessmentSummary assessmentSummary) {
+        public AssessmentSummaryDto(AssessmentSummary assessmentSummary, boolean withCreatedBy,
+                        boolean withUpdatedBy) {
                 setId(assessmentSummary.getId());
                 if (assessmentSummary.getUser() != null) {
                         setUser(new UserDto(assessmentSummary.getUser(), false, false, false));
@@ -61,8 +63,12 @@ public class AssessmentSummaryDto {
                 setScore(assessmentSummary.getScore());
                 setStatus(assessmentSummary.getStatus());
                 setCreatedAt(assessmentSummary.getCreatedAt());
-                // setCreatedBy(assessmentSummary.getCreatedBy());
+                if (withCreatedBy && assessmentSummary.getCreatedBy() != null)
+                        setCreatedBy(new UserDto(assessmentSummary.getCreatedBy(), false, false,
+                                        false));
                 setUpdatedAt(assessmentSummary.getUpdatedAt());
-                // setUpdatedBy(assessmentSummary.getUpdatedBy());
+                if (withUpdatedBy && assessmentSummary.getUpdatedBy() != null)
+                        setUpdatedBy(new UserDto(assessmentSummary.getUpdatedBy(), false, false,
+                                        false));
         }
 }
