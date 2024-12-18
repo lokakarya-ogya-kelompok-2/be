@@ -68,7 +68,7 @@ public class EmpAttitudeSkillController {
         List<EmpAttitudeSkillDto> data =
                 empAttitudeSkillService.getAllEmpAttitudeSkills(filter);
         return ResponseDto.<List<EmpAttitudeSkillDto>>builder().content(data)
-                .message("Get emp attitude skills successful!").success(true).totalRows(data.size()).build()
+                .message("Get emp attitude skills successful!").success(true).build()
                 .toResponse(HttpStatus.OK);
     }
 

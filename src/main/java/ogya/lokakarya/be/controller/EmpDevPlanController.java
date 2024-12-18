@@ -67,7 +67,7 @@ public class EmpDevPlanController {
         filter.setWithUpdatedBy(withUpdatedBy);
 
         List<EmpDevPlanDto> data = empDevPlanService.getAllEmpDevPlans(filter);
-        return ResponseDto.<List<EmpDevPlanDto>>builder().content(data).totalRows(data.size())
+        return ResponseDto.<List<EmpDevPlanDto>>builder().content(data)
                 .message("Get emp dev plans successful!").success(true).build()
                 .toResponse(HttpStatus.OK);
     }
