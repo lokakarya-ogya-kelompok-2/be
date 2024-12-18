@@ -49,8 +49,7 @@ jobs:
 
     - name: Prepare Deployment
       run: |
-        mkdir -p deployment-artifacts
-        cp docker-compose.yaml Dockerfile deployment-artifacts/
+        cp docker-compose.yaml Dockerfile .
 
     - name: Deploy to Server
       uses: appleboy/ssh-action@master
@@ -73,7 +72,7 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         password: ${{ secrets.SERVER_PASSWORD }}
         port: ${{ secrets.SERVER_PORT }}
-        source: "deployment-artifacts/*"
+        source: "docker-compose.yaml Dockerfile"
         target: ${{ env.DEPLOY_PATH }}
 
     - name: Execute Deployment
@@ -84,7 +83,7 @@ jobs:
         password: ${{ secrets.SERVER_PASSWORD }}
         port: ${{ secrets.SERVER_PORT }}
         script: |
-          cd ${{ env.DEPLOY_PATH }}/deployement-artifacts
+          cd ${{ env.DEPLOY_PATH }}
           
           # Pull latest images
           docker-compose pull
