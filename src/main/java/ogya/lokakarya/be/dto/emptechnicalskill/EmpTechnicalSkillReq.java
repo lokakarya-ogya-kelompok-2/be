@@ -4,7 +4,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,7 +29,7 @@ public class EmpTechnicalSkillReq {
     @JsonProperty("score")
     private Integer score;
 
-    @NotEmpty(message = "detail can't be empty")
+    @NotBlank(message = "detail can't be empty")
     private String detail;
 
     @NotNull(message = "Assessment year cannot be null")
