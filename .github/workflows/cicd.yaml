@@ -47,10 +47,6 @@ jobs:
         JWT_EXPIRATION_MS: ${{ secrets.JWT_EXPIRATION_MS }}
         APP_PORT: ${{ secrets.APP_PORT }}
 
-    - name: Prepare Deployment
-      run: |
-        cp docker-compose.yaml Dockerfile .
-
     - name: Deploy to Server
       uses: appleboy/ssh-action@master
       with:
