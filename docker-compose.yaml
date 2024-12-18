@@ -1,0 +1,37 @@
+services:
+  db:
+    container_name: lokakarya-db
+    image: mariadb:lts
+    environment:
+      - MARIADB_DATABASE=${DB_NAME}
+      - MARIADB_USER=${DB_USERNAME}
+      - MARIADB_PASSWORD=${DB_PASSWORD}
+      - MARIADB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  be:
+    container_name: lokakarya-be
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DB_URL: jdbc:mariadb://db:3306/${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_CLASS_NAME: ${DB_DRIVER_NAME}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS}
+      PORT: ${APP_PORT}
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:
