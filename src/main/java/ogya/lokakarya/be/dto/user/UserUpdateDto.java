@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -17,25 +17,25 @@ import ogya.lokakarya.be.entity.User;
 
 @Data
 public class UserUpdateDto {
-    @NotEmpty
+    @NotBlank
     @Pattern(regexp = "^[a-zA-Z0-9._]+$",
             message = "Username can only contain alphanumeric characters, underscores, and dots")
     private String username;
 
-    @NotEmpty
+    @NotBlank
     @JsonProperty("full_name")
     private String fullName;
 
-    @NotEmpty
+    @NotBlank
     private String position;
 
-    @NotNull
+    @NotBlank
     @Min(value = 0)
     @Max(value = 1)
     @JsonProperty("employee_status")
     private Integer employeeStatus;
 
-    @NotEmpty
+    @NotBlank
     @Email
     private String email;
 
