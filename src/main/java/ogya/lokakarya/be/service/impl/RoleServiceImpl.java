@@ -1,12 +1,7 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.role.RoleDto;
 import ogya.lokakarya.be.dto.role.RoleReq;
@@ -15,7 +10,14 @@ import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.RoleRepository;
 import ogya.lokakarya.be.service.RoleService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+@Slf4j
 @Service
 public class RoleServiceImpl implements RoleService {
     @Autowired
@@ -27,37 +29,44 @@ public class RoleServiceImpl implements RoleService {
     @Transactional
     @Override
     public RoleDto create(RoleReq data) {
+        log.info("Starting RoleServiceImpl.create");
         User currentUser = securityUtil.getCurrentUser();
         Role roleEntity = data.toEntity();
         roleEntity.setCreatedBy(currentUser);
         roleEntity = roleRepository.save(roleEntity);
+        log.info("Ending RoleServiceImpl.create");
         return new RoleDto(roleEntity, true, true, false);
     }
 
     @Override
 
     public List<RoleDto> getAllRole() {
+        log.info("Starting RoleServiceImpl.getAllRole");
         List<RoleDto> listResult = new ArrayList<>();
         List<Role> roleList = roleRepository.findAll();
         for (Role role : roleList) {
             RoleDto result = convertToDto(role);
             listResult.add(result);
         }
+        log.info("Ending RoleServiceImpl.getAllRole");
         return listResult;
     }
 
     @Override
     public RoleDto getRoleById(UUID id) {
+        log.info("Starting RoleServiceImpl.getRoleById");
         Optional<Role> roleOpt = roleRepository.findById(id);
         if (roleOpt.isEmpty()) {
             throw ResponseException.roleNotFound(id);
         }
         Role data = roleOpt.get();
+        log.info("Ending RoleServiceImpl.getRoleById");
         return convertToDto(data);
     }
 
     @Override
     public RoleDto updateRoleById(UUID id, RoleReq createRole) {
+        log.info("Starting RoleServiceImpl.updateRoleById");
         Optional<Role> roleOpt = roleRepository.findById(id);
         if (roleOpt.isEmpty()) {
             throw ResponseException.roleNotFound(id);
@@ -69,16 +78,19 @@ public class RoleServiceImpl implements RoleService {
         }
         role.setUpdatedBy(currentUser);
         role = roleRepository.save(role);
+        log.info("Ending RoleServiceImpl.updateRoleById");
         return convertToDto(role);
     }
 
     @Override
     public boolean deleteRoleById(UUID id) {
+        log.info("Starting RoleServiceImpl.deleteRoleById");
         Optional<Role> roleOpt = roleRepository.findById(id);
         if (roleOpt.isEmpty()) {
             throw ResponseException.roleNotFound(id);
         }
         roleRepository.delete(roleOpt.get());
+        log.info("Ending RoleServiceImpl.deleteRoleById");
         return true;
     }
 

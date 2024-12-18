@@ -1,17 +1,8 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillDto;
@@ -27,7 +18,19 @@ import ogya.lokakarya.be.repository.AttitudeSkillRepository;
 import ogya.lokakarya.be.repository.EmpAttitudeSkillRepository;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import ogya.lokakarya.be.service.EmpAttitudeSkillService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
+@Slf4j
 @Service
 public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
     @Autowired
@@ -49,6 +52,7 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
     @Transactional
     @Override
     public List<EmpAttitudeSkillDto> createBulkEmpAttitudeSkill(List<EmpAttitudeSkillReq> data) {
+        log.info("Starting EmpAttitudeSkillServiceImpl.createBulkEmpAttitudeSkill");
         Set<Integer> years = new HashSet<>();
         User currentUser = securityUtil.getCurrentUser();
         List<EmpAttitudeSkill> empAttitudeSkillsEntities = new ArrayList<>(data.size());
@@ -87,15 +91,15 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
             assessmentSummaryEntity.setStatus(assessmentSummary.getUser().getEmployeeStatus());
             assessmentSummaries.add(assessmentSummaryEntity);
         });
-
         assessmentSummaryRepo.saveAll(assessmentSummaries);
-
+        log.info("Ending EmpAttitudeSkillServiceImpl.createBulkEmpAttitudeSkill");
         return empAttitudeSkillsEntities.stream()
                 .map(empAttSkill -> new EmpAttitudeSkillDto(empAttSkill, true, false)).toList();
     }
 
     @Override
     public EmpAttitudeSkillDto create(EmpAttitudeSkillReq data) {
+        log.info("Starting EmpAttitudeSkillServiceImpl.create");
         Optional<AttitudeSkill> findAttitudeSkill =
                 attitudeSkillRepository.findById(data.getAttitudeSkillId());
         User currentUser = securityUtil.getCurrentUser();
@@ -107,13 +111,16 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
         dataEntity.setCreatedBy(currentUser);
         dataEntity.setAttitudeSkill(findAttitudeSkill.get());
         EmpAttitudeSkill createData = empAttitudeSkillRepository.save(dataEntity);
+        log.info("Starting EmpAttitudeSkillServiceImpl.create");
         return new EmpAttitudeSkillDto(createData, true, false);
     }
 
     @Override
     public List<EmpAttitudeSkillDto> getAllEmpAttitudeSkills(EmpAttitudeSkillFilter filter) {
+        log.info("Starting EmpAttitudeSkillServiceImpl.getAllEmpAttitudeSkills");
         List<EmpAttitudeSkill> empAttitudeSkillEntities =
                 empAttitudeSkillRepository.findAllByFilter(filter);
+        log.info("Ending EmpAttitudeSkillServiceImpl.getAllEmpAttitudeSkills");
         return empAttitudeSkillEntities.stream()
                 .map(empAttSkill -> new EmpAttitudeSkillDto(empAttSkill, filter.getWithCreatedBy(),
                         filter.getWithUpdatedBy()))
@@ -122,17 +129,20 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
 
     @Override
     public EmpAttitudeSkillDto getEmpAttitudeSkillById(UUID id) {
+        log.info("Starting EmpAttitudeSkillServiceImpl.getEmpAttitudeSkillById");
         Optional<EmpAttitudeSkill> empAttitudeSkillOpt = empAttitudeSkillRepository.findById(id);
         if (empAttitudeSkillOpt.isEmpty()) {
             throw ResponseException.empAttitudeSkillNotFound(id);
         }
         EmpAttitudeSkill data = empAttitudeSkillOpt.get();
+        log.info("Ending EmpAttitudeSkillServiceImpl.getEmpAttitudeSkillById");
         return new EmpAttitudeSkillDto(data, true, true);
     }
 
     @Override
     public EmpAttitudeSkillDto updateEmpAttitudeSkillById(UUID id,
             EmpAttitudeSkillReq empAttitudeSkillReq) {
+        log.info("Starting EmpAttitudeSkillServiceImpl.updateEmpAttitudeSkillById");
         Optional<EmpAttitudeSkill> empAttitudeSkillOpt = empAttitudeSkillRepository.findById(id);
         if (empAttitudeSkillOpt.isEmpty()) {
             throw ResponseException.empAttitudeSkillNotFound(id);
@@ -151,12 +161,14 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
         }
         empAttitudeSkill.setUpdatedBy(currentUser);
         empAttitudeSkill = empAttitudeSkillRepository.save(empAttitudeSkill);
+        log.info("Ending EmpAttitudeSkillServiceImpl.updateEmpAttitudeSkillById");
         return convertToDto(empAttitudeSkill);
 
     }
 
     @Override
     public boolean deleteEmpAttitudeSkillById(UUID id) {
+        log.info("Starting EmpAttitudeSkillServiceImpl.deleteEmpAttitudeSkillById");
         Optional<EmpAttitudeSkill> empAttitudeSkillOpt = empAttitudeSkillRepository.findById(id);
         if (empAttitudeSkillOpt.isEmpty()) {
             throw ResponseException.empAttitudeSkillNotFound(id);
@@ -168,6 +180,7 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
             throw ResponseException.unauthorized();
         }
         empAttitudeSkillRepository.delete(empAttitudeSkill);
+        log.info("Ending EmpAttitudeSkillServiceImpl.deleteEmpAttitudeSkillById");
         return true;
     }
 

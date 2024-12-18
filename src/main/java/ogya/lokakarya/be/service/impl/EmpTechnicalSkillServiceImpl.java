@@ -1,13 +1,6 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillDto;
 import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillFilter;
@@ -19,7 +12,16 @@ import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.EmpTechnicalSkillRepository;
 import ogya.lokakarya.be.repository.TechnicalSkillRepository;
 import ogya.lokakarya.be.service.EmpTechnicalSkillService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+@Slf4j
 @Service
 public class EmpTechnicalSkillServiceImpl implements EmpTechnicalSkillService {
     @Autowired
@@ -33,6 +35,7 @@ public class EmpTechnicalSkillServiceImpl implements EmpTechnicalSkillService {
 
     @Override
     public List<EmpTechnicalSkillDto> createBulk(List<EmpTechnicalSkillReq> data) {
+        log.info("Starting EmpTechnicalSkillServiceImpl.createBulk");
         User currentUser = securityUtil.getCurrentUser();
         List<EmpTechnicalSkill> empTechnicalSkillEntities = new ArrayList<>(data.size());
         Map<UUID, TechnicalSkill> technicalSkillIds = new HashMap<>();
@@ -56,13 +59,14 @@ public class EmpTechnicalSkillServiceImpl implements EmpTechnicalSkillService {
         }
 
         empTechnicalSkillEntities = empTechnicalSkillRepository.saveAll(empTechnicalSkillEntities);
-
+        log.info("Ending EmpTechnicalSkillServiceImpl.createBulk");
         return empTechnicalSkillEntities.stream()
                 .map(empTechSkill -> new EmpTechnicalSkillDto(empTechSkill, true, false)).toList();
     }
 
     @Override
     public EmpTechnicalSkillDto create(EmpTechnicalSkillReq data) {
+        log.info("Starting EmpTechnicalSkillServiceImpl.create");
         EmpTechnicalSkill empTechnicalSkillEntity = data.toEntity();
         User currentUser = securityUtil.getCurrentUser();
         empTechnicalSkillEntity.setUser(currentUser);
@@ -78,13 +82,16 @@ public class EmpTechnicalSkillServiceImpl implements EmpTechnicalSkillService {
         empTechnicalSkillEntity.setCreatedBy(currentUser);
 
         empTechnicalSkillEntity = empTechnicalSkillRepository.save(empTechnicalSkillEntity);
+        log.info("Ending EmpTechnicalSkillServiceImpl.create");
         return new EmpTechnicalSkillDto(empTechnicalSkillEntity, true, false);
     }
 
     @Override
     public List<EmpTechnicalSkillDto> getAllEmpTechnicalSkills(EmpTechnicalSkillFilter filter) {
+        log.info("Starting EmpTechnicalSkillServiceImpl.getAllEmpTechnicalSkills");
         List<EmpTechnicalSkill> empTechnicalSkillEntities =
                 empTechnicalSkillRepository.findAllByFilter(filter);
+        log.info("Ending EmpTechnicalSkillServiceImpl.getAllEmpTechnicalSkills");
         return empTechnicalSkillEntities.stream()
                 .map(empAttSkill -> new EmpTechnicalSkillDto(empAttSkill, filter.getWithCreatedBy(),
                         filter.getWithUpdatedBy()))
@@ -93,17 +100,20 @@ public class EmpTechnicalSkillServiceImpl implements EmpTechnicalSkillService {
 
     @Override
     public EmpTechnicalSkillDto getEmpTechnicalSkillById(UUID id) {
+        log.info("Starting EmpTechnicalSkillServiceImpl.getEmpTechnicalSkillById");
         Optional<EmpTechnicalSkill> empTechnicalSkillOpt = empTechnicalSkillRepository.findById(id);
         if (empTechnicalSkillOpt.isEmpty()) {
             throw ResponseException.empTechnicalSkillNotFound(id);
         }
         EmpTechnicalSkill data = empTechnicalSkillOpt.get();
+        log.info("Ending EmpTechnicalSkillServiceImpl.getEmpTechnicalSkillById");
         return convertToDto(data);
     }
 
     @Override
     public EmpTechnicalSkillDto updateEmpTechnicalSkillById(UUID id,
             EmpTechnicalSkillReq empTechnicalSkillReq) {
+        log.info("Starting EmpTechnicalSkillServiceImpl.updateEmpTechnicalSkillById");
         Optional<EmpTechnicalSkill> empTechnicalSkillOpt = empTechnicalSkillRepository.findById(id);
         if (empTechnicalSkillOpt.isEmpty()) {
             throw ResponseException.empTechnicalSkillNotFound(id);
@@ -124,12 +134,13 @@ public class EmpTechnicalSkillServiceImpl implements EmpTechnicalSkillService {
         empTechnicalSkill.setUpdatedBy(currentUser);
 
         empTechnicalSkill = empTechnicalSkillRepository.save(empTechnicalSkill);
-
+        log.info("Ending EmpTechnicalSkillServiceImpl.updateEmpTechnicalSkillById");
         return new EmpTechnicalSkillDto(empTechnicalSkill, true, true);
     }
 
     @Override
     public boolean deleteEmpTechnicalSkillById(UUID id) {
+        log.info("Starting EmpTechnicalSkillServiceImpl.deleteEmpTechnicalSkillById");
         Optional<EmpTechnicalSkill> empTechnicalSkillOpt = empTechnicalSkillRepository.findById(id);
         if (empTechnicalSkillOpt.isEmpty()) {
             throw ResponseException.empTechnicalSkillNotFound(id);
@@ -141,6 +152,8 @@ public class EmpTechnicalSkillServiceImpl implements EmpTechnicalSkillService {
             throw ResponseException.unauthorized();
         }
         empTechnicalSkillRepository.delete(empTechnicalSkill);
+        log.info("Ending EmpTechnicalSkillServiceImpl.deleteEmpTechnicalSkillById");
+
         return true;
     }
 
