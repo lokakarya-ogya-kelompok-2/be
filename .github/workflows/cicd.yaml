@@ -37,6 +37,15 @@ jobs:
     - name: Build Docker Images
       run: |
         docker compose build
+      env:
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_USERNAME: ${{ secrets.DB_USERNAME }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+        DB_DRIVER_NAME: ${{ secrets.DB_DRIVER_NAME }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        JWT_EXPIRATION_MS: ${{ secrets.JWT_EXPIRATION_MS }}
+        APP_PORT: ${{ secrets.APP_PORT }}
 
     - name: Prepare Deployment
       run: |
