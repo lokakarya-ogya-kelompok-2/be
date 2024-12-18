@@ -77,8 +77,14 @@ jobs:
         target: ${{ env.DEPLOY_PATH }}
 
     - name: Cek ada apa aja
-      run: |
-        ssh ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_ADDRESS }} -p ${{ secrets.SERVER_PORT }} "ls -la ${{ env.DEPLOY_PATH }}"
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SERVER_ADDRESS }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        password: ${{ secrets.SERVER_PASSWORD }}
+        port: ${{ secrets.SERVER_PORT }}
+        script: |
+          ls -la ${{ env.DEPLOY_PATH }}
     
     - name: Execute Deployment
       uses: appleboy/ssh-action@master
