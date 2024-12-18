@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.division.DivisionDto;
+import ogya.lokakarya.be.dto.division.DivisionFilter;
 import ogya.lokakarya.be.dto.division.DivisionReq;
 import ogya.lokakarya.be.service.DivisionService;
 
@@ -39,9 +41,18 @@ public class DivisionController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseDto<List<DivisionDto>>> getAllDivisions() {
+    public ResponseEntity<ResponseDto<List<DivisionDto>>> getAllDivisions(
+            @RequestParam(name = "name_contains", required = false) String nameContains,
+            @RequestParam(name = "with_created_by", required = false,
+                    defaultValue = "false") Boolean withCreatedBy,
+            @RequestParam(name = "with_updated_by", required = false,
+                    defaultValue = "false") Boolean withUpdatedBy) {
         log.info("Starting DivisionController.list");
-        List<DivisionDto> divisions = divisionService.getAllDivisions();
+        DivisionFilter filter = new DivisionFilter();
+        filter.setNameContains(nameContains);
+        filter.setWithCreatedBy(withCreatedBy);
+        filter.setWithUpdatedBy(withUpdatedBy);
+        List<DivisionDto> divisions = divisionService.getAllDivisions(filter);
         log.info("Ending DivisionController.list");
         return ResponseDto.<List<DivisionDto>>builder().success(true).content(divisions)
                 .message("List all division successful!").build().toResponse(HttpStatus.OK);
