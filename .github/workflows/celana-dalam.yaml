@@ -1,4 +1,4 @@
-name: Continuous Deployment
+name: Celana Dalam
 
 on:
   push:
