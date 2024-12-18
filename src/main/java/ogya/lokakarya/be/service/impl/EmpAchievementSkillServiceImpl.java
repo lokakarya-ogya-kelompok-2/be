@@ -1,17 +1,10 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillDto;
@@ -28,7 +21,17 @@ import ogya.lokakarya.be.repository.EmpAchievementSkillRepository;
 import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import ogya.lokakarya.be.service.EmpAchievementSkillService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
+@Slf4j
 @Service
 public class EmpAchievementSkillServiceImpl implements EmpAchievementSkillService {
     @Autowired
@@ -54,6 +57,7 @@ public class EmpAchievementSkillServiceImpl implements EmpAchievementSkillServic
 
     @Override
     public EmpAchievementSkillDto create(EmpAchievementSkillReq data) {
+        log.info("Starting EmpAchievementSkillServiceImpl.create");
         Optional<Achievement> findAchievement =
                 achievementRepository.findById(data.getAchievementId());
         if (findAchievement.isEmpty()) {
@@ -71,31 +75,37 @@ public class EmpAchievementSkillServiceImpl implements EmpAchievementSkillServic
         User currentUser = securityUtil.getCurrentUser();
         dataEntity.setCreatedBy(currentUser);
         EmpAchievementSkill createdData = empAchievementSkillRepository.save(dataEntity);
+        log.info("Starting EmpAchievementSkillServiceImpl.create");
         return new EmpAchievementSkillDto(createdData, true, false);
     }
 
     @Override
     public List<EmpAchievementSkillDto> getAllAchievementSkills(EmpAchievementSkillFilter filter) {
+        log.info("Starting EmpAchievementSkillServiceImpl.getAllAchievementSkills");
         List<EmpAchievementSkill> empAchievementEntities =
                 empAchievementSkillRepository.findAllByFilter(filter);
+        log.info("Ending EmpAchievementSkillServiceImpl.getAllAchievementSkills");
         return empAchievementEntities.stream().map(empAS -> new EmpAchievementSkillDto(empAS,
                 filter.getWithCreatedBy(), filter.getWithUpdatedBy())).toList();
     }
 
     @Override
     public EmpAchievementSkillDto getAchievementSkillById(UUID id) {
+        log.info("Starting EmpAchievementSkillServiceImpl.getAchievementSkillById");
         Optional<EmpAchievementSkill> empAchievementOpt =
                 empAchievementSkillRepository.findById(id);
         if (empAchievementOpt.isEmpty()) {
             throw ResponseException.empAchievementNotFound(id);
         }
         EmpAchievementSkill data = empAchievementOpt.get();
+        log.info("Ending EmpAchievementSkillServiceImpl.getAchievementSkillById");
         return convertToDto(data);
     }
 
     @Override
     public EmpAchievementSkillDto updateAchievementSkillById(UUID id,
             EmpAchievementSkillReq empAchievementSkillReq) {
+        log.info("Starting EmpAchievementSkillServiceImpl.updateAchievementSkillById");
         Optional<EmpAchievementSkill> empAchievementOpt =
                 empAchievementSkillRepository.findById(id);
         if (empAchievementOpt.isEmpty()) {
@@ -131,17 +141,20 @@ public class EmpAchievementSkillServiceImpl implements EmpAchievementSkillServic
         empAchievementSkill.setUpdatedBy(currentUser);
 
         empAchievementSkill = empAchievementSkillRepository.save(empAchievementSkill);
+        log.info("Starting EmpAchievementSkillServiceImpl.updateAchievementSkillById");
         return convertToDto(empAchievementSkill);
     }
 
     @Override
     public boolean deleteAchievementSkillById(UUID id) {
+        log.info("Starting EmpAchievementSkillServiceImpl.deleteAchievementSkillById");
         Optional<EmpAchievementSkill> empAchievementOpt =
                 empAchievementSkillRepository.findById(id);
         if (empAchievementOpt.isEmpty()) {
             throw ResponseException.empAchievementNotFound(id);
         }
         empAchievementSkillRepository.delete(empAchievementOpt.get());
+        log.info("Ending EmpAchievementSkillServiceImpl.deleteAchievementSkillById");
         return true;
     }
 
@@ -159,10 +172,9 @@ public class EmpAchievementSkillServiceImpl implements EmpAchievementSkillServic
     @Transactional
     @Override
     public List<EmpAchievementSkillDto> createBulk(List<EmpAchievementSkillReq> data) {
+        log.info("Starting EmpAchievementSkillServiceImpl.createBulk");
         User currentUser = securityUtil.getCurrentUser();
-
         Set<UserIdAndYear> userIdAndYears = new HashSet<>();
-
         List<EmpAchievementSkill> empAchievementSkillEntities = data.stream().map(empAc -> {
             EmpAchievementSkill empAchievementSkillEntity = empAc.toEntity();
             Optional<User> userOpt = userRepository.findById(empAc.getUserId());
@@ -183,7 +195,6 @@ public class EmpAchievementSkillServiceImpl implements EmpAchievementSkillServic
         empAchievementSkillEntities =
                 empAchievementSkillRepository.saveAll(empAchievementSkillEntities);
         entityManager.flush();
-
         List<AssessmentSummary> assessmentSummaries = new ArrayList<>();
         userIdAndYears.forEach(uIdAndYear -> {
             AssessmentSummaryDto assessmentSummary = assessmentSummaryService
@@ -198,9 +209,8 @@ public class EmpAchievementSkillServiceImpl implements EmpAchievementSkillServic
             assessmentSummaryEntity.setStatus(assessmentSummary.getUser().getEmployeeStatus());
             assessmentSummaries.add(assessmentSummaryEntity);
         });
-
         assessmentSummaryRepo.saveAll(assessmentSummaries);
-
+        log.info("Ending EmpAchievementSkillServiceImpl.createBulk");
         return empAchievementSkillEntities.stream()
                 .map(empAc -> new EmpAchievementSkillDto(empAc, true, false)).toList();
     }

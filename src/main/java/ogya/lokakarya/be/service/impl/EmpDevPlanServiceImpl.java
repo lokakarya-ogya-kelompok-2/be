@@ -1,13 +1,6 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.empdevplan.EmpDevPlanDto;
 import ogya.lokakarya.be.dto.empdevplan.EmpDevPlanFilter;
@@ -19,7 +12,16 @@ import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.DevPlanRepository;
 import ogya.lokakarya.be.repository.EmpDevPlanRepository;
 import ogya.lokakarya.be.service.EmpDevPlanService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+@Slf4j
 @Service
 public class EmpDevPlanServiceImpl implements EmpDevPlanService {
     @Autowired
@@ -31,6 +33,7 @@ public class EmpDevPlanServiceImpl implements EmpDevPlanService {
 
     @Override
     public List<EmpDevPlanDto> createBulkEmpDevPlan(List<EmpDevPlanReq> data) {
+        log.info("Starting EmpDevPlanServiceImpl.createBulkEmpDevPlan");
         User currentUser = securityUtil.getCurrentUser();
         List<EmpDevPlan> empDevPlanEntities = new ArrayList<>(data.size());
         Map<UUID, DevPlan> devPlanIds = new HashMap<>();
@@ -53,19 +56,16 @@ public class EmpDevPlanServiceImpl implements EmpDevPlanService {
             empDevPlanEntity.setDevPlan(devPlanIds.get(d.getDevPlanId()));
             empDevPlanEntities.add(empDevPlanEntity);
         }
-
-        // Simpan semua entitas ke database
         empDevPlanEntities = empDevPlanRepository.saveAll(empDevPlanEntities);
-
-        // Konversi entitas ke DTO untuk response
+        log.info("Ending EmpDevPlanServiceImpl.createBulkEmpDevPlan");
         return empDevPlanEntities.stream()
                 .map(empDevPlan -> new EmpDevPlanDto(empDevPlan, true, false)).toList();
     }
 
     @Override
     public EmpDevPlanDto create(EmpDevPlanReq data) {
+        log.info("Starting EmpDevPlanServiceImpl.create");
         User currentUser = securityUtil.getCurrentUser();
-
         Optional<DevPlan> findDevPlan = devPlanRepository.findById(data.getDevPlanId());
         if (findDevPlan.isEmpty()) {
             throw ResponseException.devPlanNotFound(data.getDevPlanId());
@@ -74,30 +74,35 @@ public class EmpDevPlanServiceImpl implements EmpDevPlanService {
         dataEntity.setUser(currentUser);
         dataEntity.setDevPlan(findDevPlan.get());
         EmpDevPlan createdData = empDevPlanRepository.save(dataEntity);
+        log.info("Ending EmpDevPlanServiceImpl.create");
         return new EmpDevPlanDto(createdData, true, false);
     }
 
     @Override
     public List<EmpDevPlanDto> getAllEmpDevPlans(EmpDevPlanFilter filter) {
+        log.info("Starting EmpDevPlanServiceImpl.getAllEmpDevPlans");
         List<EmpDevPlan> empDevPlanEntities = empDevPlanRepository.findAllByFilter(filter);
-
+        log.info("Ending EmpDevPlanServiceImpl.getAllEmpDevPlans");
         return empDevPlanEntities.stream().map(empDevPlan -> new EmpDevPlanDto(empDevPlan,
                 filter.getWithCreatedBy(), filter.getWithUpdatedBy())).toList();
     }
 
     @Override
     public EmpDevPlanDto getEmpDevPlanById(UUID id) {
+        log.info("Starting EmpDevPlanServiceImpl.getEmpDevPlanById");
         Optional<EmpDevPlan> empDevPlanOpt;
         empDevPlanOpt = empDevPlanRepository.findById(id);
         if (empDevPlanOpt.isEmpty()) {
             throw ResponseException.empDevPlanNotFound(id);
         }
         EmpDevPlan data = empDevPlanOpt.get();
+        log.info("Ending EmpDevPlanServiceImpl.getEmpDevPlanById");
         return convertToDto(data);
     }
 
     @Override
     public EmpDevPlanDto updateEmpDevPlanById(UUID id, EmpDevPlanReq empDevPlanReq) {
+        log.info("Starting EmpDevPlanServiceImpl.updateEmpDevPlanById");
         Optional<EmpDevPlan> empDevPlanOpt = empDevPlanRepository.findById(id);
         if (empDevPlanOpt.isEmpty()) {
             throw ResponseException.empDevPlanNotFound(id);
@@ -121,11 +126,13 @@ public class EmpDevPlanServiceImpl implements EmpDevPlanService {
             empDevPlan.setDevPlan(devPlan.get());
         }
         empDevPlan = empDevPlanRepository.save(empDevPlan);
+        log.info("Ending EmpDevPlanServiceImpl.updateEmpDevPlanById");
         return convertToDto(empDevPlan);
     }
 
     @Override
     public boolean deleteEmpDevPlanById(UUID id) {
+        log.info("Starting EmpDevPlanServiceImpl.deleteEmpDevPlanById");
         Optional<EmpDevPlan> empDevPlanOpt = empDevPlanRepository.findById(id);
         if (empDevPlanOpt.isEmpty()) {
             throw ResponseException.empDevPlanNotFound(id);
@@ -136,6 +143,7 @@ public class EmpDevPlanServiceImpl implements EmpDevPlanService {
             throw ResponseException.unauthorized();
         }
         empDevPlanRepository.delete(empDevPlan);
+        log.info("Ending EmpDevPlanServiceImpl.deleteEmpDevPlanById");
         return true;
     }
 

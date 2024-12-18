@@ -1,16 +1,8 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.user.UserChangePasswordDto;
 import ogya.lokakarya.be.dto.user.UserDto;
@@ -28,7 +20,17 @@ import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.repository.UserRoleRepository;
 import ogya.lokakarya.be.service.UserService;
 import ogya.lokakarya.be.util.RandGen;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -56,6 +58,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto create(UserReq data) {
+        log.info("Starting UserServiceImpl.create");
         User userEntity = data.toEntity();
 
         User currentUserEntity = securityUtil.getCurrentUser();
@@ -86,25 +89,29 @@ public class UserServiceImpl implements UserService {
                 userEntity.getUserRoles().add(userRole);
             }
         }
-
+        log.info("Ending UserServiceImpl.create");
         return new UserDto(userEntity, true, false, true);
     }
 
     @Override
     public List<UserDto> list(UserFilter filter) {
+        log.info("Starting UserServiceImpl.list");
         filter.validate();
         List<User> userEntities = userRepo.findAllByFilter(filter);
+        log.info("Ending UserServiceImpl.list");
         return userEntities.stream().map(user -> new UserDto(user, filter.getWithCreatedBy(),
                 filter.getWithUpdatedBy(), filter.getWithRoles())).toList();
     }
 
     @Override
     public UserDto get(UUID id) {
+        log.info("Starting UserServiceImpl.get");
         Optional<User> userOpt = userRepo.findById(id);
         if (userOpt.isEmpty()) {
             throw ResponseException.userNotFound(id);
         }
         User user = userOpt.get();
+        log.info("Ending UserServiceImpl.get");
         return new UserDto(user, true, true, true);
     }
 
@@ -112,6 +119,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto update(UUID id, UserUpdateDto data) {
+        log.info("Starting UserServiceImpl.update");
         Optional<User> userOpt = userRepo.findById(id);
         if (userOpt.isEmpty()) {
             throw ResponseException.userNotFound(id);
@@ -169,22 +177,25 @@ public class UserServiceImpl implements UserService {
                 user.getUserRoles().add(userRole);
             }
         }
-
+        log.info("Ending UserServiceImpl.update");
         return new UserDto(user, true, true, true);
     }
 
     @Override
     public void delete(UUID id) {
+        log.info("Starting UserServiceImpl.delete");
         Optional<User> userOpt = userRepo.findById(id);
         if (userOpt.isEmpty()) {
             throw ResponseException.userNotFound(id);
         }
         User user = userOpt.get();
         userRepo.delete(user);
+        log.info("Ending UserServiceImpl.delete");
     }
 
     @Override
     public UserDto changePassword(UserChangePasswordDto data) {
+        log.info("Starting UserServiceImpl.changePassword");
         User currentUser = securityUtil.getCurrentUser();
         if (!passwordEncoder.matches(data.getCurrentPassword(), currentUser.getPassword())) {
             throw new ResponseException("Incorrect current password!", HttpStatus.BAD_REQUEST);
@@ -200,12 +211,13 @@ public class UserServiceImpl implements UserService {
 
         currentUser.setPassword(passwordEncoder.encode(data.getNewPassword()));
         currentUser = userRepo.save(currentUser);
-
+        log.info("Ending UserServiceImpl.changePassword");
         return new UserDto(currentUser, true, true, false);
     }
 
     @Override
     public String resetPassword(UUID userId) {
+        log.info("Starting UserServiceImpl.resetPassword");
         Optional<User> userOpt = userRepo.findById(userId);
         if (userOpt.isEmpty()) {
             throw ResponseException.userNotFound(userId);
@@ -216,6 +228,7 @@ public class UserServiceImpl implements UserService {
         user.setUpdatedBy(currentUser);
         user.setPassword(passwordEncoder.encode(randomGenerated));
         userRepo.save(user);
+        log.info("Ending UserServiceImpl.resetPassword");
         return randomGenerated;
     }
 }
