@@ -53,7 +53,8 @@ public class AssessmentSummaryDto {
 
 
 
-        public AssessmentSummaryDto(AssessmentSummary assessmentSummary) {
+        public AssessmentSummaryDto(AssessmentSummary assessmentSummary, boolean withCreatedBy,
+                        boolean withUpdatedBy) {
                 setId(assessmentSummary.getId());
                 if (assessmentSummary.getUser() != null) {
                         setUser(new UserDto(assessmentSummary.getUser(), false, false, false));
@@ -62,8 +63,12 @@ public class AssessmentSummaryDto {
                 setScore(assessmentSummary.getScore());
                 setStatus(assessmentSummary.getStatus());
                 setCreatedAt(assessmentSummary.getCreatedAt());
-                // setCreatedBy(assessmentSummary.getCreatedBy());
+                if (withCreatedBy && assessmentSummary.getCreatedBy() != null)
+                        setCreatedBy(new UserDto(assessmentSummary.getCreatedBy(), false, false,
+                                        false));
                 setUpdatedAt(assessmentSummary.getUpdatedAt());
-                // setUpdatedBy(assessmentSummary.getUpdatedBy());
+                if (withUpdatedBy && assessmentSummary.getUpdatedBy() != null)
+                        setUpdatedBy(new UserDto(assessmentSummary.getUpdatedBy(), false, false,
+                                        false));
         }
 }

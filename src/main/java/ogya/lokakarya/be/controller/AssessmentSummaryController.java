@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
+import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryFilter;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryReq;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 
@@ -39,9 +41,20 @@ public class AssessmentSummaryController {
         }
 
         @GetMapping
-        public ResponseEntity<ResponseDto<List<AssessmentSummaryDto>>> getAllAssessmentSummaries() {
+        public ResponseEntity<ResponseDto<List<AssessmentSummaryDto>>> getAllAssessmentSummaries(
+                        @RequestParam(name = "user_ids", required = false) List<UUID> userIds,
+                        @RequestParam(required = false) List<Integer> years,
+                        @RequestParam(name = "with_created_by", required = false,
+                                        defaultValue = "false") Boolean withCreatedBy,
+                        @RequestParam(name = "with_updated_by", required = false,
+                                        defaultValue = "false") Boolean withUpdatedBy) {
+                AssessmentSummaryFilter filter = new AssessmentSummaryFilter();
+                filter.setUserIds(userIds);
+                filter.setYears(years);
+                filter.setWithCreatedBy(withCreatedBy);
+                filter.setWithUpdatedBy(withUpdatedBy);
                 List<AssessmentSummaryDto> assessmentSummaries =
-                                assessmentSummaryService.getAllAssessmentSummaries();
+                                assessmentSummaryService.getAllAssessmentSummaries(filter);
                 return ResponseDto.<List<AssessmentSummaryDto>>builder().success(true)
                                 .content(assessmentSummaries)
                                 .message("List all assessment summary successful!").build()
