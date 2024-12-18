@@ -2,7 +2,7 @@ name: Continuous Deployment
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "celana-dalam" ]
   workflow_dispatch:
     inputs:
       force_deploy:
@@ -47,6 +47,11 @@ jobs:
         JWT_EXPIRATION_MS: ${{ secrets.JWT_EXPIRATION_MS }}
         APP_PORT: ${{ secrets.APP_PORT }}
 
+    - name: Prepare Deployment
+      run: |
+        mkdir -p deployment-artifacts
+        cp docker-compose.yaml Dockerfile deployment-artifacts/
+
     - name: Deploy to Server
       uses: appleboy/ssh-action@master
       with:
@@ -68,9 +73,13 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         password: ${{ secrets.SERVER_PASSWORD }}
         port: ${{ secrets.SERVER_PORT }}
-        source: "docker-compose.yaml Dockerfile"
+        source: "deployment-artifacts/*"
         target: ${{ env.DEPLOY_PATH }}
 
+    - name: Cek ada apa aja
+      run: |
+        ssh ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_ADDRESS }} -p ${{ secrets.SERVER_PORT }} "ls -la ${{ env.DEPLOY_PATH }}"
+    
     - name: Execute Deployment
       uses: appleboy/ssh-action@master
       with:
