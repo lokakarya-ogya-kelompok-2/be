@@ -1,4 +1,4 @@
-name: Continuous Deployment
+name: Celana Dalam
 
 on:
   push:
@@ -13,7 +13,6 @@ on:
 
 env:
   DEPLOY_PATH: ~/lokakarya/be
-  COMPOSE_FILE: docker-compose.yaml
 
 jobs:
   build-and-deploy:
@@ -24,28 +23,6 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 1
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Login to Docker Hub (Optional)
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-    - name: Build Docker Images
-      run: |
-        docker compose build
-      env:
-        DB_NAME: ${{ secrets.DB_NAME }}
-        DB_USERNAME: ${{ secrets.DB_USERNAME }}
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
-        DB_DRIVER_NAME: ${{ secrets.DB_DRIVER_NAME }}
-        JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        JWT_EXPIRATION_MS: ${{ secrets.JWT_EXPIRATION_MS }}
-        APP_PORT: ${{ secrets.APP_PORT }}
 
     - name: Deploy to Server
       uses: appleboy/ssh-action@master
@@ -68,7 +45,7 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         password: ${{ secrets.SERVER_PASSWORD }}
         port: ${{ secrets.SERVER_PORT }}
-        source: "docker-compose.yaml Dockerfile"
+        source: "*"
         target: ${{ env.DEPLOY_PATH }}
 
     - name: Execute Deployment
@@ -79,16 +56,16 @@ jobs:
         password: ${{ secrets.SERVER_PASSWORD }}
         port: ${{ secrets.SERVER_PORT }}
         script: |
+          export DB_NAME=${{ secrets.DB_NAME }}
+          export DB_USERNAME=${{ secrets.DB_USERNAME }}
+          export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          export DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
+          export DB_DRIVER_NAME=${{ secrets.DB_DRIVER_NAME }}
+          export JWT_SECRET=${{ secrets.JWT_SECRET }}
+          export JWT_EXPIRATION_MS=${{ secrets.JWT_EXPIRATION_MS }}
+          export APP_PORT=${{ secrets.APP_PORT }}
           cd ${{ env.DEPLOY_PATH }}
           
-          # Pull latest images
-          docker-compose pull
-          
-          # Stop existing containers
           docker-compose down
           
-          # Start new containers
-          docker-compose up
-          
-          # Clean up unused docker resources
-          docker system prune -af --volumes
+          docker-compose up -d --wait

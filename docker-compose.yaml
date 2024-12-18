@@ -13,6 +13,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    volumes:
+      - db_data:/var/lib/mysql
 
   be:
     container_name: lokakarya-be
