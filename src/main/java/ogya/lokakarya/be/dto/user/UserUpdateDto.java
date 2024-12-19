@@ -29,7 +29,7 @@ public class UserUpdateDto {
     @NotBlank
     private String position;
 
-    @NotBlank
+    @NotNull
     @Min(value = 0)
     @Max(value = 1)
     @JsonProperty("employee_status")
