@@ -40,7 +40,7 @@ public class RoleDto {
 
     private List<MenuDto> menus;
 
-    public RoleDto(Role role, boolean withMenus, boolean withCreatedBy, boolean withUpdatedBy) {
+    public RoleDto(Role role, boolean withCreatedBy, boolean withUpdatedBy, boolean withMenus) {
         setId(role.getId());
         setRoleName(role.getRoleName());
         setCreatedAt(role.getCreatedAt());
