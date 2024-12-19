@@ -47,6 +47,8 @@ public class AssessmentSummaryController {
         @GetMapping
         public ResponseEntity<ResponseDto<List<AssessmentSummaryDto>>> getAllAssessmentSummaries(
                         @RequestParam(name = "user_ids", required = false) List<UUID> userIds,
+                        @RequestParam(name = "division_ids",
+                                        required = false) List<UUID> divisionIds,
                         @RequestParam(required = false) List<Integer> years,
                         @RequestParam(name = "with_created_by", required = false,
                                         defaultValue = "false") Boolean withCreatedBy,
@@ -55,6 +57,7 @@ public class AssessmentSummaryController {
                 log.info("Starting AssessmentSummaryController.list");
                 AssessmentSummaryFilter filter = new AssessmentSummaryFilter();
                 filter.setUserIds(userIds);
+                filter.setDivisionIds(divisionIds);
                 filter.setYears(years);
                 filter.setWithCreatedBy(withCreatedBy);
                 filter.setWithUpdatedBy(withUpdatedBy);

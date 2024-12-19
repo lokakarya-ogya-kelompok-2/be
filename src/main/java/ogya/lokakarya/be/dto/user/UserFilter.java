@@ -7,6 +7,9 @@ import ogya.lokakarya.be.exception.ResponseException;
 
 @Data
 public class UserFilter {
+    // ini kaya gabungan OR antara username, name, position, email, divisionName. males mikir, gini
+    // aja wkwk
+    private String anyStringFieldsContains;
     private String usernameContains;
     private String nameContains;
     private String positionContains;
@@ -19,6 +22,8 @@ public class UserFilter {
     private Boolean withRoles = false;
     private Boolean withCreatedBy = false;
     private Boolean withUpdatedBy = false;
+    private Integer pageNumber;
+    private Integer pageSize;
 
     public void validate() throws ResponseException {
         if (maxJoinDate != null && minJoinDate != null && maxJoinDate.isAfter(minJoinDate)) {
