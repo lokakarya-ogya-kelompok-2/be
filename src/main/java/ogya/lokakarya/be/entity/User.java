@@ -109,7 +109,6 @@ public class User implements UserDetails {
 
     @PreUpdate
     private void fillUpdatedAt() {
-        System.out.println("USER UPDATED UPDATED UPDATED");
         updatedAt = new java.util.Date();
     }
 }
