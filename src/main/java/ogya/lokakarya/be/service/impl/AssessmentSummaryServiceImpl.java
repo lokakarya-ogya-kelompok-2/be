@@ -1,5 +1,14 @@
 package ogya.lokakarya.be.service.impl;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
@@ -27,20 +36,12 @@ import ogya.lokakarya.be.repository.GroupAchievementRepository;
 import ogya.lokakarya.be.repository.GroupAttitudeSkillRepository;
 import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Service
 public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
+    private static final Integer ACHIEVEMENT_PERCENTAGE = 65;
+    private static final Integer ATTITUDE_SKILL_PERCENTAGE = 35;
     @Autowired
     private AssessmentSummaryRepository assessmentSummaryRepository;
 
@@ -147,12 +148,14 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     @Override
     public AssessmentSummaryDto calculateAssessmentSummaryButValidateTheUserIdFirstBeforeCalculating(
             UUID userId, Integer year) {
-        log.info("Starting AssessmentSummaryServiceImpl.calculateAssessmentSummaryButValidateTheUserIdFirstBeforeCalculating");
+        log.info(
+                "Starting AssessmentSummaryServiceImpl.calculateAssessmentSummaryButValidateTheUserIdFirstBeforeCalculating");
         Optional<User> userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty()) {
             throw ResponseException.userNotFound(userId);
         }
-        log.info("Ending AssessmentSummaryServiceImpl.calculateAssessmentSummaryButValidateTheUserIdFirstBeforeCalculating");
+        log.info(
+                "Ending AssessmentSummaryServiceImpl.calculateAssessmentSummaryButValidateTheUserIdFirstBeforeCalculating");
         return calculateAssessmentSummary(userId, year);
     }
 
@@ -161,7 +164,6 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     @Override
     public AssessmentSummaryDto calculateAssessmentSummary(UUID userId, Integer year) {
         log.info("Starting AssessmentSummaryServiceImpl.calculateAssessmentSummary");
-        Integer totalWeight = 0;
         Map<UUID, Object> idToGroup = new HashMap<>();
         // attitude skills mbuh mumet
         Map<UUID, GroupAttitudeSkill> attitudeGroupIdToEntity = new HashMap<>();
@@ -172,12 +174,13 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         gasFilter.setWithEnabledChildOnly(true);
         List<GroupAttitudeSkill> groupAttitudeSkills =
                 groupAttitudeSkillRepo.findAllByFilter(gasFilter);
+        Integer attitudeSkillTotalWeight = 0;
         for (GroupAttitudeSkill group : groupAttitudeSkills) {
             if (group.getAttitudeSkills() != null) {
                 group.getAttitudeSkills().forEach(attS -> idToGroup.put(attS.getId(), group));
             }
             attitudeGroupIdToEntity.put(group.getId(), group);
-            totalWeight += group.getPercentage();
+            attitudeSkillTotalWeight += group.getPercentage();
         }
 
         EmpAttitudeSkillFilter easFilter = new EmpAttitudeSkillFilter();
@@ -209,13 +212,13 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         gaFilter.setWithAchievements(true);
         gaFilter.setWithEnabledChildOnly(true);
         List<GroupAchievement> groupAchievements = groupAchievementRepo.findAllByFilter(gaFilter);
+        Integer achievementTotalWeight = 0;
         for (GroupAchievement group : groupAchievements) {
             if (group.getAchievements() != null) {
                 group.getAchievements().forEach(attS -> idToGroup.put(attS.getId(), group));
             }
             achievementGroupIdtoEntity.put(group.getId(), group);
-
-            totalWeight += group.getPercentage();
+            achievementTotalWeight += group.getPercentage();
         }
 
         EmpAchievementSkillFilter eacFilter = new EmpAchievementSkillFilter();
@@ -241,7 +244,8 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             SummaryData summaryData = new SummaryData();
             summaryData.setAspect(group.getGroupName());
             summaryData.setWeight(
-                    ((group.getPercentage().doubleValue() / totalWeight.doubleValue()) * 100l));
+                    ((group.getPercentage().doubleValue() / achievementTotalWeight.doubleValue())
+                            * ACHIEVEMENT_PERCENTAGE));
             groupAchievementToSummaryData.put(group.getId(), summaryData);
         }
 
@@ -249,7 +253,8 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             SummaryData summaryData = new SummaryData();
             summaryData.setAspect(group.getGroupName());
             summaryData.setWeight(
-                    ((group.getPercentage().doubleValue() / totalWeight.doubleValue()) * 100l));
+                    ((group.getPercentage().doubleValue() / attitudeSkillTotalWeight.doubleValue())
+                            * ATTITUDE_SKILL_PERCENTAGE));
             groupAttitudeSkillIdToSummaryData.put(group.getId(), summaryData);
         }
 
@@ -285,14 +290,12 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             GroupAttitudeSkill group = attitudeGroupIdToEntity.get(entry.getKey());
             List<EmpAttitudeSkill> empASs = entry.getValue();
 
-            Integer currGroupWeight = group.getPercentage();
             Integer childCount =
                     group.getAttitudeSkills() != null
                             ? group.getAttitudeSkills().stream().filter(AttitudeSkill::getEnabled)
                                     .toList().size()
                             : 0;
 
-            Double currGroupPct = (currGroupWeight.doubleValue() / totalWeight.doubleValue());
             Integer totalScore = 0;
             for (EmpAttitudeSkill EmpAS : empASs) {
                 totalScore += EmpAS.getScore();
@@ -301,7 +304,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             Double userScore = (double) (totalScore.doubleValue() / maxScore);
 
             SummaryData summaryData = groupAttitudeSkillIdToSummaryData.get(group.getId());
-            summaryData.setFinalScore((userScore * currGroupPct * 100l));
+            summaryData.setFinalScore((userScore * summaryData.getWeight()));
             summaryData.setScore((userScore * 100l));
 
             finalScore += summaryData.getFinalScore();
@@ -313,14 +316,12 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             GroupAchievement group = achievementGroupIdtoEntity.get(entry.getKey());
             List<EmpAchievementSkill> empAcs = entry.getValue();
 
-            Integer currGroupWeight = group.getPercentage();
             Integer childCount =
                     group.getAchievements() != null
                             ? group.getAchievements().stream().filter(Achievement::getEnabled)
                                     .toList().size()
                             : 0;
 
-            Double currGroupPct = currGroupWeight.doubleValue() / totalWeight.doubleValue();
             Integer totalScore = 0;
             for (EmpAchievementSkill empAc : empAcs) {
                 totalScore += empAc.getScore();
@@ -329,7 +330,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             Double userScore = (double) (totalScore.doubleValue() / maxScore);
 
             SummaryData summaryData = groupAchievementToSummaryData.get(group.getId());
-            summaryData.setFinalScore((userScore * currGroupPct * 100l));
+            summaryData.setFinalScore((userScore * summaryData.getWeight()));
             summaryData.setScore((userScore * 100l));
 
             finalScore += summaryData.getFinalScore();
