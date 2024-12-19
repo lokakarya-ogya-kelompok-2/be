@@ -1,5 +1,14 @@
 package ogya.lokakarya.be.service.impl;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
@@ -27,16 +36,7 @@ import ogya.lokakarya.be.repository.GroupAchievementRepository;
 import ogya.lokakarya.be.repository.GroupAttitudeSkillRepository;
 import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import ogya.lokakarya.be.specifications.GroupAttitudeSkillSpecification;
 
 @Slf4j
 @Service
@@ -147,12 +147,14 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     @Override
     public AssessmentSummaryDto calculateAssessmentSummaryButValidateTheUserIdFirstBeforeCalculating(
             UUID userId, Integer year) {
-        log.info("Starting AssessmentSummaryServiceImpl.calculateAssessmentSummaryButValidateTheUserIdFirstBeforeCalculating");
+        log.info(
+                "Starting AssessmentSummaryServiceImpl.calculateAssessmentSummaryButValidateTheUserIdFirstBeforeCalculating");
         Optional<User> userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty()) {
             throw ResponseException.userNotFound(userId);
         }
-        log.info("Ending AssessmentSummaryServiceImpl.calculateAssessmentSummaryButValidateTheUserIdFirstBeforeCalculating");
+        log.info(
+                "Ending AssessmentSummaryServiceImpl.calculateAssessmentSummaryButValidateTheUserIdFirstBeforeCalculating");
         return calculateAssessmentSummary(userId, year);
     }
 
@@ -171,7 +173,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         gasFilter.setWithAttitudeSkills(true);
         gasFilter.setWithEnabledChildOnly(true);
         List<GroupAttitudeSkill> groupAttitudeSkills =
-                groupAttitudeSkillRepo.findAllByFilter(gasFilter);
+                groupAttitudeSkillRepo.findAll(GroupAttitudeSkillSpecification.filter(gasFilter));
         for (GroupAttitudeSkill group : groupAttitudeSkills) {
             if (group.getAttitudeSkills() != null) {
                 group.getAttitudeSkills().forEach(attS -> idToGroup.put(attS.getId(), group));
