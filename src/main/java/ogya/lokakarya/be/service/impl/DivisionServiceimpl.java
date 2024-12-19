@@ -1,5 +1,15 @@
 package ogya.lokakarya.be.service.impl;
 
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.division.DivisionDto;
@@ -10,12 +20,7 @@ import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.DivisionRepository;
 import ogya.lokakarya.be.service.DivisionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import ogya.lokakarya.be.specifications.DivisionSpecification;
 
 @Slf4j
 @Service
@@ -38,12 +43,21 @@ public class DivisionServiceimpl implements DivisionService {
     }
 
     @Override
-    public List<DivisionDto> getAllDivisions(DivisionFilter filter) {
+    public Page<DivisionDto> getAllDivisions(DivisionFilter filter) {
         log.info("Starting DevPlanServiceImpl.getAllDivisions");
-        List<Division> divisions = divisionRepository.findAllByFilter(filter);
+        Page<Division> divisions;
+        if (filter.getPageNumber() != null) {
+            Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
+                    Math.max(1, filter.getPageSize()), Sort.by(Direction.DESC, "createdAt"));
+            divisions = divisionRepository.findAll(DivisionSpecification.filter(filter), pageable);
+        } else {
+            divisions = new PageImpl<>(
+                    divisionRepository.findAll(DivisionSpecification.filter(filter)));
+        }
+
         log.info("Ending DevPlanServiceImpl.getAllDivisions");
-        return divisions.stream().map(division -> new DivisionDto(division,
-                filter.getWithCreatedBy(), filter.getWithUpdatedBy())).toList();
+        return divisions.map(division -> new DivisionDto(division, filter.getWithCreatedBy(),
+                filter.getWithUpdatedBy()));
     }
 
     @Override
