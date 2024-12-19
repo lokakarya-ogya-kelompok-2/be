@@ -3,8 +3,10 @@ package ogya.lokakarya.be.entity;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,21 +25,19 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "TBL_ACHIEVEMENT",
-        uniqueConstraints = {@UniqueConstraint(name = "UK_ACHIEVEMENT_NAME_GROUP_ID",
-                columnNames = {"ACHIEVEMENT", "GROUP_ID"})})
+@Table(name = "TBL_ACHIEVEMENT", uniqueConstraints = {
+        @UniqueConstraint(name = "UK_ACHIEVEMENT_NAME_GROUP_ID", columnNames = { "ACHIEVEMENT", "GROUP_ID" }) })
 public class Achievement {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private UUID id;
 
-    @Column(name = "ACHIEVEMENT", length = 100)
+    @Column(name = "ACHIEVEMENT", length = 100, nullable = false)
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "GROUP_ID",
-            foreignKey = @ForeignKey(name = "FK_ACHIEVEMENT_GROUP_ACHIEVEMENT"))
+    @JoinColumn(name = "GROUP_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_ACHIEVEMENT_GROUP_ACHIEVEMENT"))
     private GroupAchievement groupAchievement;
 
     @Column(name = "ENABLED")

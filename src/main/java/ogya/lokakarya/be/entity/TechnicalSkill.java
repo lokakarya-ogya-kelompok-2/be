@@ -30,10 +30,10 @@ import lombok.Data;
 public class TechnicalSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private UUID id;
 
-    @Column(name = "TECHNICAL_SKILL", length = 100)
+    @Column(name = "TECHNICAL_SKILL", length = 100, nullable = false)
     private String name;
 
     @Column(name = "ENABLED")

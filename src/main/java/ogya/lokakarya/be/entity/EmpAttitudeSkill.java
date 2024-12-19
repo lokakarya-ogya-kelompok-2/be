@@ -2,8 +2,10 @@ package ogya.lokakarya.be.entity;
 
 import java.util.Date;
 import java.util.UUID;
+
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,25 +22,25 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "TBL_EMP_ATTITUDE_SKILL", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"ATTITUDE_SKILL_ID", "USER_ID", "ASSESSMENT_YEAR"})})
+        @UniqueConstraint(columnNames = { "ATTITUDE_SKILL_ID", "USER_ID", "ASSESSMENT_YEAR" }) })
 public class EmpAttitudeSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "ATTITUDE_SKILL_ID")
+    @JoinColumn(name = "ATTITUDE_SKILL_ID", nullable = false)
     private AttitudeSkill attitudeSkill;
 
     @ManyToOne
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
-    @Column(name = "SCORE", nullable = false, length = 3)
+    @Column(name = "SCORE", nullable = false)
     private Integer score;
 
-    @Column(name = "ASSESSMENT_YEAR", nullable = false, length = 4)
+    @Column(name = "ASSESSMENT_YEAR", nullable = false)
     private Integer assessmentYear;
 
     @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")

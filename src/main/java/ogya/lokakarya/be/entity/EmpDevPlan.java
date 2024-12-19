@@ -24,21 +24,21 @@ import lombok.Data;
 public class EmpDevPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "DEV_PLAN_ID")
+    @JoinColumn(name = "DEV_PLAN_ID", nullable = false)
     private DevPlan devPlan;
 
-    @JoinColumn(name = "TOO_BRIGHT")
+    @JoinColumn(name = "TOO_BRIGHT", nullable = false)
     private String tooBright;
 
-    @Column(name = "ASSESSMENT_YEAR", nullable = false, length = 4)
+    @Column(name = "ASSESSMENT_YEAR", nullable = false)
     private Integer assessmentYear;
 
     @Column(name = "CREATED_AT", nullable = false)

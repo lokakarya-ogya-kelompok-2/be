@@ -3,8 +3,10 @@ package ogya.lokakarya.be.entity;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,19 +23,18 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "TBL_GROUP_ATTITUDE_SKILL",
-        uniqueConstraints = {@UniqueConstraint(name = "UK_GROUP_ATTITUDE_SKILL_GROUP_NAME",
-                columnNames = {"GROUP_NAME"})})
+@Table(name = "TBL_GROUP_ATTITUDE_SKILL", uniqueConstraints = {
+        @UniqueConstraint(name = "UK_GROUP_ATTITUDE_SKILL_GROUP_NAME", columnNames = { "GROUP_NAME" }) })
 public class GroupAttitudeSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private UUID id;
 
-    @Column(name = "GROUP_NAME", length = 100)
+    @Column(name = "GROUP_NAME", length = 100, nullable = false)
     private String groupName;
 
-    @Column(name = "PERCENTAGE", nullable = false, length = 3)
+    @Column(name = "PERCENTAGE", nullable = false)
     private Integer percentage;
 
     @Column(name = "ENABLED")

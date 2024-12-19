@@ -31,14 +31,14 @@ import lombok.Data;
 public class AttitudeSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private UUID id;
 
     @Column(name = "ATTITUDE_SKILL", nullable = false, length = 100)
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "GROUP_ID", foreignKey = @ForeignKey(name = "FK_ATTITUDE_SKILL_GROUP_ATTITUDE_SKILL"))
+    @JoinColumn(name = "GROUP_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_ATTITUDE_SKILL_GROUP_ATTITUDE_SKILL"))
     private GroupAttitudeSkill groupAttitudeSkill;
 
     @Column(name = "ENABLED")

@@ -29,7 +29,7 @@ import lombok.Data;
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private UUID id;
 
     @Column(name = "ROLENAME", nullable = false, length = 30)
