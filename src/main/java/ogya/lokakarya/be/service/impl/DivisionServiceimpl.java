@@ -8,7 +8,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.config.security.SecurityUtil;
@@ -48,7 +47,7 @@ public class DivisionServiceimpl implements DivisionService {
         Page<Division> divisions;
         if (filter.getPageNumber() != null) {
             Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
-                    Math.max(1, filter.getPageSize()), Sort.by(Direction.DESC, "createdAt"));
+                    Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
             divisions = divisionRepository.findAll(DivisionSpecification.filter(filter), pageable);
         } else {
             divisions = new PageImpl<>(

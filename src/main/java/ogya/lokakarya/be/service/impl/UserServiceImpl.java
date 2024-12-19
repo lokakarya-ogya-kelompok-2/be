@@ -2,10 +2,15 @@ package ogya.lokakarya.be.service.impl;
 
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,6 +33,7 @@ import ogya.lokakarya.be.repository.RoleRepository;
 import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.repository.UserRoleRepository;
 import ogya.lokakarya.be.service.UserService;
+import ogya.lokakarya.be.specifications.UserSpecification;
 import ogya.lokakarya.be.util.RandGen;
 
 @Slf4j
@@ -100,13 +106,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> list(UserFilter filter) {
+    public Page<UserDto> list(UserFilter filter) {
         log.info("Starting UserServiceImpl.list");
         filter.validate();
-        List<User> userEntities = userRepo.findAllByFilter(filter);
+        Page<User> users;
+        Specification<User> userSpec;
+        if (filter.getAnyStringFieldsContains() != null) {
+            userSpec = UserSpecification.filterAnyStringFields(filter);
+        } else {
+            userSpec = UserSpecification.filter(filter);
+        }
+        if (filter.getPageNumber() != null) {
+            Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
+                    Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
+            users = userRepo.findAll(userSpec, pageable);
+        } else {
+            users = new PageImpl<>(userRepo.findAll(userSpec));
+        }
         log.info("Ending UserServiceImpl.list");
-        return userEntities.stream().map(user -> new UserDto(user, filter.getWithCreatedBy(),
-                filter.getWithUpdatedBy(), filter.getWithRoles())).toList();
+        return users.map(user -> new UserDto(user, filter.getWithCreatedBy(),
+                filter.getWithUpdatedBy(), filter.getWithRoles()));
     }
 
     @Override
