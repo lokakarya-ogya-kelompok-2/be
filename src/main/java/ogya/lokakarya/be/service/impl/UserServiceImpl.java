@@ -1,5 +1,14 @@
 package ogya.lokakarya.be.service.impl;
 
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -20,16 +29,7 @@ import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.repository.UserRoleRepository;
 import ogya.lokakarya.be.service.UserService;
 import ogya.lokakarya.be.util.RandGen;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
@@ -73,8 +73,6 @@ public class UserServiceImpl implements UserService {
             userEntity.setDivision(divisionOpt.get());
         }
 
-        userEntity = userRepo.save(userEntity);
-
         if ((data.getRoles() != null) && !data.getRoles().isEmpty()) {
             userEntity.setUserRoles(new ArrayList<>());
             for (UUID roleId : data.getRoles()) {
@@ -85,10 +83,18 @@ public class UserServiceImpl implements UserService {
                 UserRole userRole = new UserRole();
                 userRole.setUser(userEntity);
                 userRole.setRole(roleOpt.get());
-                userRoleRepo.save(userRole);
                 userEntity.getUserRoles().add(userRole);
             }
         }
+
+        userEntity = userRepo.save(userEntity);
+
+        if (userEntity.getUserRoles() != null) {
+            for (UserRole userRole : userEntity.getUserRoles()) {
+                userRoleRepo.save(userRole);
+            }
+        }
+
         log.info("Ending UserServiceImpl.create");
         return new UserDto(userEntity, true, false, true);
     }
