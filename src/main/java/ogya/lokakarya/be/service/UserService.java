@@ -1,7 +1,7 @@
 package ogya.lokakarya.be.service;
 
-import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
 import ogya.lokakarya.be.dto.user.UserChangePasswordDto;
 import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.dto.user.UserFilter;
@@ -11,7 +11,7 @@ import ogya.lokakarya.be.dto.user.UserUpdateDto;
 public interface UserService {
     UserDto create(UserReq data);
 
-    List<UserDto> list(UserFilter filter);
+    Page<UserDto> list(UserFilter filter);
 
     UserDto get(UUID id);
 

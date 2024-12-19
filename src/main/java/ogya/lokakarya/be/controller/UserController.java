@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,106 +34,128 @@ import ogya.lokakarya.be.service.UserService;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    @Autowired
-    private UserService userSvc;
+        @Autowired
+        private UserService userSvc;
 
 
-    @PostMapping
-    public ResponseEntity<ResponseDto<UserDto>> create(@RequestBody @Valid UserReq data) {
-            log.info("Starting UserController.create");
-            var createdUser = userSvc.create(data);
-            log.info("Ending UserController.create");
-        return ResponseDto.<UserDto>builder().success(true).content(createdUser)
-                .message("Create user successful!").build().toResponse(HttpStatus.CREATED);
-    }
+        @PostMapping
+        public ResponseEntity<ResponseDto<UserDto>> create(@RequestBody @Valid UserReq data) {
+                log.info("Starting UserController.create");
+                var createdUser = userSvc.create(data);
+                log.info("Ending UserController.create");
+                return ResponseDto.<UserDto>builder().success(true).content(createdUser)
+                                .message("Create user successful!").build()
+                                .toResponse(HttpStatus.CREATED);
+        }
 
-    @GetMapping
-    public ResponseEntity<ResponseDto<List<UserDto>>> list(
-            @RequestParam(name = "username_contains", required = false) String usernameContains,
-            @RequestParam(name = "name_contains", required = false) String nameContains,
-            @RequestParam(name = "position_contains", required = false) String positionContains,
-            @RequestParam(name = "email_contains", required = false) String emailContains,
-            @RequestParam(name = "min_join_date", required = false) LocalDate minJoinDate,
-            @RequestParam(name = "max_join_date", required = false) LocalDate maxJoinDate,
-            @RequestParam(name = "employee_status", required = false) Integer employeeStatus,
-            @RequestParam(name = "division_name_contains", required = false) String divisionName,
-            @RequestParam(name = "enabled_only", required = false,
-                    defaultValue = "false") Boolean enabledOnly,
-            @RequestParam(name = "with_roles", required = false,
-                    defaultValue = "false") Boolean withRoles,
-            @RequestParam(name = "with_created_by", required = false,
-                    defaultValue = "false") Boolean withCreatedBy,
-            @RequestParam(name = "with_updated_by", required = false,
-                    defaultValue = "false") Boolean withUpdatedBy) {
-            log.info("Starting UserController.list");
-        UserFilter filter = new UserFilter();
-        filter.setUsernameContains(usernameContains);
-        filter.setNameContains(nameContains);
-        filter.setPositionContains(positionContains);
-        filter.setEmailContains(emailContains);
-        filter.setMinJoinDate(minJoinDate);
-        filter.setMaxJoinDate(maxJoinDate);
-        filter.setEmployeeStatus(employeeStatus);
-        filter.setDivisionNameContains(divisionName);
-        filter.setEnabledOnly(enabledOnly);
-        filter.setWithRoles(withRoles);
-        filter.setWithCreatedBy(withCreatedBy);
-        filter.setWithUpdatedBy(withUpdatedBy);
+        @GetMapping
+        public ResponseEntity<ResponseDto<List<UserDto>>> list(
+                        @RequestParam(name = "any_contains",
+                                        required = false) String anyStringFieldsContains,
+                        @RequestParam(name = "page_number", required = false) Integer pageNumber,
+                        @RequestParam(name = "page_size", required = false,
+                                        defaultValue = "5") Integer pageSize,
+                        @RequestParam(name = "username_contains",
+                                        required = false) String usernameContains,
+                        @RequestParam(name = "name_contains", required = false) String nameContains,
+                        @RequestParam(name = "position_contains",
+                                        required = false) String positionContains,
+                        @RequestParam(name = "email_contains",
+                                        required = false) String emailContains,
+                        @RequestParam(name = "min_join_date",
+                                        required = false) LocalDate minJoinDate,
+                        @RequestParam(name = "max_join_date",
+                                        required = false) LocalDate maxJoinDate,
+                        @RequestParam(name = "employee_status",
+                                        required = false) Integer employeeStatus,
+                        @RequestParam(name = "division_name_contains",
+                                        required = false) String divisionName,
+                        @RequestParam(name = "enabled_only", required = false,
+                                        defaultValue = "false") Boolean enabledOnly,
+                        @RequestParam(name = "with_roles", required = false,
+                                        defaultValue = "false") Boolean withRoles,
+                        @RequestParam(name = "with_created_by", required = false,
+                                        defaultValue = "false") Boolean withCreatedBy,
+                        @RequestParam(name = "with_updated_by", required = false,
+                                        defaultValue = "false") Boolean withUpdatedBy) {
+                log.info("Starting UserController.list");
+                UserFilter filter = new UserFilter();
+                filter.setAnyStringFieldsContains(anyStringFieldsContains);
+                filter.setPageNumber(pageNumber);
+                filter.setPageSize(pageSize);
+                filter.setUsernameContains(usernameContains);
+                filter.setNameContains(nameContains);
+                filter.setPositionContains(positionContains);
+                filter.setEmailContains(emailContains);
+                filter.setMinJoinDate(minJoinDate);
+                filter.setMaxJoinDate(maxJoinDate);
+                filter.setEmployeeStatus(employeeStatus);
+                filter.setDivisionNameContains(divisionName);
+                filter.setEnabledOnly(enabledOnly);
+                filter.setWithRoles(withRoles);
+                filter.setWithCreatedBy(withCreatedBy);
+                filter.setWithUpdatedBy(withUpdatedBy);
 
-        List<UserDto> users = userSvc.list(filter);
-        log.info("Ending UserController.list");
-        return ResponseDto.<List<UserDto>>builder().success(true).content(users)
-                .message("List users successful!").build().toResponse(HttpStatus.OK);
-    }
+                Page<UserDto> users = userSvc.list(filter);
+                log.info("Ending UserController.list");
+                return ResponseDto.<List<UserDto>>builder().success(true).content(users.toList())
+                                .totalPages(users.getTotalPages())
+                                .totalRecords(users.getTotalElements())
+                                .pageNumber(users.getNumber()).pageSize(users.getSize())
+                                .message("List users successful!").build()
+                                .toResponse(HttpStatus.OK);
+        }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseDto<UserDto>> get(@PathVariable UUID id) {
-            log.info("Starting UserController.get for id = {}", id);
-            var user = userSvc.get(id);
-            log.info("Ending UserController.get for id = {}", id);
-        return ResponseDto.<UserDto>builder().success(true).content(user)
-                .message(String.format("Get user with id %s successful!", id)).build()
-                .toResponse(HttpStatus.OK);
-    }
+        @GetMapping("/{id}")
+        public ResponseEntity<ResponseDto<UserDto>> get(@PathVariable UUID id) {
+                log.info("Starting UserController.get for id = {}", id);
+                var user = userSvc.get(id);
+                log.info("Ending UserController.get for id = {}", id);
+                return ResponseDto.<UserDto>builder().success(true).content(user)
+                                .message(String.format("Get user with id %s successful!", id))
+                                .build().toResponse(HttpStatus.OK);
+        }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ResponseDto<UserDto>> update(@PathVariable UUID id,
-                    @RequestBody @Valid UserUpdateDto data) {
-            log.info("Starting UserController.update for id = {}", id);
-        var updatedUser = userSvc.update(id, data);
-        log.info("Ending UserController.update for id = {}", id);
-        return ResponseDto.<UserDto>builder().success(true).content(updatedUser)
-                .message(String.format("Update user with id %s successful!", id)).build()
-                .toResponse(HttpStatus.OK);
-    }
+        @PutMapping("/{id}")
+        public ResponseEntity<ResponseDto<UserDto>> update(@PathVariable UUID id,
+                        @RequestBody @Valid UserUpdateDto data) {
+                log.info("Starting UserController.update for id = {}", id);
+                var updatedUser = userSvc.update(id, data);
+                log.info("Ending UserController.update for id = {}", id);
+                return ResponseDto.<UserDto>builder().success(true).content(updatedUser)
+                                .message(String.format("Update user with id %s successful!", id))
+                                .build().toResponse(HttpStatus.OK);
+        }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseDto<Void>> delete(@PathVariable UUID id) {
-            log.info("Starting UserController.delete for id = {}", id);
-            userSvc.delete(id);
-            log.info("Ending UserController.delete for id = {}", id);
-        return ResponseDto.<Void>builder().success(true)
-                .message(String.format("Delete user with id %s successful!", id)).build()
-                .toResponse(HttpStatus.OK);
-    }
+        @DeleteMapping("/{id}")
+        public ResponseEntity<ResponseDto<Void>> delete(@PathVariable UUID id) {
+                log.info("Starting UserController.delete for id = {}", id);
+                userSvc.delete(id);
+                log.info("Ending UserController.delete for id = {}", id);
+                return ResponseDto.<Void>builder().success(true)
+                                .message(String.format("Delete user with id %s successful!", id))
+                                .build().toResponse(HttpStatus.OK);
+        }
 
-    @PutMapping("/change-password")
-    public ResponseEntity<ResponseDto<UserDto>> changePassword(
-                    @RequestBody @Valid UserChangePasswordDto data) {
-            log.info("Starting UserController.changePassword");
-            var updatedUser = userSvc.changePassword(data);
-            log.info("Ending UserController.changePassword");
-        return ResponseDto.<UserDto>builder().success(true).content(updatedUser)
-                .message("Password changed successfuly!").build().toResponse(HttpStatus.OK);
-    }
+        @PutMapping("/change-password")
+        public ResponseEntity<ResponseDto<UserDto>> changePassword(
+                        @RequestBody @Valid UserChangePasswordDto data) {
+                log.info("Starting UserController.changePassword");
+                var updatedUser = userSvc.changePassword(data);
+                log.info("Ending UserController.changePassword");
+                return ResponseDto.<UserDto>builder().success(true).content(updatedUser)
+                                .message("Password changed successfuly!").build()
+                                .toResponse(HttpStatus.OK);
+        }
 
-    @PostMapping("/{id}/reset-password")
-    public ResponseEntity<ResponseDto<String>> resetPassword(@PathVariable UUID id) {
-            log.info("Starting UserController.resetPassword for id = {}", id);
-            var generatedPassword = userSvc.resetPassword(id);
-            log.info("Ending UserController.resetPassword for id = {}", id);
-        return ResponseDto.<String>builder().success(true).content(generatedPassword)
-                .message("Reset password successful!").build().toResponse(HttpStatus.OK);
-    }
+        @PostMapping("/{id}/reset-password")
+        public ResponseEntity<ResponseDto<String>> resetPassword(@PathVariable UUID id) {
+                log.info("Starting UserController.resetPassword for id = {}", id);
+                var generatedPassword = userSvc.resetPassword(id);
+                log.info("Ending UserController.resetPassword for id = {}", id);
+                return ResponseDto.<String>builder().success(true).content(generatedPassword)
+                                .message("Reset password successful!").build()
+                                .toResponse(HttpStatus.OK);
+        }
 
 }

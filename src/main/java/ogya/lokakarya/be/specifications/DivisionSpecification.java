@@ -27,6 +27,7 @@ public class DivisionSpecification {
                     predicates.add(cb.like(cb.lower(root.get("divisionName")),
                             "%" + filter.getNameContains().toLowerCase() + "%"));
                 }
+
                 return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 
             }
