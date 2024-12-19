@@ -1,5 +1,12 @@
 package ogya.lokakarya.be.entity;
 
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,12 +21,6 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Data
@@ -29,13 +30,13 @@ import java.util.UUID;
 public class DevPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private UUID id;
 
-    @Column(name = "PLAN", length = 100)
+    @Column(name = "PLAN", length = 100, nullable = false)
     private String plan;
 
-    @Column(name = "ENABLED", length = 1)
+    @Column(name = "ENABLED")
     private boolean enabled = true;
 
     @Column(name = "CREATED_AT", nullable = false)

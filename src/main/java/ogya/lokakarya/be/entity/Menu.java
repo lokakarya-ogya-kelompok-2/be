@@ -30,10 +30,10 @@ import lombok.Data;
 public class Menu {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private UUID id;
 
-    @Column(name = "MENU_NAME", length = 30)
+    @Column(name = "MENU_NAME", length = 30, nullable = false)
     private String menuName;
 
     @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")

@@ -25,10 +25,10 @@ import lombok.Data;
 public class Division {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private UUID id;
 
-    @Column(name = "DIVISION_NAME", length = 50)
+    @Column(name = "DIVISION_NAME", length = 50, nullable = false)
     private String divisionName;
 
     @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")

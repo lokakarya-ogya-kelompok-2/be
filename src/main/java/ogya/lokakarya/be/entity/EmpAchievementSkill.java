@@ -27,24 +27,24 @@ import lombok.Data;
 public class EmpAchievementSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
-    @Column(name = "NOTES", length = 100)
+    @Column(name = "NOTES", length = 100, nullable = false)
     private String notes;
 
     @ManyToOne
-    @JoinColumn(name = "ACHIEVEMENT_ID")
+    @JoinColumn(name = "ACHIEVEMENT_ID", nullable = false)
     private Achievement achievement;
 
-    @Column(name = "SCORE", nullable = false, length = 3)
+    @Column(name = "SCORE", nullable = false)
     private Integer score;
 
-    @Column(name = "ASSESSMENT_YEAR", nullable = false, length = 4)
+    @Column(name = "ASSESSMENT_YEAR", nullable = false)
     private Integer assessmentYear;
 
     @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
