@@ -110,12 +110,7 @@ public class UserServiceImpl implements UserService {
         log.info("Starting UserServiceImpl.list");
         filter.validate();
         Page<User> users;
-        Specification<User> userSpec;
-        if (filter.getAnyStringFieldsContains() != null) {
-            userSpec = UserSpecification.filterAnyStringFields(filter);
-        } else {
-            userSpec = UserSpecification.filter(filter);
-        }
+        Specification<User> userSpec = UserSpecification.filter(filter);
         if (filter.getPageNumber() != null) {
             Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
                     Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());

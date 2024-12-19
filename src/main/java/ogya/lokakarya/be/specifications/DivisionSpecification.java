@@ -29,7 +29,6 @@ public class DivisionSpecification {
                 }
 
                 return cb.and(predicates.toArray(new Predicate[predicates.size()]));
-
             }
         };
     }
