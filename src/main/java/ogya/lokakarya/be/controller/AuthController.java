@@ -11,9 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import ogya.lokakarya.be.config.security.jwt.JwtUtil;
+import ogya.lokakarya.be.config.security.jwt.JwtService;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.auth.LoginReq;
 import ogya.lokakarya.be.dto.auth.LoginRes;
@@ -32,7 +33,7 @@ public class AuthController {
     private AuthService authSvc;
 
     @Autowired
-    private JwtUtil jwtUtil;
+    private JwtService jwtSvc;
 
     @SuppressWarnings("java:S1452")
     @PostMapping("/login")
@@ -49,7 +50,7 @@ public class AuthController {
         }
 
         UserDetails userDetails = authSvc.loadUserByUsername(data.getEmailOrUsername());
-        final String token = jwtUtil.generateToken((User) userDetails);
+        final String token = jwtSvc.generateToken((User) userDetails);
         UserDto userDto = new UserDto((User) userDetails, true, true, true);
         log.info("Ending AuthController.login for user: {}", data.getEmailOrUsername());
         return ResponseDto.<LoginRes>builder().success(true).content(new LoginRes(userDto, token))
