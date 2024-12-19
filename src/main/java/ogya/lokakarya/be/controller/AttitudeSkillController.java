@@ -3,6 +3,7 @@ package ogya.lokakarya.be.controller;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,6 +46,8 @@ public class AttitudeSkillController {
 
         @GetMapping
         public ResponseEntity<ResponseDto<List<AttitudeSkillDto>>> getAllAttitudeSKills(
+                        @RequestParam(name = "any_contains",
+                                        required = false) String anyStringFieldContains,
                         @RequestParam(name = "name_contains", required = false) String nameContains,
                         @RequestParam(name = "group_ids", required = false) List<UUID> groupIds,
                         @RequestParam(name = "enabled_only", required = false,
@@ -54,21 +57,31 @@ public class AttitudeSkillController {
                         @RequestParam(name = "with_created_by", required = false,
                                         defaultValue = "false") Boolean withCreatedBy,
                         @RequestParam(name = "with_updated_by", required = false,
-                                        defaultValue = "false") Boolean withUpdatedBy) {
+                                        defaultValue = "false") Boolean withUpdatedBy,
+                        @RequestParam(name = "page_number", required = false) Integer pageNumber,
+                        @RequestParam(name = "page_size", required = false,
+                                        defaultValue = "5") Integer pageSize) {
                 log.info("Starting AttitudeSkillController.list");
                 AttitudeSkillFilter filter = new AttitudeSkillFilter();
+                filter.setAnyStringFieldContains(anyStringFieldContains);
                 filter.setNameContains(nameContains);
                 filter.setGroupIds(groupIds);
                 filter.setEnabledOnly(enabledOnly);
                 filter.setWithGroup(withGroup);
                 filter.setWithCreatedBy(withCreatedBy);
                 filter.setWithUpdatedBy(withUpdatedBy);
+                filter.setPageNumber(pageNumber);
+                filter.setPageSize(pageSize);
 
-                List<AttitudeSkillDto> attitudeSkills =
+                Page<AttitudeSkillDto> attitudeSkills =
                                 attitudeSkillService.getAllAttitudeSkills(filter);
                 log.info("Ending AttitudeSkillController.list");
                 return ResponseDto.<List<AttitudeSkillDto>>builder().success(true)
-                                .content(attitudeSkills)
+                                .content(attitudeSkills.toList())
+                                .totalRecords(attitudeSkills.getTotalElements())
+                                .totalPages(attitudeSkills.getTotalPages())
+                                .pageNumber(attitudeSkills.getNumber())
+                                .pageSize(attitudeSkills.getSize())
                                 .message("List all attitude skill successful!").build()
                                 .toResponse(HttpStatus.OK);
         }
