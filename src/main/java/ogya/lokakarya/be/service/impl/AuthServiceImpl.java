@@ -20,7 +20,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("Starting AuthServiceImpl.loadUserByUsername");
-        Optional<User> userOpt = userRepo.findByUsername(username)
+        Optional<User> userOpt = userRepo.findByUsernameIgnoreCase(username)
                 .or(() -> userRepo.findByEmailAddressIgnoreCase(username));
         log.info("Ending AuthServiceImpl.loadUserByUsername");
         return userOpt.orElseThrow(() -> new UsernameNotFoundException("user could not be found!"));
