@@ -1,16 +1,15 @@
 package ogya.lokakarya.be.service.impl;
 
-import lombok.extern.slf4j.Slf4j;
-import ogya.lokakarya.be.entity.User;
-import ogya.lokakarya.be.repository.UserRepository;
-import ogya.lokakarya.be.service.AuthService;
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
+import ogya.lokakarya.be.entity.User;
+import ogya.lokakarya.be.repository.UserRepository;
+import ogya.lokakarya.be.service.AuthService;
 
 @Slf4j
 @Service
@@ -21,8 +20,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("Starting AuthServiceImpl.loadUserByUsername");
-        Optional<User> userOpt =
-                userRepo.findByUsername(username).or(() -> userRepo.findByEmailAddress(username));
+        Optional<User> userOpt = userRepo.findByUsername(username)
+                .or(() -> userRepo.findByEmailAddressIgnoreCase(username));
         log.info("Ending AuthServiceImpl.loadUserByUsername");
         return userOpt.orElseThrow(() -> new UsernameNotFoundException("user could not be found!"));
     }
