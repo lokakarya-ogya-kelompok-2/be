@@ -12,6 +12,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryFilter;
 import ogya.lokakarya.be.entity.AssessmentSummary;
+import ogya.lokakarya.be.entity.Division;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.repository.FilterRepository;
 
@@ -28,11 +29,22 @@ public class AssessmentSummaryRepositoryImpl
         Root<AssessmentSummary> root = query.from(AssessmentSummary.class);
         List<Predicate> predicates = new ArrayList<>();
 
+        Join<AssessmentSummary, User> assessmentSummaryUserJoin = null;
+
         if (filter.getUserIds() != null) {
-            Join<AssessmentSummary, User> assessmentSummaryUserJoin =
-                    root.join("user", JoinType.LEFT);
+            assessmentSummaryUserJoin = root.join("user", JoinType.LEFT);
             predicates.add(assessmentSummaryUserJoin.get("id").in(filter.getUserIds()));
         }
+
+        if (filter.getDivisionIds() != null) {
+            if (assessmentSummaryUserJoin == null) {
+                assessmentSummaryUserJoin = root.join("user", JoinType.LEFT);
+            }
+            Join<User, Division> userDivisionJoin =
+                    assessmentSummaryUserJoin.join("division", JoinType.LEFT);
+            predicates.add(userDivisionJoin.get("id").in(filter.getDivisionIds()));
+        }
+
         if (filter.getYears() != null) {
             predicates.add(root.get("year").in(filter.getYears()));
         }
