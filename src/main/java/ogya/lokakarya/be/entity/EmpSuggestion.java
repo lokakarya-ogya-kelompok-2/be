@@ -24,17 +24,17 @@ import lombok.Data;
 public class EmpSuggestion {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Column(name = "SUGGESTION", nullable = false, length = 200)
     private String suggestion;
 
-    @Column(name = "ASSESSMENT_YEAR", nullable = false, length = 4)
+    @Column(name = "ASSESSMENT_YEAR", nullable = false)
     private Integer assessmentYear;
 
     @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")

@@ -24,24 +24,24 @@ import lombok.Data;
 public class EmpTechnicalSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "TECHNICAL_SKILL_ID")
+    @JoinColumn(name = "TECHNICAL_SKILL_ID", nullable = false)
     private TechnicalSkill technicalSkill;
 
-    @Column(name = "SCORE", nullable = false, length = 3)
+    @Column(name = "SCORE", nullable = false)
     private Integer score;
 
-    @Column(name = "DETAIL")
+    @Column(name = "DETAIL", nullable = false)
     private String technicalSkilLDetail;
 
-    @Column(name = "ASSESSMENT_YEAR", nullable = false, length = 4)
+    @Column(name = "ASSESSMENT_YEAR", nullable = false)
     private Integer assessmentYear;
 
     @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")

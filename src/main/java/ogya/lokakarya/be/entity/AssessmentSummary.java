@@ -3,8 +3,10 @@ package ogya.lokakarya.be.entity;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
+
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,15 +21,15 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "TBL_ASSESSMENT_SUMMARY",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"USER_ID", "YEAR"})})
+@Table(name = "TBL_ASSESSMENT_SUMMARY", uniqueConstraints = { @UniqueConstraint(columnNames = { "USER_ID", "YEAR" }) })
 public class AssessmentSummary {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false)
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
     @Column(name = "YEAR", nullable = false)
