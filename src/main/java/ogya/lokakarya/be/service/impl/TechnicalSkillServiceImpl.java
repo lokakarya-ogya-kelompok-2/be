@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.config.security.SecurityUtil;
@@ -30,6 +31,9 @@ public class TechnicalSkillServiceImpl implements TechnicalSkillService {
     @Autowired
     private SecurityUtil securityUtil;
 
+    @Autowired
+    private TechnicalSkillSpecification spec;
+
     @Override
     public TechnicalSkillDto create(TechnicalSkillReq data) {
         log.info("Starting EmpDevPlanServiceImpl.create");
@@ -44,16 +48,25 @@ public class TechnicalSkillServiceImpl implements TechnicalSkillService {
     @Override
     public Page<TechnicalSkillDto> getAlltechnicalSkills(TechnicalSkillFilter filter) {
         log.info("Starting EmpDevPlanServiceImpl.getAlltechnicalSkills");
+
+        Specification<TechnicalSkill> specification = Specification.where(null);
+        if (filter.getNameContains() != null && !filter.getNameContains().isEmpty()) {
+            specification = specification.and(spec.nameContains(filter.getNameContains()));
+        }
+        if (filter.getEnabledOnly().booleanValue()) {
+            specification = specification.and(spec.enabledEquals(true));
+        }
+
         Page<TechnicalSkill> technicalSkills;
         if (filter.getPageNumber() != null) {
             Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
                     Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
-            technicalSkills = technicalSkillRepository
-                    .findAll(TechnicalSkillSpecification.filter(filter), pageable);
+            technicalSkills = technicalSkillRepository.findAll(specification, pageable);
         } else {
-            technicalSkills = new PageImpl<>(technicalSkillRepository.findAll(
-                    TechnicalSkillSpecification.filter(filter), Sort.by("createdAt").descending()));
+            technicalSkills = new PageImpl<>(technicalSkillRepository.findAll(specification,
+                    Sort.by("createdAt").descending()));
         }
+
         log.info("Ending EmpDevPlanServiceImpl.getAlltechnicalSkills");
         return technicalSkills.map(technicalSkill -> new TechnicalSkillDto(technicalSkill,
                 filter.getWithCreatedBy(), filter.getWithUpdatedBy()));
