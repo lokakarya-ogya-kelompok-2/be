@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -84,7 +85,27 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     @Override
     public Page<AssessmentSummaryDto> getAllAssessmentSummaries(AssessmentSummaryFilter filter) {
         log.info("Starting AssessmentSummaryServiceImpl.getAllAssessmentSummaries");
-        Page<AssessmentSummary> assessmentSummaries;
+        Specification<AssessmentSummary> specification = Specification.where(null);
+        if (filter.getAnyStringFieldContains() != null) {
+            specification = specification.and(Specification.anyOf(
+                    AssessmentSummarySpecification
+                            .userFullNameContains(filter.getAnyStringFieldContains()),
+                    AssessmentSummarySpecification
+                            .positionContains(filter.getAnyStringFieldContains())));
+        }
+        if (filter.getUserIds() != null && !filter.getUserIds().isEmpty()) {
+            specification =
+                    specification.and(AssessmentSummarySpecification.userIdIn(filter.getUserIds()));
+        }
+        if (filter.getYears() != null && !filter.getYears().isEmpty()) {
+            specification =
+                    specification.and(AssessmentSummarySpecification.yearIn(filter.getYears()));
+        }
+        if (filter.getDivisionIds() != null && !filter.getDivisionIds().isEmpty()) {
+            specification = specification
+                    .and(AssessmentSummarySpecification.divisionIdIn(filter.getDivisionIds()));
+        }
+
         Sort sortBy = Sort.unsorted();
         if (filter.getSortColumn() != null) {
             sortBy = Sort.by(filter.getSortColumn());
@@ -92,15 +113,17 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
                 sortBy = sortBy.descending();
             }
         }
+
+        Page<AssessmentSummary> assessmentSummaries;
         if (filter.getPageNumber() != null) {
             Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
                     Math.max(1, filter.getPageSize()), sortBy);
-            assessmentSummaries = assessmentSummaryRepository
-                    .findAll(AssessmentSummarySpecification.filter(filter), pageable);
+            assessmentSummaries = assessmentSummaryRepository.findAll(specification, pageable);
         } else {
-            assessmentSummaries = new PageImpl<>(assessmentSummaryRepository
-                    .findAll(AssessmentSummarySpecification.filter(filter), sortBy));
+            assessmentSummaries =
+                    new PageImpl<>(assessmentSummaryRepository.findAll(specification, sortBy));
         }
+
         log.info("Ending AssessmentSummaryServiceImpl.getAllAssessmentSummaries");
         return assessmentSummaries
                 .map(assessmentSummary -> new AssessmentSummaryDto(assessmentSummary,
@@ -277,12 +300,12 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             groupAttitudeSkillIdToSummaryData.put(group.getId(), summaryData);
         }
 
-        AssessmentSummaryFilter filter = new AssessmentSummaryFilter();
-        filter.setUserIds(List.of(userId));
-        filter.setYears(List.of(year));
+        Specification<AssessmentSummary> assessmentSummarySpecification =
+                Specification.allOf(AssessmentSummarySpecification.userIdIn(List.of(userId)),
+                        AssessmentSummarySpecification.yearIn(List.of(year)));
 
         List<AssessmentSummary> assessmentSummaries =
-                assessmentSummaryRepository.findAll(AssessmentSummarySpecification.filter(filter));
+                assessmentSummaryRepository.findAll(assessmentSummarySpecification);
         AssessmentSummary assessmentSummary;
         if (assessmentSummaries.isEmpty()) {
             assessmentSummary = new AssessmentSummary();
