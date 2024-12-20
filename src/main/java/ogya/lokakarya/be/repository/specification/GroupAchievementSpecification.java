@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import ogya.lokakarya.be.entity.GroupAchievement;
 
 @Component
-@SuppressWarnings({"java:S1118", "java:S1192"})
+@SuppressWarnings({"java:S1192"})
 public class GroupAchievementSpecification {
     @Autowired
     private SpecificationFactory<GroupAchievement> spec;
@@ -27,7 +27,7 @@ public class GroupAchievementSpecification {
         return spec.fieldBetween("percentage", lo, hi);
     }
 
-    public Specification<GroupAchievement> enabledEquals(boolean value) {
+    public Specification<GroupAchievement> enabledEquals(Boolean value) {
         return spec.fieldEquals("enabled", value);
     }
 }

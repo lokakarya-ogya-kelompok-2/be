@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import ogya.lokakarya.be.entity.GroupAttitudeSkill;
 
 
-@SuppressWarnings({"java:S1118", "java:S1192"})
+@SuppressWarnings({"java:S1192"})
 @Component
 public class GroupAttitudeSkillSpecification {
     @Autowired
@@ -28,7 +28,7 @@ public class GroupAttitudeSkillSpecification {
         return spec.fieldBetween("percentage", lo, hi);
     }
 
-    public Specification<GroupAttitudeSkill> enabledEquals(boolean value) {
+    public Specification<GroupAttitudeSkill> enabledEquals(Boolean value) {
         return spec.fieldEquals("enabled", value);
     }
 }

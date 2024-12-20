@@ -11,9 +11,7 @@ import ogya.lokakarya.be.entity.Achievement;
 import ogya.lokakarya.be.entity.GroupAchievement;
 
 @Component
-@SuppressWarnings({"java:S1118", "java:S3776"})
 public class AchievementSpecification {
-
     @Autowired
     private SpecificationFactory<Achievement> spec;
 
@@ -21,7 +19,7 @@ public class AchievementSpecification {
         return spec.fieldContains("name", substr);
     }
 
-    public Specification<Achievement> enabledEquals(boolean value) {
+    public Specification<Achievement> enabledEquals(Boolean value) {
         return spec.fieldEquals("enabled", value);
     }
 

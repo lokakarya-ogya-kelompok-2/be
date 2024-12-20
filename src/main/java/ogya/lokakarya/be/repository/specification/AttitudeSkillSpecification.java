@@ -10,10 +10,8 @@ import jakarta.persistence.criteria.JoinType;
 import ogya.lokakarya.be.entity.AttitudeSkill;
 import ogya.lokakarya.be.entity.GroupAttitudeSkill;
 
-@SuppressWarnings({"java:S1118", "java:S3776"})
 @Component
 public class AttitudeSkillSpecification {
-
     @Autowired
     private SpecificationFactory<AttitudeSkill> spec;
 
@@ -21,7 +19,7 @@ public class AttitudeSkillSpecification {
         return spec.fieldContains("name", substr);
     }
 
-    public Specification<AttitudeSkill> enabledEquals(boolean value) {
+    public Specification<AttitudeSkill> enabledEquals(Boolean value) {
         return spec.fieldEquals("enabled", value);
     }
 

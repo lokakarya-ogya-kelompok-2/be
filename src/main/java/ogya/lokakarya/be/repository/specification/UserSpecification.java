@@ -9,7 +9,7 @@ import jakarta.persistence.criteria.JoinType;
 import ogya.lokakarya.be.entity.Division;
 import ogya.lokakarya.be.entity.User;
 
-@SuppressWarnings({"java:S3776", "java:S1118", "java:S1192"})
+@SuppressWarnings({"java:S1192"})
 @Component
 public class UserSpecification {
     @Autowired

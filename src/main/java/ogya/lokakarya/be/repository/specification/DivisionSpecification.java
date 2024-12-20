@@ -5,7 +5,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import ogya.lokakarya.be.entity.Division;
 
-@SuppressWarnings("java:S1118")
 @Component
 public class DivisionSpecification {
     @Autowired

@@ -5,7 +5,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import ogya.lokakarya.be.entity.TechnicalSkill;
 
-@SuppressWarnings("java:S1118")
 @Component
 public class TechnicalSkillSpecification {
     @Autowired
@@ -15,7 +14,7 @@ public class TechnicalSkillSpecification {
         return spec.fieldContains("name", substr);
     }
 
-    public Specification<TechnicalSkill> enabledEquals(boolean value) {
+    public Specification<TechnicalSkill> enabledEquals(Boolean value) {
         return spec.fieldEquals("enabled", value);
     }
 }

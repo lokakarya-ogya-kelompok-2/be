@@ -12,9 +12,7 @@ import ogya.lokakarya.be.entity.Division;
 import ogya.lokakarya.be.entity.User;
 
 @Component
-@SuppressWarnings({"java:S1118", "java:S3776"})
 public class AssessmentSummarySpecification {
-
     @Autowired
     private SpecificationFactory<AssessmentSummary> spec;
 

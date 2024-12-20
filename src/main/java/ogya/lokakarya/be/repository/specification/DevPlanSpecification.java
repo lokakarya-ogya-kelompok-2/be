@@ -5,7 +5,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import ogya.lokakarya.be.entity.DevPlan;
 
-@SuppressWarnings("java:S1118")
 @Component
 public class DevPlanSpecification {
     @Autowired
@@ -15,7 +14,7 @@ public class DevPlanSpecification {
         return spec.fieldContains("plan", substr);
     }
 
-    public Specification<DevPlan> enabledEquals(boolean value) {
+    public Specification<DevPlan> enabledEquals(Boolean value) {
         return spec.fieldEquals("enabled", value);
     }
 }
