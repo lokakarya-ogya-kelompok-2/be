@@ -24,7 +24,7 @@ import ogya.lokakarya.be.service.DivisionService;
 
 @Slf4j
 @Service
-public class DivisionServiceimpl implements DivisionService {
+public class DivisionServiceImpl implements DivisionService {
     @Autowired
     private SecurityUtil securityUtil;
 
