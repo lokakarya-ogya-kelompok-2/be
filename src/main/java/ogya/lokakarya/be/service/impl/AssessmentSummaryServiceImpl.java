@@ -23,7 +23,6 @@ import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryReq;
 import ogya.lokakarya.be.dto.assessmentsummary.SummaryData;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillFilter;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillFilter;
-import ogya.lokakarya.be.dto.groupachievement.GroupAchievementFilter;
 import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillFilter;
 import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.Achievement;
@@ -68,7 +67,10 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     private EmpAchievementSkillRepository empAchievementSkillRepo;
 
     @Autowired
-    private AssessmentSummarySpecification spec;
+    private AssessmentSummarySpecification assSumSpec;
+
+    @Autowired
+    private GroupAchievementSpecification groupAchspec;
 
 
     @Override
@@ -91,17 +93,17 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         Specification<AssessmentSummary> specification = Specification.where(null);
         if (filter.getAnyStringFieldContains() != null) {
             specification = specification.and(Specification.anyOf(
-                    spec.userFullNameContains(filter.getAnyStringFieldContains()),
-                    spec.positionContains(filter.getAnyStringFieldContains())));
+                    assSumSpec.userFullNameContains(filter.getAnyStringFieldContains()),
+                    assSumSpec.positionContains(filter.getAnyStringFieldContains())));
         }
         if (filter.getUserIds() != null && !filter.getUserIds().isEmpty()) {
-            specification = specification.and(spec.userIdIn(filter.getUserIds()));
+            specification = specification.and(assSumSpec.userIdIn(filter.getUserIds()));
         }
         if (filter.getYears() != null && !filter.getYears().isEmpty()) {
-            specification = specification.and(spec.yearIn(filter.getYears()));
+            specification = specification.and(assSumSpec.yearIn(filter.getYears()));
         }
         if (filter.getDivisionIds() != null && !filter.getDivisionIds().isEmpty()) {
-            specification = specification.and(spec.divisionIdIn(filter.getDivisionIds()));
+            specification = specification.and(assSumSpec.divisionIdIn(filter.getDivisionIds()));
         }
 
         Sort sortBy = Sort.unsorted();
@@ -248,12 +250,10 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         Map<UUID, GroupAchievement> achievementGroupIdtoEntity = new HashMap<>();
 
         Map<UUID, SummaryData> groupAchievementToSummaryData = new HashMap<>();
-        GroupAchievementFilter gaFilter = new GroupAchievementFilter();
-        gaFilter.setEnabledOnly(true);
-        gaFilter.setWithAchievements(true);
-        gaFilter.setWithEnabledChildOnly(true);
+        Specification<GroupAchievement> groupAchievementSpecification =
+                Specification.allOf(groupAchspec.enabledEquals(true));
         List<GroupAchievement> groupAchievements =
-                groupAchievementRepo.findAll(GroupAchievementSpecification.filter(gaFilter));
+                groupAchievementRepo.findAll(groupAchievementSpecification);
         for (GroupAchievement group : groupAchievements) {
             if (group.getAchievements() != null) {
                 group.getAchievements().forEach(attS -> idToGroup.put(attS.getId(), group));
@@ -298,8 +298,8 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             groupAttitudeSkillIdToSummaryData.put(group.getId(), summaryData);
         }
 
-        Specification<AssessmentSummary> assessmentSummarySpecification =
-                Specification.allOf(spec.userIdIn(List.of(userId)), spec.yearIn(List.of(year)));
+        Specification<AssessmentSummary> assessmentSummarySpecification = Specification
+                .allOf(assSumSpec.userIdIn(List.of(userId)), assSumSpec.yearIn(List.of(year)));
 
         List<AssessmentSummary> assessmentSummaries =
                 assessmentSummaryRepository.findAll(assessmentSummarySpecification);

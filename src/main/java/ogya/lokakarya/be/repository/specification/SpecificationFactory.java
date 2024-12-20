@@ -18,4 +18,16 @@ public class SpecificationFactory<E> {
     public Specification<E> fieldIn(String fieldName, Collection<?> values) {
         return (root, query, cb) -> root.get(fieldName).in(values);
     }
+
+    public Specification<E> fieldGte(String fieldName, Integer lo) {
+        return (root, query, cb) -> cb.greaterThanOrEqualTo(root.get(fieldName), lo);
+    }
+
+    public Specification<E> fieldLte(String fieldName, Integer hi) {
+        return (root, query, cb) -> cb.lessThanOrEqualTo(root.get(fieldName), hi);
+    }
+
+    public Specification<E> fieldBetween(String fieldName, Integer lo, Integer hi) {
+        return (root, query, cb) -> cb.between(root.get(fieldName), lo, hi);
+    }
 }

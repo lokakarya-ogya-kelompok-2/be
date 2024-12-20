@@ -1,49 +1,34 @@
 package ogya.lokakarya.be.repository.specification;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import ogya.lokakarya.be.dto.groupachievement.GroupAchievementFilter;
+import org.springframework.stereotype.Component;
 import ogya.lokakarya.be.entity.GroupAchievement;
 
+@Component
 @SuppressWarnings({"java:S1118", "java:S1192"})
 public class GroupAchievementSpecification {
-    public static Specification<GroupAchievement> filter(GroupAchievementFilter filter) {
-        return new Specification<>() {
 
-            @Override
-            @Nullable
-            public Predicate toPredicate(@NonNull Root<GroupAchievement> root,
-                    @Nullable CriteriaQuery<?> query, @NonNull CriteriaBuilder cb) {
-                List<Predicate> predicates = new ArrayList<>();
+    @Autowired
+    private SpecificationFactory<GroupAchievement> spec;
 
-                if (filter.getNameContains() != null) {
-                    predicates.add(cb.like(cb.lower(root.get("groupName")),
-                            "%" + filter.getNameContains().toLowerCase() + "%"));
-                }
-                if (filter.getMinWeight() != null && filter.getMaxWeight() != null) {
-                    predicates.add(cb.between(root.get("percentage"), filter.getMinWeight(),
-                            filter.getMaxWeight()));
-                } else if (filter.getMinWeight() != null) {
-                    predicates.add(
-                            cb.greaterThanOrEqualTo(root.get("percentage"), filter.getMinWeight()));
-                } else if (filter.getMaxWeight() != null) {
-                    predicates.add(
-                            cb.lessThanOrEqualTo(root.get("percentage"), filter.getMaxWeight()));
-                }
-                if (filter.getEnabledOnly().booleanValue()) {
-                    predicates.add(cb.equal(root.get("enabled"), true));
-                }
+    public Specification<GroupAchievement> nameContains(String substr) {
+        return spec.fieldContains("groupName", substr);
+    }
 
-                return cb.and(predicates.toArray(new Predicate[predicates.size()]));
-            }
+    public Specification<GroupAchievement> weightLte(Integer hi) {
+        return spec.fieldLte("percentage", hi);
+    }
 
-        };
+    public Specification<GroupAchievement> weightGte(Integer lo) {
+        return spec.fieldGte("percentage", lo);
+    }
+
+    public Specification<GroupAchievement> weightBetween(Integer lo, Integer hi) {
+        return spec.fieldBetween("percentage", lo, hi);
+    }
+
+    public Specification<GroupAchievement> enabledEquals(boolean value) {
+        return spec.fieldEquals("enabled", value);
     }
 }
