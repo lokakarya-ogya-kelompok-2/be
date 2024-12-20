@@ -36,6 +36,7 @@ import ogya.lokakarya.be.repository.GroupAchievementRepository;
 import ogya.lokakarya.be.repository.GroupAttitudeSkillRepository;
 import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
+import ogya.lokakarya.be.specification.GroupAchievementSpecification;
 import ogya.lokakarya.be.specification.GroupAttitudeSkillSpecification;
 
 @Slf4j
@@ -210,7 +211,8 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         gaFilter.setEnabledOnly(true);
         gaFilter.setWithAchievements(true);
         gaFilter.setWithEnabledChildOnly(true);
-        List<GroupAchievement> groupAchievements = groupAchievementRepo.findAllByFilter(gaFilter);
+        List<GroupAchievement> groupAchievements =
+                groupAchievementRepo.findAll(GroupAchievementSpecification.filter(gaFilter));
         for (GroupAchievement group : groupAchievements) {
             if (group.getAchievements() != null) {
                 group.getAchievements().forEach(attS -> idToGroup.put(attS.getId(), group));

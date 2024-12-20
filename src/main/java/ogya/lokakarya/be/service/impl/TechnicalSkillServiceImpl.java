@@ -46,8 +46,8 @@ public class TechnicalSkillServiceImpl implements TechnicalSkillService {
         log.info("Starting EmpDevPlanServiceImpl.getAlltechnicalSkills");
         Page<TechnicalSkill> technicalSkills;
         if (filter.getPageNumber() != null) {
-            Pageable pageable = PageRequest.of(filter.getPageNumber() - 1, filter.getPageSize(),
-                    Sort.by("createdAt").descending());
+            Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
+                    Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
             technicalSkills = technicalSkillRepository
                     .findAll(TechnicalSkillSpecification.filter(filter), pageable);
         } else {
