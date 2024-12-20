@@ -67,6 +67,9 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     @Autowired
     private EmpAchievementSkillRepository empAchievementSkillRepo;
 
+    @Autowired
+    private AssessmentSummarySpecification spec;
+
 
     @Override
     public AssessmentSummaryDto create(AssessmentSummaryReq data) {
@@ -88,22 +91,17 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         Specification<AssessmentSummary> specification = Specification.where(null);
         if (filter.getAnyStringFieldContains() != null) {
             specification = specification.and(Specification.anyOf(
-                    AssessmentSummarySpecification
-                            .userFullNameContains(filter.getAnyStringFieldContains()),
-                    AssessmentSummarySpecification
-                            .positionContains(filter.getAnyStringFieldContains())));
+                    spec.userFullNameContains(filter.getAnyStringFieldContains()),
+                    spec.positionContains(filter.getAnyStringFieldContains())));
         }
         if (filter.getUserIds() != null && !filter.getUserIds().isEmpty()) {
-            specification =
-                    specification.and(AssessmentSummarySpecification.userIdIn(filter.getUserIds()));
+            specification = specification.and(spec.userIdIn(filter.getUserIds()));
         }
         if (filter.getYears() != null && !filter.getYears().isEmpty()) {
-            specification =
-                    specification.and(AssessmentSummarySpecification.yearIn(filter.getYears()));
+            specification = specification.and(spec.yearIn(filter.getYears()));
         }
         if (filter.getDivisionIds() != null && !filter.getDivisionIds().isEmpty()) {
-            specification = specification
-                    .and(AssessmentSummarySpecification.divisionIdIn(filter.getDivisionIds()));
+            specification = specification.and(spec.divisionIdIn(filter.getDivisionIds()));
         }
 
         Sort sortBy = Sort.unsorted();
@@ -301,8 +299,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         }
 
         Specification<AssessmentSummary> assessmentSummarySpecification =
-                Specification.allOf(AssessmentSummarySpecification.userIdIn(List.of(userId)),
-                        AssessmentSummarySpecification.yearIn(List.of(year)));
+                Specification.allOf(spec.userIdIn(List.of(userId)), spec.yearIn(List.of(year)));
 
         List<AssessmentSummary> assessmentSummaries =
                 assessmentSummaryRepository.findAll(assessmentSummarySpecification);

@@ -2,16 +2,23 @@ package ogya.lokakarya.be.repository.specification;
 
 import java.util.List;
 import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import ogya.lokakarya.be.entity.AssessmentSummary;
 import ogya.lokakarya.be.entity.Division;
 import ogya.lokakarya.be.entity.User;
 
+@Component
 @SuppressWarnings({"java:S1118", "java:S3776"})
 public class AssessmentSummarySpecification {
-    public static Specification<AssessmentSummary> userFullNameContains(String substr) {
+
+    @Autowired
+    private SpecificationFactory<AssessmentSummary> spec;
+
+    public Specification<AssessmentSummary> userFullNameContains(String substr) {
         return (root, query, cb) -> {
             Join<AssessmentSummary, User> assessmentSummaryUserJoin =
                     root.join("user", JoinType.LEFT);
@@ -20,7 +27,7 @@ public class AssessmentSummarySpecification {
         };
     }
 
-    public static Specification<AssessmentSummary> positionContains(String substr) {
+    public Specification<AssessmentSummary> positionContains(String substr) {
         return (root, query, cb) -> {
             Join<AssessmentSummary, User> assessmentSummaryUserJoin =
                     root.join("user", JoinType.LEFT);
@@ -29,7 +36,7 @@ public class AssessmentSummarySpecification {
         };
     }
 
-    public static Specification<AssessmentSummary> userIdIn(List<UUID> userIds) {
+    public Specification<AssessmentSummary> userIdIn(List<UUID> userIds) {
         return (root, query, cb) -> {
             Join<AssessmentSummary, User> assessmentSummaryUserJoin =
                     root.join("user", JoinType.LEFT);
@@ -37,7 +44,7 @@ public class AssessmentSummarySpecification {
         };
     }
 
-    public static Specification<AssessmentSummary> divisionIdIn(List<UUID> divisionIds) {
+    public Specification<AssessmentSummary> divisionIdIn(List<UUID> divisionIds) {
         return (root, query, cb) -> {
             Join<AssessmentSummary, User> assessmentSummaryUserJoin =
                     root.join("user", JoinType.LEFT);
@@ -47,8 +54,7 @@ public class AssessmentSummarySpecification {
         };
     }
 
-    public static Specification<AssessmentSummary> yearIn(List<Integer> years) {
-        return (root, query, cb) -> root.get("year").in(years);
-
+    public Specification<AssessmentSummary> yearIn(List<Integer> years) {
+        return spec.fieldIn("year", years);
     }
 }

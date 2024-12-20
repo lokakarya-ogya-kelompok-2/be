@@ -15,7 +15,7 @@ import ogya.lokakarya.be.entity.GroupAchievement;
 public class AchievementSpecification {
 
     @Autowired
-    private SpecificationWrapper<Achievement> spec;
+    private SpecificationFactory<Achievement> spec;
 
     public Specification<Achievement> nameContains(String substr) {
         return spec.fieldContains("name", substr);
