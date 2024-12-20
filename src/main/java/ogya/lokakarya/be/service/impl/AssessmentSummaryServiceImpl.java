@@ -8,6 +8,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +41,7 @@ import ogya.lokakarya.be.repository.GroupAchievementRepository;
 import ogya.lokakarya.be.repository.GroupAttitudeSkillRepository;
 import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
+import ogya.lokakarya.be.specification.AssessmentSummarySpecification;
 import ogya.lokakarya.be.specification.GroupAchievementSpecification;
 import ogya.lokakarya.be.specification.GroupAttitudeSkillSpecification;
 
@@ -76,15 +82,29 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     }
 
     @Override
-    public List<AssessmentSummaryDto> getAllAssessmentSummaries(AssessmentSummaryFilter filter) {
+    public Page<AssessmentSummaryDto> getAllAssessmentSummaries(AssessmentSummaryFilter filter) {
         log.info("Starting AssessmentSummaryServiceImpl.getAllAssessmentSummaries");
-        List<AssessmentSummary> assessmentSummaries =
-                assessmentSummaryRepository.findAllByFilter(filter);
+        Page<AssessmentSummary> assessmentSummaries;
+        Sort sortBy = Sort.unsorted();
+        if (filter.getSortColumn() != null) {
+            sortBy = Sort.by(filter.getSortColumn());
+            if (filter.getSortMode().equalsIgnoreCase("desc")) {
+                sortBy = sortBy.descending();
+            }
+        }
+        if (filter.getPageNumber() != null) {
+            Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
+                    Math.max(1, filter.getPageSize()), sortBy);
+            assessmentSummaries = assessmentSummaryRepository
+                    .findAll(AssessmentSummarySpecification.filter(filter), pageable);
+        } else {
+            assessmentSummaries = new PageImpl<>(assessmentSummaryRepository
+                    .findAll(AssessmentSummarySpecification.filter(filter), sortBy));
+        }
         log.info("Ending AssessmentSummaryServiceImpl.getAllAssessmentSummaries");
-        return assessmentSummaries.stream()
+        return assessmentSummaries
                 .map(assessmentSummary -> new AssessmentSummaryDto(assessmentSummary,
-                        filter.getWithCreatedBy(), filter.getWithUpdatedBy()))
-                .toList();
+                        filter.getWithCreatedBy(), filter.getWithUpdatedBy()));
     }
 
     @Override
@@ -262,7 +282,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         filter.setYears(List.of(year));
 
         List<AssessmentSummary> assessmentSummaries =
-                assessmentSummaryRepository.findAllByFilter(filter);
+                assessmentSummaryRepository.findAll(AssessmentSummarySpecification.filter(filter));
         AssessmentSummary assessmentSummary;
         if (assessmentSummaries.isEmpty()) {
             assessmentSummary = new AssessmentSummary();
