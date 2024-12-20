@@ -1,5 +1,15 @@
 package ogya.lokakarya.be.service.impl;
 
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.devplan.DevPlanDto;
@@ -10,13 +20,7 @@ import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.DevPlanRepository;
 import ogya.lokakarya.be.service.DevPlanService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import ogya.lokakarya.be.specification.DevPlanSpecification;
 
 @Slf4j
 @Service
@@ -39,12 +43,20 @@ public class DevPlanServiceImpl implements DevPlanService {
     }
 
     @Override
-    public List<DevPlanDto> getAllDevPlans(DevPlanFilter filter) {
+    public Page<DevPlanDto> getAllDevPlans(DevPlanFilter filter) {
         log.info("Starting DevPlanServiceImpl.getAllDevPlans");
-        List<DevPlan> devPlans = devPlanRepository.findAllByFilter(filter);
+        Page<DevPlan> devPlans;
+        if (filter.getPageNumber() != null) {
+            Pageable pageable = PageRequest.of(filter.getPageNumber() - 1, filter.getPageSize(),
+                    Sort.by("createdAt").descending());
+            devPlans = devPlanRepository.findAll(DevPlanSpecification.filter(filter), pageable);
+        } else {
+            devPlans = new PageImpl<>(devPlanRepository.findAll(DevPlanSpecification.filter(filter),
+                    Sort.by("createdAt").descending()));
+        }
         log.info("Ending DevPlanServiceImpl.getAllDevPlans");
-        return devPlans.stream().map(devPlan -> new DevPlanDto(devPlan, filter.getWithCreatedBy(),
-                filter.getWithUpdatedBy())).toList();
+        return devPlans.map(devPlan -> new DevPlanDto(devPlan, filter.getWithCreatedBy(),
+                filter.getWithUpdatedBy()));
     }
 
     @Override

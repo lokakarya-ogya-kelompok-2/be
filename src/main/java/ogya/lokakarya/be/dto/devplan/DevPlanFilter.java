@@ -8,4 +8,6 @@ public class DevPlanFilter {
     private Boolean enabledOnly = false;
     private Boolean withCreatedBy = false;
     private Boolean withUpdatedBy = false;
+    private Integer pageNumber;
+    private Integer pageSize;
 }
