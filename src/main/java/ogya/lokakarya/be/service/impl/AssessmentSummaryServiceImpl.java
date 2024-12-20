@@ -23,7 +23,6 @@ import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryReq;
 import ogya.lokakarya.be.dto.assessmentsummary.SummaryData;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillFilter;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillFilter;
-import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillFilter;
 import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.Achievement;
 import ogya.lokakarya.be.entity.AssessmentSummary;
@@ -70,8 +69,10 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     private AssessmentSummarySpecification assSumSpec;
 
     @Autowired
-    private GroupAchievementSpecification groupAchspec;
+    private GroupAchievementSpecification groupAchSpec;
 
+    @Autowired
+    private GroupAttitudeSkillSpecification groupAttSkillSpec;
 
     @Override
     public AssessmentSummaryDto create(AssessmentSummaryReq data) {
@@ -212,12 +213,8 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         // attitude skills mbuh mumet
         Map<UUID, GroupAttitudeSkill> attitudeGroupIdToEntity = new HashMap<>();
         HashMap<UUID, SummaryData> groupAttitudeSkillIdToSummaryData = new HashMap<>();
-        GroupAttitudeSkillFilter gasFilter = new GroupAttitudeSkillFilter();
-        gasFilter.setEnabledOnly(true);
-        gasFilter.setWithAttitudeSkills(true);
-        gasFilter.setWithEnabledChildOnly(true);
         List<GroupAttitudeSkill> groupAttitudeSkills =
-                groupAttitudeSkillRepo.findAll(GroupAttitudeSkillSpecification.filter(gasFilter));
+                groupAttitudeSkillRepo.findAll(groupAttSkillSpec.enabledEquals(true));
         for (GroupAttitudeSkill group : groupAttitudeSkills) {
             if (group.getAttitudeSkills() != null) {
                 group.getAttitudeSkills().forEach(attS -> idToGroup.put(attS.getId(), group));
@@ -250,10 +247,8 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         Map<UUID, GroupAchievement> achievementGroupIdtoEntity = new HashMap<>();
 
         Map<UUID, SummaryData> groupAchievementToSummaryData = new HashMap<>();
-        Specification<GroupAchievement> groupAchievementSpecification =
-                Specification.allOf(groupAchspec.enabledEquals(true));
         List<GroupAchievement> groupAchievements =
-                groupAchievementRepo.findAll(groupAchievementSpecification);
+                groupAchievementRepo.findAll(groupAchSpec.enabledEquals(true));
         for (GroupAchievement group : groupAchievements) {
             if (group.getAchievements() != null) {
                 group.getAchievements().forEach(attS -> idToGroup.put(attS.getId(), group));

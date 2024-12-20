@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
@@ -40,6 +41,9 @@ public class GroupAttitudeSkillServiceImpl implements GroupAttitudeSkillService 
     @Autowired
     private SecurityUtil securityUtil;
 
+    @Autowired
+    private GroupAttitudeSkillSpecification spec;
+
     @Transactional
     @Override
     public GroupAttitudeSkillDto create(GroupAttitudeSkillReq data) {
@@ -60,15 +64,30 @@ public class GroupAttitudeSkillServiceImpl implements GroupAttitudeSkillService 
     public Page<GroupAttitudeSkillDto> getAllGroupAttitudeSkills(GroupAttitudeSkillFilter filter) {
         log.info("Starting GroupAttitudeSkillServiceImpl.getAllGroupAttitudeSkills");
         filter.validate();
+
+        Specification<GroupAttitudeSkill> specification = Specification.where(null);
+        if (filter.getNameContains() != null && !filter.getNameContains().isEmpty()) {
+            specification = specification.and(spec.nameContains(filter.getNameContains()));
+        }
+        if (filter.getMinWeight() != null && filter.getMaxWeight() != null) {
+            specification = specification
+                    .and(spec.weightBetween(filter.getMinWeight(), filter.getMaxWeight()));
+        } else if (filter.getMinWeight() != null) {
+            specification = specification.and(spec.weightGte(filter.getMinWeight()));
+        } else if (filter.getMaxWeight() != null) {
+            specification = specification.and(spec.weightLte(filter.getMaxWeight()));
+        }
+        if (filter.getEnabledOnly().booleanValue()) {
+            specification = specification.and(spec.enabledEquals(true));
+        }
+
         Page<GroupAttitudeSkill> groupAttitudeSkills;
         if (filter.getPageNumber() != null) {
             Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
                     Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
-            groupAttitudeSkills = groupAttitudeSkillRepository
-                    .findAll(GroupAttitudeSkillSpecification.filter(filter), pageable);
+            groupAttitudeSkills = groupAttitudeSkillRepository.findAll(specification, pageable);
         } else {
-            groupAttitudeSkills = new PageImpl<>(groupAttitudeSkillRepository.findAll(
-                    GroupAttitudeSkillSpecification.filter(filter),
+            groupAttitudeSkills = new PageImpl<>(groupAttitudeSkillRepository.findAll(specification,
                     Sort.by("createdAt").descending()));
         }
         log.info("Ending GroupAttitudeSkillServiceImpl.getAllGroupAttitudeSkills");

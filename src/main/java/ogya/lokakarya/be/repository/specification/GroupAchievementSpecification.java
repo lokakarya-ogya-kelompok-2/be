@@ -8,7 +8,6 @@ import ogya.lokakarya.be.entity.GroupAchievement;
 @Component
 @SuppressWarnings({"java:S1118", "java:S1192"})
 public class GroupAchievementSpecification {
-
     @Autowired
     private SpecificationFactory<GroupAchievement> spec;
 

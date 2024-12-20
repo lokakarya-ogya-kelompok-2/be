@@ -1,49 +1,34 @@
 package ogya.lokakarya.be.repository.specification;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillFilter;
+import org.springframework.stereotype.Component;
 import ogya.lokakarya.be.entity.GroupAttitudeSkill;
 
 
 @SuppressWarnings({"java:S1118", "java:S1192"})
+@Component
 public class GroupAttitudeSkillSpecification {
-    public static Specification<GroupAttitudeSkill> filter(GroupAttitudeSkillFilter filter) {
-        return new Specification<GroupAttitudeSkill>() {
+    @Autowired
+    private SpecificationFactory<GroupAttitudeSkill> spec;
 
-            @Override
-            @Nullable
-            public Predicate toPredicate(@NonNull Root<GroupAttitudeSkill> root,
-                    @Nullable CriteriaQuery<?> query, @NonNull CriteriaBuilder cb) {
-                List<Predicate> predicates = new ArrayList<>();
-                if (filter.getNameContains() != null) {
-                    predicates.add(cb.like(cb.lower(root.get("groupName")),
-                            "%" + filter.getNameContains().toLowerCase() + "%"));
-                }
-                if (filter.getMinWeight() != null && filter.getMaxWeight() != null) {
-                    predicates.add(cb.between(root.get("percentage"), filter.getMinWeight(),
-                            filter.getMaxWeight()));
-                } else if (filter.getMinWeight() != null) {
-                    predicates.add(
-                            cb.greaterThanOrEqualTo(root.get("percentage"), filter.getMinWeight()));
-                } else if (filter.getMaxWeight() != null) {
-                    predicates.add(
-                            cb.lessThanOrEqualTo(root.get("percentage"), filter.getMaxWeight()));
-                }
-                if (filter.getEnabledOnly().booleanValue()) {
-                    predicates.add(cb.equal(root.get("enabled"), true));
-                }
+    public Specification<GroupAttitudeSkill> nameContains(String substr) {
+        return spec.fieldContains("groupName", substr);
+    }
 
-                return cb.and(predicates.toArray(new Predicate[predicates.size()]));
-            }
+    public Specification<GroupAttitudeSkill> weightLte(Integer hi) {
+        return spec.fieldLte("percentage", hi);
+    }
 
-        };
+    public Specification<GroupAttitudeSkill> weightGte(Integer lo) {
+        return spec.fieldGte("percentage", lo);
+    }
+
+    public Specification<GroupAttitudeSkill> weightBetween(Integer lo, Integer hi) {
+        return spec.fieldBetween("percentage", lo, hi);
+    }
+
+    public Specification<GroupAttitudeSkill> enabledEquals(boolean value) {
+        return spec.fieldEquals("enabled", value);
     }
 }
