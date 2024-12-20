@@ -74,8 +74,8 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
             attitudeSkills = attitudeSkillRepository
                     .findAll(AttitudeSkillSpecification.filter(filter), pageable);
         } else {
-            attitudeSkills = new PageImpl<>(
-                    attitudeSkillRepository.findAll(AttitudeSkillSpecification.filter(filter)));
+            attitudeSkills = new PageImpl<>(attitudeSkillRepository.findAll(
+                    AttitudeSkillSpecification.filter(filter), Sort.by("createdAt").descending()));
         }
         log.info("Ending AttitudeSkillServiceImpl.getAllAttitudeSkills");
         return attitudeSkills.map(attitudeSkill -> new AttitudeSkillDto(attitudeSkill,

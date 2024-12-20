@@ -50,8 +50,9 @@ public class DivisionServiceimpl implements DivisionService {
                     Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
             divisions = divisionRepository.findAll(DivisionSpecification.filter(filter), pageable);
         } else {
-            divisions = new PageImpl<>(
-                    divisionRepository.findAll(DivisionSpecification.filter(filter)));
+            divisions =
+                    new PageImpl<>(divisionRepository.findAll(DivisionSpecification.filter(filter),
+                            Sort.by("createdAt").descending()));
         }
 
         log.info("Ending DevPlanServiceImpl.getAllDivisions");

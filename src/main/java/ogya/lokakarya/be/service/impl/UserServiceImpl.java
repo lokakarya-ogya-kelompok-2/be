@@ -116,7 +116,7 @@ public class UserServiceImpl implements UserService {
                     Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
             users = userRepo.findAll(userSpec, pageable);
         } else {
-            users = new PageImpl<>(userRepo.findAll(userSpec));
+            users = new PageImpl<>(userRepo.findAll(userSpec, Sort.by("createdAt").descending()));
         }
         log.info("Ending UserServiceImpl.list");
         return users.map(user -> new UserDto(user, filter.getWithCreatedBy(),
