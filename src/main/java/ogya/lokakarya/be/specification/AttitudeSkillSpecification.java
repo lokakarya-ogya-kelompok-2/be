@@ -1,4 +1,4 @@
-package ogya.lokakarya.be.specifications;
+package ogya.lokakarya.be.specification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillFilter;
 import ogya.lokakarya.be.entity.AttitudeSkill;
 import ogya.lokakarya.be.entity.GroupAttitudeSkill;
 
-@SuppressWarnings("java:S1118")
+@SuppressWarnings({"java:S1118", "java:S3776"})
 public class AttitudeSkillSpecification {
     public static Specification<AttitudeSkill> filter(AttitudeSkillFilter filter) {
         return new Specification<>() {

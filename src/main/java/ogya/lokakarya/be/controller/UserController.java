@@ -101,7 +101,7 @@ public class UserController {
                 return ResponseDto.<List<UserDto>>builder().success(true).content(users.toList())
                                 .totalPages(users.getTotalPages())
                                 .totalRecords(users.getTotalElements())
-                                .pageNumber(users.getNumber()).pageSize(users.getSize())
+                                .pageNumber(users.getNumber() + 1).pageSize(users.getSize())
                                 .message("List users successful!").build()
                                 .toResponse(HttpStatus.OK);
         }

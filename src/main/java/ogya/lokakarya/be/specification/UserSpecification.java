@@ -1,4 +1,4 @@
-package ogya.lokakarya.be.specifications;
+package ogya.lokakarya.be.specification;
 
 import java.sql.Date;
 import java.util.ArrayList;

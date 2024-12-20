@@ -36,7 +36,7 @@ import ogya.lokakarya.be.repository.GroupAchievementRepository;
 import ogya.lokakarya.be.repository.GroupAttitudeSkillRepository;
 import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
-import ogya.lokakarya.be.specifications.GroupAttitudeSkillSpecification;
+import ogya.lokakarya.be.specification.GroupAttitudeSkillSpecification;
 
 @Slf4j
 @Service

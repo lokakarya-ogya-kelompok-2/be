@@ -1,7 +1,7 @@
 package ogya.lokakarya.be.service;
 
-import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
 import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillDto;
 import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillFilter;
 import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillReq;
@@ -9,7 +9,7 @@ import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillReq;
 public interface TechnicalSkillService {
     TechnicalSkillDto create(TechnicalSkillReq data);
 
-    List<TechnicalSkillDto> getAlltechnicalSkills(TechnicalSkillFilter filter);
+    Page<TechnicalSkillDto> getAlltechnicalSkills(TechnicalSkillFilter filter);
 
     TechnicalSkillDto gettechnicalSkillById(UUID id);
 

@@ -1,4 +1,4 @@
-package ogya.lokakarya.be.specifications;
+package ogya.lokakarya.be.specification;
 
 import java.util.ArrayList;
 import java.util.List;
