@@ -1,97 +1,61 @@
 package ogya.lokakarya.be.repository.specification;
 
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
+import org.springframework.stereotype.Component;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import ogya.lokakarya.be.dto.user.UserFilter;
 import ogya.lokakarya.be.entity.Division;
 import ogya.lokakarya.be.entity.User;
 
 @SuppressWarnings({"java:S3776", "java:S1118", "java:S1192"})
+@Component
 public class UserSpecification {
-    public static Specification<User> filter(UserFilter filter) {
-        return new Specification<User>() {
+    @Autowired
+    private SpecificationFactory<User> spec;
 
-            @Override
-            @Nullable
-            public Predicate toPredicate(@NonNull Root<User> root, @Nullable CriteriaQuery<?> query,
-                    @NonNull CriteriaBuilder cb) {
+    public Specification<User> usernameContains(String substr) {
+        return spec.fieldContains("username", substr);
+    }
 
-                Join<User, Division> userDivisionJoin = null;
-                List<Predicate> predicates = new ArrayList<>();
-                if (filter.getAnyStringFieldsContains() != null) {
-                    List<Predicate> orPredicates = new ArrayList<>();
+    public Specification<User> fullNameContains(String substr) {
+        return spec.fieldContains("fullName", substr);
+    }
 
-                    orPredicates.add(cb.like(cb.lower(root.get("username")),
-                            "%" + filter.getAnyStringFieldsContains().toLowerCase() + "%"));
-                    orPredicates.add(cb.like(cb.lower(root.get("fullName")),
-                            "%" + filter.getAnyStringFieldsContains().toLowerCase() + "%"));
-                    orPredicates.add(cb.like(cb.lower(root.get("position")),
-                            "%" + filter.getAnyStringFieldsContains().toLowerCase() + "%"));
-                    orPredicates.add(cb.like(cb.lower(root.get("emailAddress")),
-                            "%" + filter.getAnyStringFieldsContains().toLowerCase() + "%"));
-                    userDivisionJoin = root.join("division", JoinType.LEFT);
-                    orPredicates.add(cb.like(cb.lower(userDivisionJoin.get("divisionName")),
-                            "%" + filter.getAnyStringFieldsContains().toLowerCase() + "%"));
+    public Specification<User> positionContains(String substr) {
+        return spec.fieldContains("position", substr);
+    }
 
-                    predicates.add(cb.or(orPredicates.toArray(new Predicate[orPredicates.size()])));
-                } else {
-                    if (filter.getUsernameContains() != null) {
-                        predicates.add(cb.like(cb.lower(root.get("username")),
-                                "%" + filter.getUsernameContains().toLowerCase() + "%"));
-                    }
-                    if (filter.getNameContains() != null) {
-                        predicates.add(cb.like(cb.lower(root.get("fullName")),
-                                "%" + filter.getNameContains().toLowerCase() + "%"));
-                    }
-                    if (filter.getPositionContains() != null) {
-                        predicates.add(cb.like(cb.lower(root.get("position")),
-                                "%" + filter.getPositionContains().toLowerCase() + "%"));
-                    }
-                    if (filter.getEmailContains() != null) {
-                        predicates.add(cb.like(cb.lower(root.get("emailAddress")),
-                                "%" + filter.getEmailContains().toLowerCase() + "%"));
-                    }
-                    if (filter.getDivisionNameContains() != null) {
-                        if (userDivisionJoin == null) {
-                            userDivisionJoin = root.join("division", JoinType.LEFT);
-                        }
-                        predicates.add(cb.like(cb.lower(userDivisionJoin.get("divisionName")),
-                                "%" + filter.getDivisionNameContains().toLowerCase() + "%"));
-                    }
-                }
+    public Specification<User> emailContains(String substr) {
+        return spec.fieldContains("emailAddress", substr);
+    }
 
-                if (filter.getMinJoinDate() != null && filter.getMaxJoinDate() != null) {
-                    predicates.add(
-                            cb.between(root.get("joinDate"), Date.valueOf(filter.getMinJoinDate()),
-                                    Date.valueOf(filter.getMaxJoinDate())));
-                } else if (filter.getMinJoinDate() != null) {
-                    predicates.add(cb.greaterThanOrEqualTo(root.get("joinDate"),
-                            Date.valueOf(filter.getMinJoinDate())));
-                } else if (filter.getMaxJoinDate() != null) {
-                    predicates.add(cb.lessThanOrEqualTo(root.get("joinDate"),
-                            Date.valueOf(filter.getMaxJoinDate())));
-                }
-                if (filter.getEmployeeStatus() != null) {
-                    predicates
-                            .add(cb.equal(root.get("employeeStatus"), filter.getEmployeeStatus()));
-                }
-                if (filter.getEnabledOnly().booleanValue()) {
-                    predicates.add(cb.equal(root.get("enabled"), true));
-                }
-
-                return cb.and(predicates.toArray(new Predicate[predicates.size()]));
-
-            }
+    public Specification<User> divisionNameContains(String substr) {
+        return (root, query, cb) -> {
+            Join<User, Division> userDivisionJoin = root.join("division", JoinType.LEFT);
+            return cb.like(cb.lower(userDivisionJoin.get("divisionName")),
+                    "%" + substr.toLowerCase() + "%");
         };
+    }
+
+    public Specification<User> joinDateGte(Date lo) {
+        return spec.fieldGte("joinDate", lo);
+    }
+
+    public Specification<User> joinDateLte(Date hi) {
+        return spec.fieldLte("joinDate", hi);
+    }
+
+    public Specification<User> joinDateBetween(Date lo, Date hi) {
+        return spec.fieldBetween("joinDate", lo, hi);
+    }
+
+    public Specification<User> employeeStatusEquals(Integer value) {
+        return spec.fieldEquals("employeeStatus", value);
+    }
+
+    public Specification<User> enabledEquals(Boolean value) {
+        return spec.fieldEquals("enabled", value);
     }
 }
