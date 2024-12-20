@@ -80,7 +80,7 @@ public class AttitudeSkillController {
                                 .content(attitudeSkills.toList())
                                 .totalRecords(attitudeSkills.getTotalElements())
                                 .totalPages(attitudeSkills.getTotalPages())
-                                .pageNumber(attitudeSkills.getNumber())
+                                .pageNumber(attitudeSkills.getNumber() + 1)
                                 .pageSize(attitudeSkills.getSize())
                                 .message("List all attitude skill successful!").build()
                                 .toResponse(HttpStatus.OK);

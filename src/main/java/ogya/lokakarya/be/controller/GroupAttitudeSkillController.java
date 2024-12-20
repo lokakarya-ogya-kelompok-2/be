@@ -79,7 +79,7 @@ public class GroupAttitudeSkillController {
                                 .content(groupAttitudeSkills.toList())
                                 .totalRecords(groupAttitudeSkills.getTotalElements())
                                 .totalPages(groupAttitudeSkills.getTotalPages())
-                                .pageNumber(groupAttitudeSkills.getNumber())
+                                .pageNumber(groupAttitudeSkills.getNumber() + 1)
                                 .pageSize(groupAttitudeSkills.getSize())
                                 .message("Get all group attitude skill successful!").success(true)
                                 .build().toResponse(HttpStatus.OK);
