@@ -1,4 +1,4 @@
-package ogya.lokakarya.be.specification;
+package ogya.lokakarya.be.repository.specification;
 
 import java.util.List;
 import java.util.UUID;

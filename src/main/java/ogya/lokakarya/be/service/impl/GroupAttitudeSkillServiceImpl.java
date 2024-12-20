@@ -21,9 +21,9 @@ import ogya.lokakarya.be.entity.GroupAttitudeSkill;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.GroupAttitudeSkillRepository;
+import ogya.lokakarya.be.repository.specification.GroupAttitudeSkillSpecification;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import ogya.lokakarya.be.service.GroupAttitudeSkillService;
-import ogya.lokakarya.be.specification.GroupAttitudeSkillSpecification;
 
 @Slf4j
 @Service

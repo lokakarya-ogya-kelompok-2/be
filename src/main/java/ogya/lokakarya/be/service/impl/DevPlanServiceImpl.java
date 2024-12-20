@@ -19,8 +19,8 @@ import ogya.lokakarya.be.entity.DevPlan;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.DevPlanRepository;
+import ogya.lokakarya.be.repository.specification.DevPlanSpecification;
 import ogya.lokakarya.be.service.DevPlanService;
-import ogya.lokakarya.be.specification.DevPlanSpecification;
 
 @Slf4j
 @Service

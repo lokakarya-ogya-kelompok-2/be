@@ -18,8 +18,8 @@ import ogya.lokakarya.be.entity.Division;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.DivisionRepository;
+import ogya.lokakarya.be.repository.specification.DivisionSpecification;
 import ogya.lokakarya.be.service.DivisionService;
-import ogya.lokakarya.be.specification.DivisionSpecification;
 
 @Slf4j
 @Service

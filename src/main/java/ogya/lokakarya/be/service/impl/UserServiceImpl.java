@@ -32,8 +32,8 @@ import ogya.lokakarya.be.repository.DivisionRepository;
 import ogya.lokakarya.be.repository.RoleRepository;
 import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.repository.UserRoleRepository;
+import ogya.lokakarya.be.repository.specification.UserSpecification;
 import ogya.lokakarya.be.service.UserService;
-import ogya.lokakarya.be.specification.UserSpecification;
 import ogya.lokakarya.be.util.RandGen;
 
 @Slf4j

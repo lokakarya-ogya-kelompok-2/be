@@ -20,9 +20,9 @@ import ogya.lokakarya.be.entity.GroupAchievement;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.GroupAchievementRepository;
+import ogya.lokakarya.be.repository.specification.GroupAchievementSpecification;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import ogya.lokakarya.be.service.GroupAchievementService;
-import ogya.lokakarya.be.specification.GroupAchievementSpecification;
 
 @Slf4j
 @Service

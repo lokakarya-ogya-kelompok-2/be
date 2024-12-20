@@ -18,8 +18,8 @@ import ogya.lokakarya.be.entity.TechnicalSkill;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.TechnicalSkillRepository;
+import ogya.lokakarya.be.repository.specification.TechnicalSkillSpecification;
 import ogya.lokakarya.be.service.TechnicalSkillService;
-import ogya.lokakarya.be.specification.TechnicalSkillSpecification;
 
 @Slf4j
 @Service

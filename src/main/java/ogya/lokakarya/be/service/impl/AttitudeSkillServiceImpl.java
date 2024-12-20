@@ -23,9 +23,9 @@ import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.AttitudeSkillRepository;
 import ogya.lokakarya.be.repository.GroupAttitudeSkillRepository;
+import ogya.lokakarya.be.repository.specification.AttitudeSkillSpecification;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import ogya.lokakarya.be.service.AttitudeSkillService;
-import ogya.lokakarya.be.specification.AttitudeSkillSpecification;
 
 @Slf4j
 @Service
