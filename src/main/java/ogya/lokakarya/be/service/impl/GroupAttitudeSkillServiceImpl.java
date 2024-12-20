@@ -67,8 +67,9 @@ public class GroupAttitudeSkillServiceImpl implements GroupAttitudeSkillService 
             groupAttitudeSkills = groupAttitudeSkillRepository
                     .findAll(GroupAttitudeSkillSpecification.filter(filter), pageable);
         } else {
-            groupAttitudeSkills = new PageImpl<>(groupAttitudeSkillRepository
-                    .findAll(GroupAttitudeSkillSpecification.filter(filter)));
+            groupAttitudeSkills = new PageImpl<>(groupAttitudeSkillRepository.findAll(
+                    GroupAttitudeSkillSpecification.filter(filter),
+                    Sort.by("createdAt").descending()));
         }
         log.info("Ending GroupAttitudeSkillServiceImpl.getAllGroupAttitudeSkills");
         return groupAttitudeSkills
