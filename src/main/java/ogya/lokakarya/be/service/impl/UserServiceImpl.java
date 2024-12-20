@@ -33,7 +33,7 @@ import ogya.lokakarya.be.repository.RoleRepository;
 import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.repository.UserRoleRepository;
 import ogya.lokakarya.be.service.UserService;
-import ogya.lokakarya.be.specifications.UserSpecification;
+import ogya.lokakarya.be.specification.UserSpecification;
 import ogya.lokakarya.be.util.RandGen;
 
 @Slf4j
@@ -110,18 +110,13 @@ public class UserServiceImpl implements UserService {
         log.info("Starting UserServiceImpl.list");
         filter.validate();
         Page<User> users;
-        Specification<User> userSpec;
-        if (filter.getAnyStringFieldsContains() != null) {
-            userSpec = UserSpecification.filterAnyStringFields(filter);
-        } else {
-            userSpec = UserSpecification.filter(filter);
-        }
+        Specification<User> userSpec = UserSpecification.filter(filter);
         if (filter.getPageNumber() != null) {
             Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
                     Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
             users = userRepo.findAll(userSpec, pageable);
         } else {
-            users = new PageImpl<>(userRepo.findAll(userSpec));
+            users = new PageImpl<>(userRepo.findAll(userSpec, Sort.by("createdAt").descending()));
         }
         log.info("Ending UserServiceImpl.list");
         return users.map(user -> new UserDto(user, filter.getWithCreatedBy(),

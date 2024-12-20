@@ -1,7 +1,7 @@
 package ogya.lokakarya.be.service;
 
-import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
 import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillDto;
 import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillFilter;
 import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillReq;
@@ -9,7 +9,7 @@ import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillReq;
 public interface GroupAttitudeSkillService {
     GroupAttitudeSkillDto create(GroupAttitudeSkillReq data);
 
-    List<GroupAttitudeSkillDto> getAllGroupAttitudeSkills(GroupAttitudeSkillFilter filter);
+    Page<GroupAttitudeSkillDto> getAllGroupAttitudeSkills(GroupAttitudeSkillFilter filter);
 
     GroupAttitudeSkillDto getGroupAttitudeSkillById(UUID id);
 

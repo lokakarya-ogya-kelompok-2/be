@@ -1,9 +1,13 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
@@ -19,6 +23,7 @@ import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.GroupAttitudeSkillRepository;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import ogya.lokakarya.be.service.GroupAttitudeSkillService;
+import ogya.lokakarya.be.specification.GroupAttitudeSkillSpecification;
 
 @Slf4j
 @Service
@@ -52,17 +57,25 @@ public class GroupAttitudeSkillServiceImpl implements GroupAttitudeSkillService 
     }
 
     @Override
-    public List<GroupAttitudeSkillDto> getAllGroupAttitudeSkills(GroupAttitudeSkillFilter filter) {
+    public Page<GroupAttitudeSkillDto> getAllGroupAttitudeSkills(GroupAttitudeSkillFilter filter) {
         log.info("Starting GroupAttitudeSkillServiceImpl.getAllGroupAttitudeSkills");
         filter.validate();
-        List<GroupAttitudeSkill> groupAttitudeSkills =
-                groupAttitudeSkillRepository.findAllByFilter(filter);
+        Page<GroupAttitudeSkill> groupAttitudeSkills;
+        if (filter.getPageNumber() != null) {
+            Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
+                    Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
+            groupAttitudeSkills = groupAttitudeSkillRepository
+                    .findAll(GroupAttitudeSkillSpecification.filter(filter), pageable);
+        } else {
+            groupAttitudeSkills = new PageImpl<>(groupAttitudeSkillRepository.findAll(
+                    GroupAttitudeSkillSpecification.filter(filter),
+                    Sort.by("createdAt").descending()));
+        }
         log.info("Ending GroupAttitudeSkillServiceImpl.getAllGroupAttitudeSkills");
-        return groupAttitudeSkills.stream()
+        return groupAttitudeSkills
                 .map(groupAttitudeSkill -> new GroupAttitudeSkillDto(groupAttitudeSkill,
                         filter.getWithCreatedBy(), filter.getWithUpdatedBy(),
-                        filter.getWithAttitudeSkills(), filter.getWithEnabledChildOnly()))
-                .toList();
+                        filter.getWithAttitudeSkills(), filter.getWithEnabledChildOnly()));
     }
 
     @Override

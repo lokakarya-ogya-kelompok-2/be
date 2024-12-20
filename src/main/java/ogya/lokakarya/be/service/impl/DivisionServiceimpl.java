@@ -19,7 +19,7 @@ import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.DivisionRepository;
 import ogya.lokakarya.be.service.DivisionService;
-import ogya.lokakarya.be.specifications.DivisionSpecification;
+import ogya.lokakarya.be.specification.DivisionSpecification;
 
 @Slf4j
 @Service
@@ -50,8 +50,9 @@ public class DivisionServiceimpl implements DivisionService {
                     Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
             divisions = divisionRepository.findAll(DivisionSpecification.filter(filter), pageable);
         } else {
-            divisions = new PageImpl<>(
-                    divisionRepository.findAll(DivisionSpecification.filter(filter)));
+            divisions =
+                    new PageImpl<>(divisionRepository.findAll(DivisionSpecification.filter(filter),
+                            Sort.by("createdAt").descending()));
         }
 
         log.info("Ending DevPlanServiceImpl.getAllDivisions");

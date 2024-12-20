@@ -1,4 +1,4 @@
-package ogya.lokakarya.be.specifications;
+package ogya.lokakarya.be.specification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,6 @@ public class DivisionSpecification {
                 }
 
                 return cb.and(predicates.toArray(new Predicate[predicates.size()]));
-
             }
         };
     }

@@ -1,13 +1,9 @@
 package ogya.lokakarya.be.controller;
 
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.validation.Valid;
-import ogya.lokakarya.be.dto.ResponseDto;
-import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillDto;
-import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillFilter;
-import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillReq;
-import ogya.lokakarya.be.service.GroupAttitudeSkillService;
+import java.util.List;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,9 +15,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.UUID;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import ogya.lokakarya.be.dto.ResponseDto;
+import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillDto;
+import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillFilter;
+import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillReq;
+import ogya.lokakarya.be.service.GroupAttitudeSkillService;
 
 @SecurityRequirement(name = "bearerAuth")
 @RestController
@@ -43,6 +43,7 @@ public class GroupAttitudeSkillController {
         @GetMapping
         public ResponseEntity<ResponseDto<List<GroupAttitudeSkillDto>>> getAllGroupAttitudeSkills(
                         @RequestParam(name = "name_contains", required = false) String nameContains,
+
                         @RequestParam(name = "min_weight", required = false) Integer minWeight,
                         @RequestParam(name = "max_weight", required = false) Integer maxWeight,
                         @RequestParam(name = "enabled_only", required = false,
@@ -54,7 +55,10 @@ public class GroupAttitudeSkillController {
                         @RequestParam(name = "with_created_by", required = false,
                                         defaultValue = "false") Boolean withCreatedBy,
                         @RequestParam(name = "with_updated_by", required = false,
-                                        defaultValue = "false") Boolean withUpdatedBy) {
+                                        defaultValue = "false") Boolean withUpdatedBy,
+                        @RequestParam(name = "page_number", required = false) Integer pageNumber,
+                        @RequestParam(name = "page_size", required = false,
+                                        defaultValue = "5") Integer pageSize) {
 
                 System.out.println("Get All Group Attitude Skills");
                 GroupAttitudeSkillFilter filter = new GroupAttitudeSkillFilter();
@@ -66,10 +70,17 @@ public class GroupAttitudeSkillController {
                 filter.setWithEnabledChildOnly(withEnabledChildOnly);
                 filter.setWithCreatedBy(withCreatedBy);
                 filter.setWithUpdatedBy(withUpdatedBy);
+                filter.setPageNumber(pageNumber);
+                filter.setPageSize(pageSize);
 
-                List<GroupAttitudeSkillDto> response =
+                Page<GroupAttitudeSkillDto> groupAttitudeSkills =
                                 groupAttitudeSkillService.getAllGroupAttitudeSkills(filter);
-                return ResponseDto.<List<GroupAttitudeSkillDto>>builder().content(response)
+                return ResponseDto.<List<GroupAttitudeSkillDto>>builder()
+                                .content(groupAttitudeSkills.toList())
+                                .totalRecords(groupAttitudeSkills.getTotalElements())
+                                .totalPages(groupAttitudeSkills.getTotalPages())
+                                .pageNumber(groupAttitudeSkills.getNumber() + 1)
+                                .pageSize(groupAttitudeSkills.getSize())
                                 .message("Get all group attitude skill successful!").success(true)
                                 .build().toResponse(HttpStatus.OK);
         }

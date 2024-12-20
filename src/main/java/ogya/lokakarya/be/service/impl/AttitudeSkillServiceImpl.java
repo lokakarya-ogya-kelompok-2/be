@@ -1,5 +1,15 @@
 package ogya.lokakarya.be.service.impl;
 
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -15,13 +25,7 @@ import ogya.lokakarya.be.repository.AttitudeSkillRepository;
 import ogya.lokakarya.be.repository.GroupAttitudeSkillRepository;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import ogya.lokakarya.be.service.AttitudeSkillService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import ogya.lokakarya.be.specification.AttitudeSkillSpecification;
 
 @Slf4j
 @Service
@@ -61,13 +65,21 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
     }
 
     @Override
-    public List<AttitudeSkillDto> getAllAttitudeSkills(AttitudeSkillFilter filter) {
+    public Page<AttitudeSkillDto> getAllAttitudeSkills(AttitudeSkillFilter filter) {
         log.info("Starting AttitudeSkillServiceImpl.getAllAttitudeSkills");
-        List<AttitudeSkill> attitudeSkills = attitudeSkillRepository.findAllByFilter(filter);
+        Page<AttitudeSkill> attitudeSkills;
+        if (filter.getPageNumber() != null) {
+            Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
+                    Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
+            attitudeSkills = attitudeSkillRepository
+                    .findAll(AttitudeSkillSpecification.filter(filter), pageable);
+        } else {
+            attitudeSkills = new PageImpl<>(attitudeSkillRepository.findAll(
+                    AttitudeSkillSpecification.filter(filter), Sort.by("createdAt").descending()));
+        }
         log.info("Ending AttitudeSkillServiceImpl.getAllAttitudeSkills");
-        return attitudeSkills.stream().map(attitudeSkill -> new AttitudeSkillDto(attitudeSkill,
-                filter.getWithCreatedBy(), filter.getWithUpdatedBy(), filter.getWithGroup()))
-                .toList();
+        return attitudeSkills.map(attitudeSkill -> new AttitudeSkillDto(attitudeSkill,
+                filter.getWithCreatedBy(), filter.getWithUpdatedBy(), filter.getWithGroup()));
     }
 
     @Override

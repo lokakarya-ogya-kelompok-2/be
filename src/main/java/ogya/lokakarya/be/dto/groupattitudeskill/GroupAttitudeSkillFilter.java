@@ -14,6 +14,8 @@ public class GroupAttitudeSkillFilter {
     private Boolean withEnabledChildOnly = false;
     private Boolean withCreatedBy = false;
     private Boolean withUpdatedBy = false;
+    private Integer pageNumber;
+    private Integer pageSize;
 
     public void validate() throws ResponseException {
         if (minWeight != null && (minWeight < 0 || minWeight > 100)) {
