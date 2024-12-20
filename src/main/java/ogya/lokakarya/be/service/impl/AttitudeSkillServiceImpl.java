@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
@@ -23,9 +24,9 @@ import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.AttitudeSkillRepository;
 import ogya.lokakarya.be.repository.GroupAttitudeSkillRepository;
+import ogya.lokakarya.be.repository.specification.AttitudeSkillSpecification;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import ogya.lokakarya.be.service.AttitudeSkillService;
-import ogya.lokakarya.be.specification.AttitudeSkillSpecification;
 
 @Slf4j
 @Service
@@ -43,6 +44,9 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
 
     @Autowired
     private SecurityUtil securityUtil;
+
+    @Autowired
+    private AttitudeSkillSpecification spec;
 
     @Transactional
     @Override
@@ -67,16 +71,34 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
     @Override
     public Page<AttitudeSkillDto> getAllAttitudeSkills(AttitudeSkillFilter filter) {
         log.info("Starting AttitudeSkillServiceImpl.getAllAttitudeSkills");
+
+        Specification<AttitudeSkill> specification = Specification.where(null);
+        if (filter.getAnyStringFieldContains() != null) {
+            specification = specification
+                    .and(Specification.anyOf(spec.nameContains(filter.getAnyStringFieldContains()),
+                            spec.groupNameContains(filter.getAnyStringFieldContains())));
+        } else {
+            if (filter.getNameContains() != null && !filter.getNameContains().isBlank()) {
+                specification = specification.and(spec.nameContains(filter.getNameContains()));
+            }
+        }
+        if (filter.getGroupIds() != null && !filter.getGroupIds().isEmpty()) {
+            specification = specification.and(spec.groupIdIn(filter.getGroupIds()));
+        }
+        if (filter.getEnabledOnly().booleanValue()) {
+            specification = specification.and(spec.enabledEquals(true));
+        }
+
         Page<AttitudeSkill> attitudeSkills;
         if (filter.getPageNumber() != null) {
             Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
                     Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
-            attitudeSkills = attitudeSkillRepository
-                    .findAll(AttitudeSkillSpecification.filter(filter), pageable);
+            attitudeSkills = attitudeSkillRepository.findAll(specification, pageable);
         } else {
-            attitudeSkills = new PageImpl<>(attitudeSkillRepository.findAll(
-                    AttitudeSkillSpecification.filter(filter), Sort.by("createdAt").descending()));
+            attitudeSkills = new PageImpl<>(attitudeSkillRepository.findAll(specification,
+                    Sort.by("createdAt").descending()));
         }
+
         log.info("Ending AttitudeSkillServiceImpl.getAllAttitudeSkills");
         return attitudeSkills.map(attitudeSkill -> new AttitudeSkillDto(attitudeSkill,
                 filter.getWithCreatedBy(), filter.getWithUpdatedBy(), filter.getWithGroup()));

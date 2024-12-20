@@ -3,16 +3,15 @@ package ogya.lokakarya.be.exception;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
-
 import io.jsonwebtoken.JwtException;
 import ogya.lokakarya.be.dto.ResponseDto;
 
@@ -39,13 +38,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(JwtException.class)
-    public ResponseEntity<ResponseDto<Object>> handleJwtException(JwtException ex, WebRequest req) {
-        return ResponseDto.builder().success(false).message(ex.getMessage()).build()
+    public ResponseEntity<ResponseDto<Void>> handleJwtException(JwtException ex, WebRequest req) {
+        return ResponseDto.<Void>builder().success(false).message(ex.getMessage()).build()
                 .toResponse(HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ResponseDto<Object>> handleDataIntegrityViolationException(
+    public ResponseEntity<ResponseDto<Void>> handleDataIntegrityViolationException(
             DataIntegrityViolationException ex, WebRequest req) {
 
         Throwable rootCause = ex.getRootCause();
@@ -61,18 +60,21 @@ public class GlobalExceptionHandler {
             } else if (exceptionMsg.contains("UK_DIVISION_DIVISION_NAME")) {
                 message = "Division with given name already exists!";
             } else if (exceptionMsg.contains("FK_USER_DIVISION")) {
-                message = "Cannot delete this division because it still has users assigned to it. Please reassign or remove these users first.";
+                message =
+                        "Cannot delete this division because it still has users assigned to it. Please reassign or remove these users first.";
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
             } else if (exceptionMsg.contains("UK_ROLE_ROLENAME")) {
                 message = "Role with given name already exists!";
             } else if (exceptionMsg.contains("UK_MENU_MENU_NAME")) {
                 message = "Menu with given name already exists!";
             } else if (exceptionMsg.contains("FK_ATTITUDE_SKILL_GROUP_ATTITUDE_SKILL")) {
-                message = "Cannot delete this group attitude skill because it still has attitude skills assigned to it. Please reassign or remove these attitude skills first.";
+                message =
+                        "Cannot delete this group attitude skill because it still has attitude skills assigned to it. Please reassign or remove these attitude skills first.";
             } else if (exceptionMsg.contains("UK_ATTITUDE_SKILL_GROUP_NAME")) {
                 message = "Attitude skill with given name already exists in this group!";
             } else if (exceptionMsg.contains("FK_ACHIEVEMENT_GROUP_ACHIEVEMENT")) {
-                message = "Cannot delete this group achievement because it still has achievements assigned to it. Please reassign or remove these achievement first.";
+                message =
+                        "Cannot delete this group achievement because it still has achievements assigned to it. Please reassign or remove these achievement first.";
             } else if (exceptionMsg.contains("UK_ACHIEVEMENT_NAME_GROUP_ID")) {
                 message = "Achievement with given name already exists in this group!";
             } else if (exceptionMsg.contains("UK_TECHNICAL_SKILL_NAME")) {
@@ -85,15 +87,15 @@ public class GlobalExceptionHandler {
                 message = "Development plan with given name already exists!";
             }
 
-            return ResponseDto.builder().success(false).message(message).build()
+            return ResponseDto.<Void>builder().success(false).message(message).build()
                     .toResponse(httpStatus);
         }
-        return ResponseDto.builder().success(false).message("Unknown error").build()
+        return ResponseDto.<Void>builder().success(false).message("Unknown error").build()
                 .toResponse(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ResponseDto<Object>> handleConstraintViolationException(
+    public ResponseEntity<ResponseDto<Void>> handleConstraintViolationException(
             ConstraintViolationException ex, WebRequest req) {
 
         String exceptionMsg = ex.getMessage();
@@ -106,18 +108,21 @@ public class GlobalExceptionHandler {
         } else if (exceptionMsg.contains("UK_DIVISION_DIVISION_NAME")) {
             message = "Division with given name already exists!";
         } else if (exceptionMsg.contains("FK_USER_DIVISION")) {
-            message = "Cannot delete this division because it still has active users assigned to it. Please reassign or remove these users first.";
+            message =
+                    "Cannot delete this division because it still has active users assigned to it. Please reassign or remove these users first.";
             httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
         } else if (exceptionMsg.contains("UK_ROLE_ROLENAME")) {
             message = "Role with given name already exists!";
         } else if (exceptionMsg.contains("UK_MENU_MENU_NAME")) {
             message = "Menu with given name already exists!";
         } else if (exceptionMsg.contains("FK_ATTITUDE_SKILL_GROUP_ATTITUDE_SKILL")) {
-            message = "Cannot delete this group attitude skill because it still has attitude skills assigned to it. Please reassign or remove these attitude skills first.";
+            message =
+                    "Cannot delete this group attitude skill because it still has attitude skills assigned to it. Please reassign or remove these attitude skills first.";
         } else if (exceptionMsg.contains("UK_ATTITUDE_SKILL_GROUP_NAME")) {
             message = "Attitude skill with given name already exists in this group!";
         } else if (exceptionMsg.contains("FK_ACHIEVEMENT_GROUP_ACHIEVEMENT")) {
-            message = "Cannot delete this group achievement because it still has achievements assigned to it. Please reassign or remove these achievement first.";
+            message =
+                    "Cannot delete this group achievement because it still has achievements assigned to it. Please reassign or remove these achievement first.";
         } else if (exceptionMsg.contains("UK_ACHIEVEMENT_NAME_GROUP_ID")) {
             message = "Achievement with given name already exists in this group!";
         } else if (exceptionMsg.contains("UK_TECHNICAL_SKILL_NAME")) {
@@ -131,14 +136,23 @@ public class GlobalExceptionHandler {
         } else {
             httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         }
-        return ResponseDto.builder().success(false).message(message).build()
+        return ResponseDto.<Void>builder().success(false).message(message).build()
                 .toResponse(httpStatus);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ResponseDto<Object>> handleException(Exception ex, WebRequest req) {
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<ResponseDto<Void>> handlePropertyReferenceException(
+            PropertyReferenceException ex, WebRequest req) {
         ex.printStackTrace();
-        return ResponseDto.builder().success(false).message(ex.getMessage()).build()
+        return ResponseDto.<Void>builder().success(false)
+                .message(String.format("invalid property: %s", ex.getPropertyName())).build()
+                .toResponse(HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ResponseDto<Void>> handleException(Exception ex, WebRequest req) {
+        ex.printStackTrace();
+        return ResponseDto.<Void>builder().success(false).message(ex.getMessage()).build()
                 .toResponse(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.config.security.SecurityUtil;
@@ -18,17 +19,20 @@ import ogya.lokakarya.be.entity.Division;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.DivisionRepository;
+import ogya.lokakarya.be.repository.specification.DivisionSpecification;
 import ogya.lokakarya.be.service.DivisionService;
-import ogya.lokakarya.be.specification.DivisionSpecification;
 
 @Slf4j
 @Service
-public class DivisionServiceimpl implements DivisionService {
+public class DivisionServiceImpl implements DivisionService {
     @Autowired
     private SecurityUtil securityUtil;
 
     @Autowired
     private DivisionRepository divisionRepository;
+
+    @Autowired
+    private DivisionSpecification spec;
 
     @Override
     public DivisionDto create(DivisionReq data) {
@@ -44,15 +48,20 @@ public class DivisionServiceimpl implements DivisionService {
     @Override
     public Page<DivisionDto> getAllDivisions(DivisionFilter filter) {
         log.info("Starting DevPlanServiceImpl.getAllDivisions");
+
+        Specification<Division> specification = Specification.where(null);
+        if (filter.getNameContains() != null && !filter.getNameContains().isEmpty()) {
+            specification = specification.and(spec.nameContains(filter.getNameContains()));
+        }
+
         Page<Division> divisions;
         if (filter.getPageNumber() != null) {
             Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
                     Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
-            divisions = divisionRepository.findAll(DivisionSpecification.filter(filter), pageable);
+            divisions = divisionRepository.findAll(specification, pageable);
         } else {
-            divisions =
-                    new PageImpl<>(divisionRepository.findAll(DivisionSpecification.filter(filter),
-                            Sort.by("createdAt").descending()));
+            divisions = new PageImpl<>(
+                    divisionRepository.findAll(specification, Sort.by("createdAt").descending()));
         }
 
         log.info("Ending DevPlanServiceImpl.getAllDivisions");
