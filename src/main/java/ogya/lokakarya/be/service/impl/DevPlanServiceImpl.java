@@ -47,8 +47,8 @@ public class DevPlanServiceImpl implements DevPlanService {
         log.info("Starting DevPlanServiceImpl.getAllDevPlans");
         Page<DevPlan> devPlans;
         if (filter.getPageNumber() != null) {
-            Pageable pageable = PageRequest.of(filter.getPageNumber() - 1, filter.getPageSize(),
-                    Sort.by("createdAt").descending());
+            Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
+                    Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
             devPlans = devPlanRepository.findAll(DevPlanSpecification.filter(filter), pageable);
         } else {
             devPlans = new PageImpl<>(devPlanRepository.findAll(DevPlanSpecification.filter(filter),
