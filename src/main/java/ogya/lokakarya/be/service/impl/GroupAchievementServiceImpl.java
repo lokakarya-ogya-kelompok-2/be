@@ -1,5 +1,14 @@
 package ogya.lokakarya.be.service.impl;
 
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -13,12 +22,8 @@ import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.GroupAchievementRepository;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import ogya.lokakarya.be.service.GroupAchievementService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import ogya.lokakarya.be.specification.GroupAchievementSpecification;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 @Slf4j
 @Service
 public class GroupAchievementServiceImpl implements GroupAchievementService {
@@ -51,17 +56,24 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
     }
 
     @Override
-    public List<GroupAchievementDto> getAllGroupAchievements(GroupAchievementFilter filter) {
+    public Page<GroupAchievementDto> getAllGroupAchievements(GroupAchievementFilter filter) {
         log.info("Starting GroupAchievementServiceImpl.getAllGroupAchievements");
         filter.validate();
-        List<GroupAchievement> groupAchievements =
-                groupAchievementRepository.findAllByFilter(filter);
+        Page<GroupAchievement> groupAchievements;
+        if (filter.getPageNumber() != null) {
+            Pageable pageable = PageRequest.of(filter.getPageNumber() - 1, filter.getPageSize(),
+                    Sort.by("createdAt").descending());
+            groupAchievements = groupAchievementRepository
+                    .findAll(GroupAchievementSpecification.filter(filter), pageable);
+        } else {
+            groupAchievements = new PageImpl<>(
+                    groupAchievementRepository.findAll(GroupAchievementSpecification.filter(filter),
+                            Sort.by("createdAt").descending()));
+        }
         log.info("Ending GroupAchievementServiceImpl.getAllGroupAchievements");
-        return groupAchievements.stream()
-                .map(groupAchievement -> new GroupAchievementDto(groupAchievement,
-                        filter.getWithCreatedBy(), filter.getWithUpdatedBy(),
-                        filter.getWithAchievements(), filter.getWithEnabledChildOnly()))
-                .toList();
+        return groupAchievements.map(groupAchievement -> new GroupAchievementDto(groupAchievement,
+                filter.getWithCreatedBy(), filter.getWithUpdatedBy(), filter.getWithAchievements(),
+                filter.getWithEnabledChildOnly()));
     }
 
     @Override
