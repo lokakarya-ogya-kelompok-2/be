@@ -84,11 +84,12 @@ public class GroupAttitudeSkillServiceImpl implements GroupAttitudeSkillService 
         Page<GroupAttitudeSkill> groupAttitudeSkills;
         if (filter.getPageNumber() != null) {
             Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
-                    Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
+                    Math.max(1, filter.getPageSize()),
+                    Sort.by(filter.getSortDirection(), filter.getSortField()));
             groupAttitudeSkills = groupAttitudeSkillRepository.findAll(specification, pageable);
         } else {
             groupAttitudeSkills = new PageImpl<>(groupAttitudeSkillRepository.findAll(specification,
-                    Sort.by("createdAt").descending()));
+                    Sort.by(filter.getSortDirection(), filter.getSortField())));
         }
         log.info("Ending GroupAttitudeSkillServiceImpl.getAllGroupAttitudeSkills");
         return groupAttitudeSkills
