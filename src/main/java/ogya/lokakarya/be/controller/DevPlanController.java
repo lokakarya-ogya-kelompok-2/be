@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -53,7 +54,12 @@ public class DevPlanController {
                                         defaultValue = "false") Boolean withUpdatedBy,
                         @RequestParam(name = "page_number", required = false) Integer pageNumber,
                         @RequestParam(name = "page_size", required = false,
-                                        defaultValue = "5") Integer pageSize) {
+                                        defaultValue = "5") Integer pageSize,
+                        @RequestParam(name = "sort_field", required = false,
+                                        defaultValue = "createdAt") String sortField,
+                        @RequestParam(name = "sort_direction", required = false,
+                                        defaultValue = "DESC") Direction sortDirection) {
+
                 log.info("Starting DevPlanController.list");
                 DevPlanFilter filter = new DevPlanFilter();
                 filter.setNameContains(nameContains);
@@ -62,6 +68,8 @@ public class DevPlanController {
                 filter.setWithUpdatedBy(withUpdatedBy);
                 filter.setPageNumber(pageNumber);
                 filter.setPageSize(pageSize);
+                filter.setSortField(sortField);
+                filter.setSortDirection(sortDirection);
 
                 Page<DevPlanDto> devPlans = devPlanService.getAllDevPlans(filter);
                 log.info("Ending DevPlanController.list");
