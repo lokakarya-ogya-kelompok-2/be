@@ -91,14 +91,15 @@ public class AchievementServiceImpl implements AchievementService {
             specification = specification.and(spec.enabledEquals(true));
         }
 
+        Sort sortBy = Sort.by(filter.getSortDirection(), filter.getSortField());
+
         Page<Achievement> achievements;
         if (filter.getPageNumber() != null) {
             Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
-                    Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
+                    Math.max(1, filter.getPageSize()), sortBy);
             achievements = achievementRepository.findAll(specification, pageable);
         } else {
-            achievements = new PageImpl<>(achievementRepository.findAll(specification,
-                    Sort.by("createdAt").descending()));
+            achievements = new PageImpl<>(achievementRepository.findAll(specification, sortBy));
         }
 
         log.info("Ending AchievementServiceImpl.getAllAchievements");
