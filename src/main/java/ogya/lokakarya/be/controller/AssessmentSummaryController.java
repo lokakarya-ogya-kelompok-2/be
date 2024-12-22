@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -47,9 +48,10 @@ public class AssessmentSummaryController {
 
         @GetMapping
         public ResponseEntity<ResponseDto<List<AssessmentSummaryDto>>> getAllAssessmentSummaries(
-                        @RequestParam(name = "sort_column", required = false) String sortColumn,
-                        @RequestParam(name = "sort_mode", required = false,
-                                        defaultValue = "asc") String sortMode,
+                        @RequestParam(name = "sort_field", required = false,
+                                        defaultValue = "createdAt") String sortField,
+                        @RequestParam(name = "sort_direction", required = false,
+                                        defaultValue = "DESC") Direction sortDirection,
                         @RequestParam(name = "any_contains",
                                         required = false) String anyStringFieldContains,
                         @RequestParam(name = "user_ids", required = false) List<UUID> userIds,
@@ -65,14 +67,16 @@ public class AssessmentSummaryController {
                                         defaultValue = "5") Integer pageSize) {
                 log.info("Starting AssessmentSummaryController.list");
                 AssessmentSummaryFilter filter = new AssessmentSummaryFilter();
-                filter.setSortColumn(sortColumn);
-                filter.setSortMode(sortMode);
                 filter.setUserIds(userIds);
                 filter.setAnyStringFieldContains(anyStringFieldContains);
                 filter.setDivisionIds(divisionIds);
                 filter.setYears(years);
                 filter.setWithCreatedBy(withCreatedBy);
                 filter.setWithUpdatedBy(withUpdatedBy);
+                filter.setPageSize(pageSize);
+                filter.setPageNumber(pageNumber);
+                filter.setSortField(sortField);
+                filter.setSortDirection(sortDirection);
 
                 Page<AssessmentSummaryDto> assessmentSummaries =
                                 assessmentSummaryService.getAllAssessmentSummaries(filter);

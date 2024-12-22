@@ -88,15 +88,17 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
         if (filter.getEnabledOnly().booleanValue()) {
             specification = specification.and(spec.enabledEquals(true));
         }
+        System.out
+                .println(filter.getSortDirection() + "<DIRECTION | FIELD>" + filter.getSortField());
+        Sort sortBy = Sort.by(filter.getSortDirection(), filter.getSortField());
 
         Page<AttitudeSkill> attitudeSkills;
         if (filter.getPageNumber() != null) {
             Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
-                    Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
+                    Math.max(1, filter.getPageSize()), sortBy);
             attitudeSkills = attitudeSkillRepository.findAll(specification, pageable);
         } else {
-            attitudeSkills = new PageImpl<>(attitudeSkillRepository.findAll(specification,
-                    Sort.by("createdAt").descending()));
+            attitudeSkills = new PageImpl<>(attitudeSkillRepository.findAll(specification, sortBy));
         }
 
         log.info("Ending AttitudeSkillServiceImpl.getAllAttitudeSkills");
