@@ -1,15 +1,5 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.util.Optional;
-import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.technicalskill.TechnicalSkillDto;
@@ -21,6 +11,17 @@ import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.TechnicalSkillRepository;
 import ogya.lokakarya.be.repository.specification.TechnicalSkillSpecification;
 import ogya.lokakarya.be.service.TechnicalSkillService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -58,13 +59,13 @@ public class TechnicalSkillServiceImpl implements TechnicalSkillService {
         }
 
         Page<TechnicalSkill> technicalSkills;
+        Sort sortBy= Sort.by(filter.getSortDirection(),filter.getSortField());
         if (filter.getPageNumber() != null) {
             Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
-                    Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
+                    Math.max(1, filter.getPageSize()), sortBy);
             technicalSkills = technicalSkillRepository.findAll(specification, pageable);
         } else {
-            technicalSkills = new PageImpl<>(technicalSkillRepository.findAll(specification,
-                    Sort.by("createdAt").descending()));
+            technicalSkills = new PageImpl<>(technicalSkillRepository.findAll(specification,sortBy));
         }
 
         log.info("Ending EmpDevPlanServiceImpl.getAlltechnicalSkills");

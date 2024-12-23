@@ -64,9 +64,6 @@ public class DivisionServiceImpl implements DivisionService {
             divisions = new PageImpl<>(
                     divisionRepository.findAll(specification, sortBy));
         }
-
-
-
         log.info("Ending DevPlanServiceImpl.getAllDivisions");
         return divisions.map(division -> new DivisionDto(division, filter.getWithCreatedBy(),
                 filter.getWithUpdatedBy()));
