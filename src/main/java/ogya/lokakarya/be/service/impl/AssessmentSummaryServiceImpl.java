@@ -21,7 +21,9 @@ import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryFilter;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryReq;
 import ogya.lokakarya.be.dto.assessmentsummary.SummaryData;
+import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillDto;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillFilter;
+import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillDto;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillFilter;
 import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.Achievement;
@@ -206,7 +208,8 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         Map<UUID, Object> idToGroup = new HashMap<>();
         // attitude skills mbuh mumet
         Map<UUID, GroupAttitudeSkill> attitudeGroupIdToEntity = new HashMap<>();
-        HashMap<UUID, SummaryData> groupAttitudeSkillIdToSummaryData = new HashMap<>();
+        HashMap<UUID, SummaryData<EmpAttitudeSkillDto>> groupAttitudeSkillIdToSummaryData =
+                new HashMap<>();
         List<GroupAttitudeSkill> groupAttitudeSkills =
                 groupAttitudeSkillRepo.findAll(groupAttSkillSpec.enabledEquals(true));
         for (GroupAttitudeSkill group : groupAttitudeSkills) {
@@ -240,7 +243,8 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         // achievements mbuh juga
         Map<UUID, GroupAchievement> achievementGroupIdtoEntity = new HashMap<>();
 
-        Map<UUID, SummaryData> groupAchievementToSummaryData = new HashMap<>();
+        Map<UUID, SummaryData<EmpAchievementSkillDto>> groupAchievementToSummaryData =
+                new HashMap<>();
         List<GroupAchievement> groupAchievements =
                 groupAchievementRepo.findAll(groupAchSpec.enabledEquals(true));
         for (GroupAchievement group : groupAchievements) {
@@ -272,7 +276,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         });
 
         for (GroupAchievement group : groupAchievements) {
-            SummaryData summaryData = new SummaryData();
+            SummaryData<EmpAchievementSkillDto> summaryData = new SummaryData<>();
             summaryData.setAspect(group.getGroupName());
             summaryData.setWeight(
                     ((group.getPercentage().doubleValue() / totalWeight.doubleValue()) * 100l));
@@ -280,7 +284,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         }
 
         for (GroupAttitudeSkill group : groupAttitudeSkills) {
-            SummaryData summaryData = new SummaryData();
+            SummaryData<EmpAttitudeSkillDto> summaryData = new SummaryData<>();
             summaryData.setAspect(group.getGroupName());
             summaryData.setWeight(
                     ((group.getPercentage().doubleValue() / totalWeight.doubleValue()) * 100l));
@@ -333,9 +337,12 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             Double maxScore = childCount * 100d;
             Double userScore = (double) (totalScore.doubleValue() / maxScore);
 
-            SummaryData summaryData = groupAttitudeSkillIdToSummaryData.get(group.getId());
+            SummaryData<EmpAttitudeSkillDto> summaryData =
+                    groupAttitudeSkillIdToSummaryData.get(group.getId());
             summaryData.setFinalScore((userScore * currGroupPct * 100l));
             summaryData.setScore((userScore * 100l));
+            summaryData.setItems(entry.getValue().stream()
+                    .map(empAS -> new EmpAttitudeSkillDto(empAS, false, false)).toList());
 
             finalScore += summaryData.getFinalScore();
             groupAttitudeSkillIdToSummaryData.put(group.getId(), summaryData);
@@ -361,9 +368,12 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             Double maxScore = childCount * 100d;
             Double userScore = (double) (totalScore.doubleValue() / maxScore);
 
-            SummaryData summaryData = groupAchievementToSummaryData.get(group.getId());
+            SummaryData<EmpAchievementSkillDto> summaryData =
+                    groupAchievementToSummaryData.get(group.getId());
             summaryData.setFinalScore((userScore * currGroupPct * 100l));
             summaryData.setScore((userScore * 100l));
+            summaryData.setItems(entry.getValue().stream()
+                    .map(empAS -> new EmpAchievementSkillDto(empAS, false, false)).toList());
 
             finalScore += summaryData.getFinalScore();
             groupAchievementToSummaryData.put(group.getId(), summaryData);

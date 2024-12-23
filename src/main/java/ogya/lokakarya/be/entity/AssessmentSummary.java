@@ -7,6 +7,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -51,12 +52,17 @@ public class AssessmentSummary {
     @Column(name = "UPDATED_AT")
     private Date updatedAt;
 
-    private Boolean approved = false;
-
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @ManyToOne
     @JoinColumn(name = "UPDATED_BY")
     private User updatedBy;
+
+    private Integer approved;
+
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "APPROVER_ID")
+    private User approverId;
 
     @PreUpdate
     private void fillUpdatedAt() {

@@ -10,6 +10,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillDto;
+import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillDto;
 import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.AssessmentSummary;
 
@@ -34,10 +36,10 @@ public class AssessmentSummaryDto {
         @JsonProperty("status")
         private Integer status;
 
-        private List<SummaryData> achievements;
+        private List<SummaryData<EmpAchievementSkillDto>> achievements;
 
         @JsonProperty("attitude_skills")
-        private List<SummaryData> attitudeSkills;
+        private List<SummaryData<EmpAttitudeSkillDto>> attitudeSkills;
 
         @JsonProperty("created_at")
         private Date createdAt;
