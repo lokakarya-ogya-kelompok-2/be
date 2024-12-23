@@ -1,5 +1,16 @@
 package ogya.lokakarya.be.service.impl;
 
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -13,15 +24,10 @@ import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.AchievementRepository;
 import ogya.lokakarya.be.repository.GroupAchievementRepository;
+import ogya.lokakarya.be.repository.specification.AchievementSpecification;
 import ogya.lokakarya.be.service.AchievementService;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 @Slf4j
 @Service
 public class AchievementServiceImpl implements AchievementService {
@@ -38,6 +44,9 @@ public class AchievementServiceImpl implements AchievementService {
 
     @Autowired
     private SecurityUtil securityUtil;
+
+    @Autowired
+    private AchievementSpecification spec;
 
     @Transactional
     @Override
@@ -62,13 +71,40 @@ public class AchievementServiceImpl implements AchievementService {
     }
 
     @Override
-    public List<AchievementDto> getAllAchievements(AchievementFilter filter) {
+    public Page<AchievementDto> getAllAchievements(AchievementFilter filter) {
         log.info("Starting AchievementServiceImpl.getAllAchievements");
-        List<Achievement> achievements = achievementRepository.findAllByFilter(filter);
+
+        Specification<Achievement> specification = Specification.where(null);
+        if (filter.getAnyStringFieldContains() != null) {
+            specification = specification
+                    .and(Specification.anyOf(spec.nameContains(filter.getAnyStringFieldContains()),
+                            spec.groupNameContains(filter.getAnyStringFieldContains())));
+        } else {
+            if (filter.getNameContains() != null && !filter.getNameContains().isBlank()) {
+                specification = specification.and(spec.nameContains(filter.getNameContains()));
+            }
+        }
+        if (filter.getGroupIds() != null && !filter.getGroupIds().isEmpty()) {
+            specification = specification.and(spec.groupIdIn(filter.getGroupIds()));
+        }
+        if (filter.getEnabledOnly().booleanValue()) {
+            specification = specification.and(spec.enabledEquals(true));
+        }
+
+        Sort sortBy = Sort.by(filter.getSortDirection(), filter.getSortField());
+
+        Page<Achievement> achievements;
+        if (filter.getPageNumber() != null) {
+            Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
+                    Math.max(1, filter.getPageSize()), sortBy);
+            achievements = achievementRepository.findAll(specification, pageable);
+        } else {
+            achievements = new PageImpl<>(achievementRepository.findAll(specification, sortBy));
+        }
+
         log.info("Ending AchievementServiceImpl.getAllAchievements");
-        return achievements.stream().map(achievement -> new AchievementDto(achievement,
-                filter.getWithCreatedBy(), filter.getWithUpdatedBy(), filter.getWithGroup()))
-                .toList();
+        return achievements.map(achievement -> new AchievementDto(achievement,
+                filter.getWithCreatedBy(), filter.getWithUpdatedBy(), filter.getWithGroup()));
     }
 
     @Override

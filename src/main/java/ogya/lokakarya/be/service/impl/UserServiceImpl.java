@@ -32,8 +32,8 @@ import ogya.lokakarya.be.repository.DivisionRepository;
 import ogya.lokakarya.be.repository.RoleRepository;
 import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.repository.UserRoleRepository;
+import ogya.lokakarya.be.repository.specification.UserSpecification;
 import ogya.lokakarya.be.service.UserService;
-import ogya.lokakarya.be.specification.UserSpecification;
 import ogya.lokakarya.be.util.RandGen;
 
 @Slf4j
@@ -60,6 +60,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private SecurityUtil securityUtil;
+
+    @Autowired
+    private UserSpecification spec;
 
     @Override
     @Transactional
@@ -105,19 +108,71 @@ public class UserServiceImpl implements UserService {
         return new UserDto(userEntity, true, false, true);
     }
 
+    @SuppressWarnings("java:S3776")
     @Override
     public Page<UserDto> list(UserFilter filter) {
         log.info("Starting UserServiceImpl.list");
+
         filter.validate();
+        Specification<User> specification = Specification.where(null);
+        if (filter.getAnyStringFieldsContains() != null
+                && !filter.getAnyStringFieldsContains().isEmpty()) {
+            specification = specification.and(
+                    Specification.anyOf(spec.usernameContains(filter.getAnyStringFieldsContains()),
+                            spec.fullNameContains(filter.getAnyStringFieldsContains()),
+                            spec.positionContains(filter.getAnyStringFieldsContains()),
+                            spec.emailContains(filter.getAnyStringFieldsContains()),
+                            spec.divisionNameContains(filter.getAnyStringFieldsContains())));
+        } else {
+            if (filter.getUsernameContains() != null && !filter.getUsernameContains().isEmpty()) {
+                specification =
+                        specification.and(spec.usernameContains(filter.getUsernameContains()));
+            }
+            if (filter.getNameContains() != null && !filter.getNameContains().isEmpty()) {
+                specification = specification.and(spec.fullNameContains(filter.getNameContains()));
+            }
+            if (filter.getPositionContains() != null && !filter.getPositionContains().isEmpty()) {
+                specification =
+                        specification.and(spec.positionContains(filter.getPositionContains()));
+            }
+            if (filter.getEmailContains() != null && !filter.getEmailContains().isEmpty()) {
+                specification = specification.and(spec.emailContains(filter.getEmailContains()));
+            }
+            if (filter.getDivisionNameContains() != null
+                    && !filter.getDivisionNameContains().isEmpty()) {
+                specification = specification
+                        .and(spec.divisionNameContains(filter.getDivisionNameContains()));
+            }
+        }
+        if (filter.getMinJoinDate() != null && filter.getMaxJoinDate() != null) {
+            specification =
+                    specification.and(spec.joinDateBetween(Date.valueOf(filter.getMinJoinDate()),
+                            Date.valueOf(filter.getMaxJoinDate())));
+        } else if (filter.getMinJoinDate() != null) {
+            specification =
+                    specification.and(spec.joinDateGte(Date.valueOf(filter.getMinJoinDate())));
+        } else if (filter.getMaxJoinDate() != null) {
+            specification =
+                    specification.and(spec.joinDateLte(Date.valueOf(filter.getMaxJoinDate())));
+        }
+        if (filter.getEmployeeStatus() != null) {
+            specification =
+                    specification.and(spec.employeeStatusEquals(filter.getEmployeeStatus()));
+        }
+        if (filter.getEnabledOnly().booleanValue()) {
+            specification = specification.and(spec.enabledEquals(true));
+        }
+
         Page<User> users;
-        Specification<User> userSpec = UserSpecification.filter(filter);
         if (filter.getPageNumber() != null) {
             Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
                     Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
-            users = userRepo.findAll(userSpec, pageable);
+            users = userRepo.findAll(specification, pageable);
         } else {
-            users = new PageImpl<>(userRepo.findAll(userSpec, Sort.by("createdAt").descending()));
+            users = new PageImpl<>(
+                    userRepo.findAll(specification, Sort.by("createdAt").descending()));
         }
+
         log.info("Ending UserServiceImpl.list");
         return users.map(user -> new UserDto(user, filter.getWithCreatedBy(),
                 filter.getWithUpdatedBy(), filter.getWithRoles()));

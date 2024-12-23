@@ -1,5 +1,15 @@
 package ogya.lokakarya.be.service.impl;
 
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -11,14 +21,10 @@ import ogya.lokakarya.be.entity.GroupAchievement;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.GroupAchievementRepository;
+import ogya.lokakarya.be.repository.specification.GroupAchievementSpecification;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import ogya.lokakarya.be.service.GroupAchievementService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 @Slf4j
 @Service
 public class GroupAchievementServiceImpl implements GroupAchievementService {
@@ -33,6 +39,9 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private GroupAchievementSpecification spec;
 
     @Transactional
     @Override
@@ -51,17 +60,42 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
     }
 
     @Override
-    public List<GroupAchievementDto> getAllGroupAchievements(GroupAchievementFilter filter) {
+    public Page<GroupAchievementDto> getAllGroupAchievements(GroupAchievementFilter filter) {
         log.info("Starting GroupAchievementServiceImpl.getAllGroupAchievements");
         filter.validate();
-        List<GroupAchievement> groupAchievements =
-                groupAchievementRepository.findAllByFilter(filter);
+
+        Specification<GroupAchievement> specification = Specification.where(null);
+        if (filter.getNameContains() != null && !filter.getNameContains().isEmpty()) {
+            specification = specification.and(spec.nameContains(filter.getNameContains()));
+        }
+        if (filter.getMinWeight() != null && filter.getMaxWeight() != null) {
+            specification = specification
+                    .and(spec.weightBetween(filter.getMinWeight(), filter.getMaxWeight()));
+        } else if (filter.getMinWeight() != null) {
+            specification = specification.and(spec.weightGte(filter.getMinWeight()));
+        } else if (filter.getMaxWeight() != null) {
+            specification = specification.and(spec.weightLte(filter.getMaxWeight()));
+        }
+        if (filter.getEnabledOnly().booleanValue()) {
+            specification = specification.and(spec.enabledEquals(true));
+        }
+
+        Sort sortBy = Sort.by(filter.getSortDirection(), filter.getSortField());
+
+        Page<GroupAchievement> groupAchievements;
+        if (filter.getPageNumber() != null) {
+            Pageable pageable =
+                    PageRequest.of(filter.getPageNumber() - 1, filter.getPageSize(), sortBy);
+            groupAchievements = groupAchievementRepository.findAll(specification, pageable);
+        } else {
+            groupAchievements =
+                    new PageImpl<>(groupAchievementRepository.findAll(specification, sortBy));
+        }
+
         log.info("Ending GroupAchievementServiceImpl.getAllGroupAchievements");
-        return groupAchievements.stream()
-                .map(groupAchievement -> new GroupAchievementDto(groupAchievement,
-                        filter.getWithCreatedBy(), filter.getWithUpdatedBy(),
-                        filter.getWithAchievements(), filter.getWithEnabledChildOnly()))
-                .toList();
+        return groupAchievements.map(groupAchievement -> new GroupAchievementDto(groupAchievement,
+                filter.getWithCreatedBy(), filter.getWithUpdatedBy(), filter.getWithAchievements(),
+                filter.getWithEnabledChildOnly()));
     }
 
     @Override

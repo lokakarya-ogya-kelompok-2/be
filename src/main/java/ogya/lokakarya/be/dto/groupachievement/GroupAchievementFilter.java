@@ -2,18 +2,19 @@ package ogya.lokakarya.be.dto.groupachievement;
 
 import org.springframework.http.HttpStatus;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import ogya.lokakarya.be.dto.common.Filter;
 import ogya.lokakarya.be.exception.ResponseException;
 
 @Data
-public class GroupAchievementFilter {
+@EqualsAndHashCode(callSuper = false)
+public class GroupAchievementFilter extends Filter {
     private String nameContains;
     private Integer minWeight;
     private Integer maxWeight;
     private Boolean enabledOnly = false;
     private Boolean withAchievements = false;
     private Boolean withEnabledChildOnly = false;
-    private Boolean withCreatedBy = false;
-    private Boolean withUpdatedBy = false;
 
     public void validate() throws ResponseException {
         if (minWeight != null && (minWeight < 0 || minWeight > 100)) {

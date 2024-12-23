@@ -8,6 +8,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +23,6 @@ import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryReq;
 import ogya.lokakarya.be.dto.assessmentsummary.SummaryData;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillFilter;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillFilter;
-import ogya.lokakarya.be.dto.groupachievement.GroupAchievementFilter;
-import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillFilter;
 import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.Achievement;
 import ogya.lokakarya.be.entity.AssessmentSummary;
@@ -35,8 +39,10 @@ import ogya.lokakarya.be.repository.EmpAttitudeSkillRepository;
 import ogya.lokakarya.be.repository.GroupAchievementRepository;
 import ogya.lokakarya.be.repository.GroupAttitudeSkillRepository;
 import ogya.lokakarya.be.repository.UserRepository;
+import ogya.lokakarya.be.repository.specification.AssessmentSummarySpecification;
+import ogya.lokakarya.be.repository.specification.GroupAchievementSpecification;
+import ogya.lokakarya.be.repository.specification.GroupAttitudeSkillSpecification;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
-import ogya.lokakarya.be.specification.GroupAttitudeSkillSpecification;
 
 @Slf4j
 @Service
@@ -59,6 +65,14 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     @Autowired
     private EmpAchievementSkillRepository empAchievementSkillRepo;
 
+    @Autowired
+    private AssessmentSummarySpecification assSumSpec;
+
+    @Autowired
+    private GroupAchievementSpecification groupAchSpec;
+
+    @Autowired
+    private GroupAttitudeSkillSpecification groupAttSkillSpec;
 
     @Override
     public AssessmentSummaryDto create(AssessmentSummaryReq data) {
@@ -75,15 +89,40 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     }
 
     @Override
-    public List<AssessmentSummaryDto> getAllAssessmentSummaries(AssessmentSummaryFilter filter) {
+    public Page<AssessmentSummaryDto> getAllAssessmentSummaries(AssessmentSummaryFilter filter) {
         log.info("Starting AssessmentSummaryServiceImpl.getAllAssessmentSummaries");
-        List<AssessmentSummary> assessmentSummaries =
-                assessmentSummaryRepository.findAllByFilter(filter);
+        Specification<AssessmentSummary> specification = Specification.where(null);
+        if (filter.getAnyStringFieldContains() != null) {
+            specification = specification.and(Specification.anyOf(
+                    assSumSpec.userFullNameContains(filter.getAnyStringFieldContains()),
+                    assSumSpec.positionContains(filter.getAnyStringFieldContains())));
+        }
+        if (filter.getUserIds() != null && !filter.getUserIds().isEmpty()) {
+            specification = specification.and(assSumSpec.userIdIn(filter.getUserIds()));
+        }
+        if (filter.getYears() != null && !filter.getYears().isEmpty()) {
+            specification = specification.and(assSumSpec.yearIn(filter.getYears()));
+        }
+        if (filter.getDivisionIds() != null && !filter.getDivisionIds().isEmpty()) {
+            specification = specification.and(assSumSpec.divisionIdIn(filter.getDivisionIds()));
+        }
+
+        Sort sortBy = Sort.by(filter.getSortDirection(), filter.getSortField());
+
+        Page<AssessmentSummary> assessmentSummaries;
+        if (filter.getPageNumber() != null) {
+            Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
+                    Math.max(1, filter.getPageSize()), sortBy);
+            assessmentSummaries = assessmentSummaryRepository.findAll(specification, pageable);
+        } else {
+            assessmentSummaries =
+                    new PageImpl<>(assessmentSummaryRepository.findAll(specification, sortBy));
+        }
+
         log.info("Ending AssessmentSummaryServiceImpl.getAllAssessmentSummaries");
-        return assessmentSummaries.stream()
+        return assessmentSummaries
                 .map(assessmentSummary -> new AssessmentSummaryDto(assessmentSummary,
-                        filter.getWithCreatedBy(), filter.getWithUpdatedBy()))
-                .toList();
+                        filter.getWithCreatedBy(), filter.getWithUpdatedBy()));
     }
 
     @Override
@@ -168,12 +207,8 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         // attitude skills mbuh mumet
         Map<UUID, GroupAttitudeSkill> attitudeGroupIdToEntity = new HashMap<>();
         HashMap<UUID, SummaryData> groupAttitudeSkillIdToSummaryData = new HashMap<>();
-        GroupAttitudeSkillFilter gasFilter = new GroupAttitudeSkillFilter();
-        gasFilter.setEnabledOnly(true);
-        gasFilter.setWithAttitudeSkills(true);
-        gasFilter.setWithEnabledChildOnly(true);
         List<GroupAttitudeSkill> groupAttitudeSkills =
-                groupAttitudeSkillRepo.findAll(GroupAttitudeSkillSpecification.filter(gasFilter));
+                groupAttitudeSkillRepo.findAll(groupAttSkillSpec.enabledEquals(true));
         for (GroupAttitudeSkill group : groupAttitudeSkills) {
             if (group.getAttitudeSkills() != null) {
                 group.getAttitudeSkills().forEach(attS -> idToGroup.put(attS.getId(), group));
@@ -206,11 +241,8 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         Map<UUID, GroupAchievement> achievementGroupIdtoEntity = new HashMap<>();
 
         Map<UUID, SummaryData> groupAchievementToSummaryData = new HashMap<>();
-        GroupAchievementFilter gaFilter = new GroupAchievementFilter();
-        gaFilter.setEnabledOnly(true);
-        gaFilter.setWithAchievements(true);
-        gaFilter.setWithEnabledChildOnly(true);
-        List<GroupAchievement> groupAchievements = groupAchievementRepo.findAllByFilter(gaFilter);
+        List<GroupAchievement> groupAchievements =
+                groupAchievementRepo.findAll(groupAchSpec.enabledEquals(true));
         for (GroupAchievement group : groupAchievements) {
             if (group.getAchievements() != null) {
                 group.getAchievements().forEach(attS -> idToGroup.put(attS.getId(), group));
@@ -255,12 +287,11 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             groupAttitudeSkillIdToSummaryData.put(group.getId(), summaryData);
         }
 
-        AssessmentSummaryFilter filter = new AssessmentSummaryFilter();
-        filter.setUserIds(List.of(userId));
-        filter.setYears(List.of(year));
+        Specification<AssessmentSummary> assessmentSummarySpecification = Specification
+                .allOf(assSumSpec.userIdIn(List.of(userId)), assSumSpec.yearIn(List.of(year)));
 
         List<AssessmentSummary> assessmentSummaries =
-                assessmentSummaryRepository.findAllByFilter(filter);
+                assessmentSummaryRepository.findAll(assessmentSummarySpecification);
         AssessmentSummary assessmentSummary;
         if (assessmentSummaries.isEmpty()) {
             assessmentSummary = new AssessmentSummary();

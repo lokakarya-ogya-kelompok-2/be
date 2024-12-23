@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +20,8 @@ import ogya.lokakarya.be.entity.DevPlan;
 import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.DevPlanRepository;
+import ogya.lokakarya.be.repository.specification.DevPlanSpecification;
 import ogya.lokakarya.be.service.DevPlanService;
-import ogya.lokakarya.be.specification.DevPlanSpecification;
 
 @Slf4j
 @Service
@@ -30,6 +31,9 @@ public class DevPlanServiceImpl implements DevPlanService {
 
     @Autowired
     private SecurityUtil securityUtil;
+
+    @Autowired
+    private DevPlanSpecification spec;
 
     @Override
     public DevPlanDto create(DevPlanReq data) {
@@ -45,15 +49,26 @@ public class DevPlanServiceImpl implements DevPlanService {
     @Override
     public Page<DevPlanDto> getAllDevPlans(DevPlanFilter filter) {
         log.info("Starting DevPlanServiceImpl.getAllDevPlans");
+
+        Specification<DevPlan> specification = Specification.where(null);
+        if (filter.getNameContains() != null && !filter.getNameContains().isEmpty()) {
+            specification = specification.and(spec.nameContains(filter.getNameContains()));
+        }
+        if (filter.getEnabledOnly().booleanValue()) {
+            specification = specification.and(spec.enabledEquals(true));
+        }
+
+        Sort sortBy = Sort.by(filter.getSortDirection(), filter.getSortField());
+
         Page<DevPlan> devPlans;
         if (filter.getPageNumber() != null) {
-            Pageable pageable = PageRequest.of(filter.getPageNumber() - 1, filter.getPageSize(),
-                    Sort.by("createdAt").descending());
-            devPlans = devPlanRepository.findAll(DevPlanSpecification.filter(filter), pageable);
+            Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
+                    Math.max(1, filter.getPageSize()), sortBy);
+            devPlans = devPlanRepository.findAll(specification, pageable);
         } else {
-            devPlans = new PageImpl<>(devPlanRepository.findAll(DevPlanSpecification.filter(filter),
-                    Sort.by("createdAt").descending()));
+            devPlans = new PageImpl<>(devPlanRepository.findAll(specification, sortBy));
         }
+
         log.info("Ending DevPlanServiceImpl.getAllDevPlans");
         return devPlans.map(devPlan -> new DevPlanDto(devPlan, filter.getWithCreatedBy(),
                 filter.getWithUpdatedBy()));

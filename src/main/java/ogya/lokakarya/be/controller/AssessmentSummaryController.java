@@ -3,6 +3,8 @@ package ogya.lokakarya.be.controller;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,6 +48,12 @@ public class AssessmentSummaryController {
 
         @GetMapping
         public ResponseEntity<ResponseDto<List<AssessmentSummaryDto>>> getAllAssessmentSummaries(
+                        @RequestParam(name = "sort_field", required = false,
+                                        defaultValue = "createdAt") String sortField,
+                        @RequestParam(name = "sort_direction", required = false,
+                                        defaultValue = "DESC") Direction sortDirection,
+                        @RequestParam(name = "any_contains",
+                                        required = false) String anyStringFieldContains,
                         @RequestParam(name = "user_ids", required = false) List<UUID> userIds,
                         @RequestParam(name = "division_ids",
                                         required = false) List<UUID> divisionIds,
@@ -53,20 +61,32 @@ public class AssessmentSummaryController {
                         @RequestParam(name = "with_created_by", required = false,
                                         defaultValue = "false") Boolean withCreatedBy,
                         @RequestParam(name = "with_updated_by", required = false,
-                                        defaultValue = "false") Boolean withUpdatedBy) {
+                                        defaultValue = "false") Boolean withUpdatedBy,
+                        @RequestParam(name = "page_number", required = false) Integer pageNumber,
+                        @RequestParam(name = "page_size", required = false,
+                                        defaultValue = "5") Integer pageSize) {
                 log.info("Starting AssessmentSummaryController.list");
                 AssessmentSummaryFilter filter = new AssessmentSummaryFilter();
                 filter.setUserIds(userIds);
+                filter.setAnyStringFieldContains(anyStringFieldContains);
                 filter.setDivisionIds(divisionIds);
                 filter.setYears(years);
                 filter.setWithCreatedBy(withCreatedBy);
                 filter.setWithUpdatedBy(withUpdatedBy);
+                filter.setPageSize(pageSize);
+                filter.setPageNumber(pageNumber);
+                filter.setSortField(sortField);
+                filter.setSortDirection(sortDirection);
 
-                List<AssessmentSummaryDto> assessmentSummaries =
+                Page<AssessmentSummaryDto> assessmentSummaries =
                                 assessmentSummaryService.getAllAssessmentSummaries(filter);
                 log.info("Ending AssessmentSummaryController.list");
                 return ResponseDto.<List<AssessmentSummaryDto>>builder().success(true)
-                                .content(assessmentSummaries)
+                                .content(assessmentSummaries.toList())
+                                .totalRecords(assessmentSummaries.getTotalElements())
+                                .totalPages(assessmentSummaries.getTotalPages())
+                                .pageNumber(assessmentSummaries.getNumber() + 1)
+                                .pageSize(assessmentSummaries.getSize())
                                 .message("List all assessment summary successful!").build()
                                 .toResponse(HttpStatus.OK);
         }
