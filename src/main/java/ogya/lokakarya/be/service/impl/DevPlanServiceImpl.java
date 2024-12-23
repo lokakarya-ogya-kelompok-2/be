@@ -58,14 +58,15 @@ public class DevPlanServiceImpl implements DevPlanService {
             specification = specification.and(spec.enabledEquals(true));
         }
 
+        Sort sortBy = Sort.by(filter.getSortDirection(), filter.getSortField());
+
         Page<DevPlan> devPlans;
         if (filter.getPageNumber() != null) {
             Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
-                    Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
+                    Math.max(1, filter.getPageSize()), sortBy);
             devPlans = devPlanRepository.findAll(specification, pageable);
         } else {
-            devPlans = new PageImpl<>(
-                    devPlanRepository.findAll(specification, Sort.by("createdAt").descending()));
+            devPlans = new PageImpl<>(devPlanRepository.findAll(specification, sortBy));
         }
 
         log.info("Ending DevPlanServiceImpl.getAllDevPlans");

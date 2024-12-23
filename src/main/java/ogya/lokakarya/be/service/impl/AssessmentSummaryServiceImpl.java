@@ -107,13 +107,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             specification = specification.and(assSumSpec.divisionIdIn(filter.getDivisionIds()));
         }
 
-        Sort sortBy = Sort.unsorted();
-        if (filter.getSortColumn() != null) {
-            sortBy = Sort.by(filter.getSortColumn());
-            if (filter.getSortMode().equalsIgnoreCase("desc")) {
-                sortBy = sortBy.descending();
-            }
-        }
+        Sort sortBy = Sort.by(filter.getSortDirection(), filter.getSortField());
 
         Page<AssessmentSummary> assessmentSummaries;
         if (filter.getPageNumber() != null) {

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -60,7 +61,11 @@ public class AttitudeSkillController {
                                         defaultValue = "false") Boolean withUpdatedBy,
                         @RequestParam(name = "page_number", required = false) Integer pageNumber,
                         @RequestParam(name = "page_size", required = false,
-                                        defaultValue = "5") Integer pageSize) {
+                                        defaultValue = "5") Integer pageSize,
+                        @RequestParam(name = "sort_field", required = false,
+                                        defaultValue = "createdAt") String sortField,
+                        @RequestParam(name = "sort_direction", required = false,
+                                        defaultValue = "DESC") Direction sortDirection) {
                 log.info("Starting AttitudeSkillController.list");
                 AttitudeSkillFilter filter = new AttitudeSkillFilter();
                 filter.setAnyStringFieldContains(anyStringFieldContains);
@@ -72,6 +77,8 @@ public class AttitudeSkillController {
                 filter.setWithUpdatedBy(withUpdatedBy);
                 filter.setPageNumber(pageNumber);
                 filter.setPageSize(pageSize);
+                filter.setSortField(sortField);
+                filter.setSortDirection(sortDirection);
 
                 Page<AttitudeSkillDto> attitudeSkills =
                                 attitudeSkillService.getAllAttitudeSkills(filter);

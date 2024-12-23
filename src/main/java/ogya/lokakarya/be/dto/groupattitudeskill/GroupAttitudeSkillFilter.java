@@ -2,20 +2,19 @@ package ogya.lokakarya.be.dto.groupattitudeskill;
 
 import org.springframework.http.HttpStatus;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import ogya.lokakarya.be.dto.common.Filter;
 import ogya.lokakarya.be.exception.ResponseException;
 
 @Data
-public class GroupAttitudeSkillFilter {
+@EqualsAndHashCode(callSuper = false)
+public class GroupAttitudeSkillFilter extends Filter {
     private String nameContains;
     private Integer minWeight;
     private Integer maxWeight;
     private Boolean enabledOnly = false;
     private Boolean withAttitudeSkills = false;
     private Boolean withEnabledChildOnly = false;
-    private Boolean withCreatedBy = false;
-    private Boolean withUpdatedBy = false;
-    private Integer pageNumber;
-    private Integer pageSize;
 
     public void validate() throws ResponseException {
         if (minWeight != null && (minWeight < 0 || minWeight > 100)) {

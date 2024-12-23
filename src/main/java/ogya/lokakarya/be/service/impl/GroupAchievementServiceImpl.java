@@ -80,14 +80,16 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
             specification = specification.and(spec.enabledEquals(true));
         }
 
+        Sort sortBy = Sort.by(filter.getSortDirection(), filter.getSortField());
+
         Page<GroupAchievement> groupAchievements;
         if (filter.getPageNumber() != null) {
-            Pageable pageable = PageRequest.of(filter.getPageNumber() - 1, filter.getPageSize(),
-                    Sort.by("createdAt").descending());
+            Pageable pageable =
+                    PageRequest.of(filter.getPageNumber() - 1, filter.getPageSize(), sortBy);
             groupAchievements = groupAchievementRepository.findAll(specification, pageable);
         } else {
-            groupAchievements = new PageImpl<>(groupAchievementRepository.findAll(specification,
-                    Sort.by("createdAt").descending()));
+            groupAchievements =
+                    new PageImpl<>(groupAchievementRepository.findAll(specification, sortBy));
         }
 
         log.info("Ending GroupAchievementServiceImpl.getAllGroupAchievements");
