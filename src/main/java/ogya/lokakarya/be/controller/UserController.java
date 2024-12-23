@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -52,9 +53,6 @@ public class UserController {
         public ResponseEntity<ResponseDto<List<UserDto>>> list(
                         @RequestParam(name = "any_contains",
                                         required = false) String anyStringFieldsContains,
-                        @RequestParam(name = "page_number", required = false) Integer pageNumber,
-                        @RequestParam(name = "page_size", required = false,
-                                        defaultValue = "5") Integer pageSize,
                         @RequestParam(name = "username_contains",
                                         required = false) String usernameContains,
                         @RequestParam(name = "name_contains", required = false) String nameContains,
@@ -77,7 +75,15 @@ public class UserController {
                         @RequestParam(name = "with_created_by", required = false,
                                         defaultValue = "false") Boolean withCreatedBy,
                         @RequestParam(name = "with_updated_by", required = false,
-                                        defaultValue = "false") Boolean withUpdatedBy) {
+                                        defaultValue = "false") Boolean withUpdatedBy,
+                        @RequestParam(name = "page_number", required = false) Integer pageNumber,
+                        @RequestParam(name = "page_size", required = false,
+                                        defaultValue = "5") Integer pageSize,
+                        @RequestParam(name = "sort_field", required = false,
+                                        defaultValue = "createdAt") String sortField,
+                        @RequestParam(name = "sort_direction", required = false,
+                                        defaultValue = "DESC") Direction sortDirection) {
+
                 log.info("Starting UserController.list");
                 UserFilter filter = new UserFilter();
                 filter.setAnyStringFieldsContains(anyStringFieldsContains);
@@ -95,6 +101,8 @@ public class UserController {
                 filter.setWithRoles(withRoles);
                 filter.setWithCreatedBy(withCreatedBy);
                 filter.setWithUpdatedBy(withUpdatedBy);
+                filter.setSortField(sortField);
+                filter.setSortDirection(sortDirection);
 
                 Page<UserDto> users = userSvc.list(filter);
                 log.info("Ending UserController.list");
