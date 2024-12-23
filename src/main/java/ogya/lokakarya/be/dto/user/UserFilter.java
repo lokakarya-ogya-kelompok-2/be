@@ -3,10 +3,13 @@ package ogya.lokakarya.be.dto.user;
 import java.time.LocalDate;
 import org.springframework.http.HttpStatus;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import ogya.lokakarya.be.dto.common.Filter;
 import ogya.lokakarya.be.exception.ResponseException;
 
 @Data
-public class UserFilter {
+@EqualsAndHashCode(callSuper = false)
+public class UserFilter extends Filter {
     // ini kaya gabungan OR antara username, name, position, email, divisionName. males mikir, gini
     // aja wkwk
     private String anyStringFieldsContains;
@@ -20,10 +23,6 @@ public class UserFilter {
     private String divisionNameContains;
     private Boolean enabledOnly = false;
     private Boolean withRoles = false;
-    private Boolean withCreatedBy = false;
-    private Boolean withUpdatedBy = false;
-    private Integer pageNumber;
-    private Integer pageSize;
 
     public void validate() throws ResponseException {
         if (maxJoinDate != null && minJoinDate != null && maxJoinDate.isAfter(minJoinDate)) {

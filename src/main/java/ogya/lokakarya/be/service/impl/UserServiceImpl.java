@@ -163,14 +163,15 @@ public class UserServiceImpl implements UserService {
             specification = specification.and(spec.enabledEquals(true));
         }
 
+        Sort sortBy = Sort.by(filter.getSortDirection(), filter.getSortField());
+
         Page<User> users;
         if (filter.getPageNumber() != null) {
             Pageable pageable = PageRequest.of(Math.max(0, filter.getPageNumber() - 1),
-                    Math.max(1, filter.getPageSize()), Sort.by("createdAt").descending());
+                    Math.max(1, filter.getPageSize()), sortBy);
             users = userRepo.findAll(specification, pageable);
         } else {
-            users = new PageImpl<>(
-                    userRepo.findAll(specification, Sort.by("createdAt").descending()));
+            users = new PageImpl<>(userRepo.findAll(specification, sortBy));
         }
 
         log.info("Ending UserServiceImpl.list");
