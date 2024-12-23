@@ -1,12 +1,11 @@
 package ogya.lokakarya.be.dto.division;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import ogya.lokakarya.be.dto.common.Filter;
 
 @Data
-public class DivisionFilter {
+@EqualsAndHashCode(callSuper=false)
+public class DivisionFilter extends Filter {
     private String nameContains;
-    private Boolean withCreatedBy = false;
-    private Boolean withUpdatedBy = false;
-    private Integer pageNumber;
-    private Integer pageSize;
 }
