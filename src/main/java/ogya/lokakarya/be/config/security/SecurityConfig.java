@@ -1,7 +1,7 @@
 package ogya.lokakarya.be.config.security;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,6 +28,9 @@ public class SecurityConfig {
 
     private final JwtValidationFilter jwtValidationFilter;
 
+    @Value("${cors.allowed_origins}")
+    private String[] allowedOrigins;
+
     @Bean
     SecurityFilterChain mySecurityConfig(HttpSecurity http, AuthService authSvc) throws Exception {
         return http
@@ -35,22 +38,20 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration cfg = new CorsConfiguration();
-                    cfg.setAllowedOriginPatterns(Collections.singletonList("*"));
-                    cfg.setAllowedMethods(Collections.singletonList("*"));
+                    cfg.setAllowedOriginPatterns(List.of(allowedOrigins));
+                    cfg.setAllowedMethods(List.of("*"));
                     cfg.setAllowCredentials(true);
-                    cfg.setAllowedHeaders(Collections.singletonList("*"));
-                    cfg.setExposedHeaders(Arrays.asList("Authorization"));
+                    cfg.setAllowedHeaders(List.of("*"));
+                    cfg.setExposedHeaders(List.of("Authorization"));
                     return cfg;
                 }))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/users/**").authenticated()
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/users/**").authenticated()
                         .requestMatchers("/divisions/**").authenticated()
                         .requestMatchers("/dev-plans/**").authenticated()
                         .requestMatchers("/emp-attitude-skills/**").authenticated()
                         .requestMatchers("/emp-dev-plans/**").authenticated()
-                        .requestMatchers("/menus/**").authenticated()
-                        .requestMatchers("/roles/**").authenticated()
-                        .requestMatchers("/role-menu/**").authenticated()
+                        .requestMatchers("/menus/**").authenticated().requestMatchers("/roles/**")
+                        .authenticated().requestMatchers("/role-menu/**").authenticated()
                         .requestMatchers("/achievements/**").authenticated()
                         .requestMatchers("/attitude-skills/**").authenticated()
                         .requestMatchers("/assessment-summaries/**").authenticated()
