@@ -32,7 +32,7 @@ services:
       JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS}
       PORT: ${APP_PORT}
     ports:
-      - "${APP_PORT}:${APP_PORT}"
+      - "127.0.0.1:${APP_PORT}:${APP_PORT}"
     depends_on:
       db:
         condition: service_healthy
