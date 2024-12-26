@@ -114,4 +114,9 @@ public class User implements UserDetails {
     private void fillUpdatedAt() {
         updatedAt = new java.util.Date();
     }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
 }
