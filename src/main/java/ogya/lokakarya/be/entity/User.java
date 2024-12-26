@@ -63,6 +63,9 @@ public class User implements UserDetails {
     @Column(name = "PASSWORD", nullable = false, length = 100)
     private String password;
 
+    @Column(name = "PASSWORD_RECENTLY_RESET", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean passwordRecentlyReset = false;
+
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<UserRole> userRoles;
 

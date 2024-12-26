@@ -273,6 +273,7 @@ public class UserServiceImpl implements UserService {
     public UserDto changePassword(UserChangePasswordDto data) {
         log.info("Starting UserServiceImpl.changePassword");
         User currentUser = securityUtil.getCurrentUser();
+
         if (!passwordEncoder.matches(data.getCurrentPassword(), currentUser.getPassword())) {
             throw new ResponseException("Incorrect current password!", HttpStatus.BAD_REQUEST);
         }
@@ -286,6 +287,8 @@ public class UserServiceImpl implements UserService {
         }
 
         currentUser.setPassword(passwordEncoder.encode(data.getNewPassword()));
+        currentUser.setPasswordRecentlyReset(false);
+        currentUser.setUpdatedBy(currentUser);
         currentUser = userRepo.save(currentUser);
         log.info("Ending UserServiceImpl.changePassword");
         return new UserDto(currentUser, true, true, false);
@@ -303,6 +306,7 @@ public class UserServiceImpl implements UserService {
         String randomGenerated = RandGen.generate(10);
         user.setUpdatedBy(currentUser);
         user.setPassword(passwordEncoder.encode(randomGenerated));
+        user.setPasswordRecentlyReset(true);
         userRepo.save(user);
         log.info("Ending UserServiceImpl.resetPassword");
         return randomGenerated;

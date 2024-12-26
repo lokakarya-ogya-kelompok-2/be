@@ -32,6 +32,9 @@ public class UserDto {
 
     private String password;
 
+    @JsonProperty("password_recently_reset")
+    private Boolean passwordRecentlyReset;
+
     @JsonProperty("created_at")
     private Date createdAt;
 
@@ -61,6 +64,7 @@ public class UserDto {
         setEnabled(user.getEnabled());
         setPassword(user.getPassword());
         setEmployeeStatus(user.getEmployeeStatus());
+        setPasswordRecentlyReset(user.getPasswordRecentlyReset());
         if (user.getCreatedAt() != null) {
             setCreatedAt(user.getCreatedAt());
         }
