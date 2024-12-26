@@ -8,6 +8,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -147,6 +148,13 @@ public class GlobalExceptionHandler {
         return ResponseDto.<Void>builder().success(false)
                 .message(String.format("invalid property: %s", ex.getPropertyName())).build()
                 .toResponse(HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ResponseDto<Void>> handleUsernameNotFoundException(
+            UsernameNotFoundException ex, WebRequest req) {
+        return ResponseDto.<Void>builder().success(false).message(ex.getMessage()).build()
+                .toResponse(HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(Exception.class)
