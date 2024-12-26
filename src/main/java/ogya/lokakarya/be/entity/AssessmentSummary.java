@@ -57,7 +57,7 @@ public class AssessmentSummary {
     @JoinColumn(name = "UPDATED_BY")
     private User updatedBy;
 
-    private Integer approved;
+    private Integer approved = 0;
 
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @ManyToOne(fetch = FetchType.LAZY)
