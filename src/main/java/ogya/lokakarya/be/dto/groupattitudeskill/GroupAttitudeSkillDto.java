@@ -47,8 +47,8 @@ public class GroupAttitudeSkillDto {
     public GroupAttitudeSkillDto(GroupAttitudeSkill groupAttitudeSkill, boolean withCreatedBy,
             boolean withUpdatedBy, boolean withAttitudeSkills, boolean withEnabledChildOnly) {
         setId(groupAttitudeSkill.getId());
-        setGroupName(groupAttitudeSkill.getGroupName());
-        setPercentage(groupAttitudeSkill.getPercentage());
+        setGroupName(groupAttitudeSkill.getName());
+        setPercentage(groupAttitudeSkill.getWeight());
         setEnabled(groupAttitudeSkill.getEnabled());
         setCreatedAt(groupAttitudeSkill.getCreatedAt());
         if (withCreatedBy && groupAttitudeSkill.getCreatedBy() != null)

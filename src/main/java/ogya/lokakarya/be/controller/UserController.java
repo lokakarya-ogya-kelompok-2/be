@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import ogya.lokakarya.be.dto.FilterInfo;
+import ogya.lokakarya.be.dto.PageInfo;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.user.UserChangePasswordDto;
 import ogya.lokakarya.be.dto.user.UserDto;
@@ -107,9 +109,11 @@ public class UserController {
                 Page<UserDto> users = userSvc.list(filter);
                 log.info("Ending UserController.list");
                 return ResponseDto.<List<UserDto>>builder().success(true).content(users.toList())
-                                .totalPages(users.getTotalPages())
-                                .totalRecords(users.getTotalElements())
-                                .pageNumber(users.getNumber() + 1).pageSize(users.getSize())
+                                .pageInfo(new PageInfo(users.getNumber() + 1, users.getSize(),
+                                                users.getTotalPages(), users.getTotalElements()))
+                                .filterInfo(new FilterInfo("id", "username", "fullName", "position",
+                                                "joinDate", "createdAt", "createdBy", "updatedAt",
+                                                "updatedBy"))
                                 .message("List users successful!").build()
                                 .toResponse(HttpStatus.OK);
         }

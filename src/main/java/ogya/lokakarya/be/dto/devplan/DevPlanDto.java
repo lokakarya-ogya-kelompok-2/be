@@ -38,7 +38,7 @@ public class DevPlanDto {
 
     public DevPlanDto(DevPlan devPlan, boolean withCreatedBy, boolean withUpdatedBy) {
         setId(devPlan.getId());
-        setPlan(devPlan.getPlan());
+        setPlan(devPlan.getName());
         setEnabled(devPlan.isEnabled());
         setCreatedAt(devPlan.getCreatedAt());
         if (withCreatedBy && devPlan.getCreatedBy() != null) {

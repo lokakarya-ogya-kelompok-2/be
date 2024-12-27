@@ -3,10 +3,8 @@ package ogya.lokakarya.be.entity;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,9 +22,8 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "TBL_DEV_PLAN", uniqueConstraints = {
-        @UniqueConstraint(name = "UK_DEV_PLAN_NAME", columnNames = { "PLAN" })
-})
+@Table(name = "TBL_DEV_PLAN",
+        uniqueConstraints = {@UniqueConstraint(name = "UK_DEV_PLAN_NAME", columnNames = {"PLAN"})})
 public class DevPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -34,7 +31,7 @@ public class DevPlan {
     private UUID id;
 
     @Column(name = "PLAN", length = 100, nullable = false)
-    private String plan;
+    private String name;
 
     @Column(name = "ENABLED")
     private boolean enabled = true;

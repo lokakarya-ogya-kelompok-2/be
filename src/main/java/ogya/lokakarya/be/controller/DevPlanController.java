@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import ogya.lokakarya.be.dto.FilterInfo;
+import ogya.lokakarya.be.dto.PageInfo;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.devplan.DevPlanDto;
 import ogya.lokakarya.be.dto.devplan.DevPlanFilter;
@@ -75,9 +77,11 @@ public class DevPlanController {
                 log.info("Ending DevPlanController.list");
                 return ResponseDto.<List<DevPlanDto>>builder().success(true)
                                 .content(devPlans.toList())
-                                .totalRecords(devPlans.getTotalElements())
-                                .totalPages(devPlans.getTotalPages())
-                                .pageNumber(devPlans.getNumber() + 1).pageSize(devPlans.getSize())
+                                .pageInfo(new PageInfo(devPlans.getNumber() + 1, devPlans.getSize(),
+                                                devPlans.getTotalPages(),
+                                                devPlans.getTotalElements()))
+                                .filterInfo(new FilterInfo("id", "name", "createdAt", "createdBy",
+                                                "updatedAt", "updatedBy"))
                                 .message("List all dev plan successful!").build()
                                 .toResponse(HttpStatus.OK);
         }

@@ -37,7 +37,7 @@ public class DivisionDto {
 
     public DivisionDto(Division division, boolean withCreatedBy, boolean withUpdatedBy) {
         setId(division.getId());
-        setDivisionName(division.getDivisionName());
+        setDivisionName(division.getName());
         setCreatedAt(division.getCreatedAt());
         if (withCreatedBy && division.getCreatedBy() != null) {
             setCreatedBy(new UserDto(division.getCreatedBy(), false, false, false));

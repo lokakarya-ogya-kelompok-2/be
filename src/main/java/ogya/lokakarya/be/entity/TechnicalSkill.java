@@ -3,10 +3,8 @@ package ogya.lokakarya.be.entity;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,8 +23,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "TBL_TECHNICAL_SKILL", uniqueConstraints = {
-        @UniqueConstraint(name = "UK_TECHNICAL_SKILL_NAME", columnNames = "TECHNICAL_SKILL")
-})
+        @UniqueConstraint(name = "UK_TECHNICAL_SKILL_NAME", columnNames = "TECHNICAL_SKILL")})
 public class TechnicalSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -56,7 +53,7 @@ public class TechnicalSkill {
     private User updatedBy;
 
     @OneToMany(mappedBy = "technicalSkill", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<EmpTechnicalSkill> empAchievementSkills;
+    private List<EmpTechnicalSkill> empTechnicalSkills;
 
     @PreUpdate
     private void fillUpdatedAt() {

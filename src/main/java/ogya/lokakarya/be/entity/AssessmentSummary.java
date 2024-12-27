@@ -1,5 +1,6 @@
 package ogya.lokakarya.be.entity;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
@@ -22,7 +23,7 @@ import lombok.Data;
 @Entity
 @Table(name = "TBL_ASSESSMENT_SUMMARY",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"USER_ID", "YEAR"})})
-public class AssessmentSummary {
+public class AssessmentSummary implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false)
@@ -62,7 +63,7 @@ public class AssessmentSummary {
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "APPROVER_ID")
-    private User approverId;
+    private User approver;
 
     @PreUpdate
     private void fillUpdatedAt() {

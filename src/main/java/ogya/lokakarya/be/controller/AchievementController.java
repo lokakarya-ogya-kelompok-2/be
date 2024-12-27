@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import ogya.lokakarya.be.dto.FilterInfo;
+import ogya.lokakarya.be.dto.PageInfo;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.achievement.AchievementDto;
 import ogya.lokakarya.be.dto.achievement.AchievementFilter;
@@ -84,10 +86,12 @@ public class AchievementController {
                 log.info("Ending AchievementController.list");
                 return ResponseDto.<List<AchievementDto>>builder().success(true)
                                 .content(achievements.toList())
-                                .totalRecords(achievements.getTotalElements())
-                                .totalPages(achievements.getTotalPages())
-                                .pageNumber(achievements.getNumber() + 1)
-                                .pageSize(achievements.getSize())
+                                .pageInfo(new PageInfo(achievements.getNumber() + 1,
+                                                achievements.getSize(),
+                                                achievements.getTotalPages(),
+                                                achievements.getTotalElements()))
+                                .filterInfo(new FilterInfo("id", "name", "groupAchievement",
+                                                "createdAt", "createdBy", "updatedAt", "updatedBy"))
                                 .message("List all achievement successful!").build()
                                 .toResponse(HttpStatus.OK);
         }
