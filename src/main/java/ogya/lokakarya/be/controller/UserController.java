@@ -114,9 +114,12 @@ public class UserController {
                 return ResponseDto.<List<UserDto>>builder().success(true).content(users.toList())
                                 .pageInfo(new PageInfo(users.getNumber() + 1, users.getSize(),
                                                 users.getTotalPages(), users.getTotalElements()))
-                                .filterInfo(new FilterInfo("id", "username", "fullName", "position",
-                                                "joinDate", "createdAt", "createdBy", "updatedAt",
-                                                "updatedBy"))
+                                .filterInfo(new FilterInfo(List.of("id", "username", "fullName",
+                                                "position", "email", "division", "joinDate",
+                                                "division", "createdAt", "createdBy", "updatedAt",
+                                                "updatedBy"),
+                                                List.of("username", "fullName", "position", "email",
+                                                                "division.name")))
                                 .message("List users successful!").build()
                                 .toResponse(HttpStatus.OK);
         }

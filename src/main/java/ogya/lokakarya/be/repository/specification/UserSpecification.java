@@ -28,7 +28,7 @@ public class UserSpecification {
     }
 
     public Specification<User> emailContains(String substr) {
-        return spec.fieldContains("emailAddress", substr);
+        return spec.fieldContains("email", substr);
     }
 
     public Specification<User> divisionNameContains(String substr) {

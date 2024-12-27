@@ -9,7 +9,7 @@ import ogya.lokakarya.be.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificationExecutor<User> {
-    Optional<User> findByEmailAddressIgnoreCase(String email);
+    Optional<User> findByEmailIgnoreCase(String email);
 
     Optional<User> findByUsernameIgnoreCase(String username);
 }

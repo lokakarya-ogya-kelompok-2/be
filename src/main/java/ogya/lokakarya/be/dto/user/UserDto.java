@@ -59,7 +59,7 @@ public class UserDto {
         setUsername(user.getUsername());
         setFullName(user.getFullName());
         setPosition(user.getPosition());
-        setEmailAddress(user.getEmailAddress());
+        setEmailAddress(user.getEmail());
         setJoinDate(user.getJoinDate().toLocalDate());
         setEnabled(user.getEnabled());
         setPassword(user.getPassword());

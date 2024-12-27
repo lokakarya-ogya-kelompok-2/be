@@ -49,7 +49,7 @@ public class User implements UserDetails {
     private String position;
 
     @Column(name = "EMAIL_ADDRESS", nullable = false, length = 60)
-    private String emailAddress;
+    private String email;
 
     @Column(name = "EMPLOYEE_STATUS", nullable = false, length = 1)
     private Integer employeeStatus;
