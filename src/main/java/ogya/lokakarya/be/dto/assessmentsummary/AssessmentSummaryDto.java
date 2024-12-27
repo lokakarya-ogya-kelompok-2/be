@@ -33,8 +33,14 @@ public class AssessmentSummaryDto {
         @JsonProperty("score")
         private BigDecimal score;
 
-        @JsonProperty("status")
-        private Integer status;
+        @JsonProperty("approval_status")
+        private Integer approvalStatus;
+
+        @JsonProperty("approved_at")
+        private Date approvedAt;
+
+        @JsonProperty("approver")
+        private UserDto approver;
 
         private List<SummaryData<EmpAchievementSkillDto>> achievements;
 
@@ -55,15 +61,14 @@ public class AssessmentSummaryDto {
 
 
 
-        public AssessmentSummaryDto(AssessmentSummary assessmentSummary, boolean withCreatedBy,
-                        boolean withUpdatedBy) {
+        public AssessmentSummaryDto(AssessmentSummary assessmentSummary, boolean withApprover,
+                        boolean withCreatedBy, boolean withUpdatedBy) {
                 setId(assessmentSummary.getId());
                 if (assessmentSummary.getUser() != null) {
                         setUser(new UserDto(assessmentSummary.getUser(), false, false, false));
                 }
                 setYear(assessmentSummary.getYear());
                 setScore(assessmentSummary.getScore());
-                setStatus(assessmentSummary.getStatus());
                 setCreatedAt(assessmentSummary.getCreatedAt());
                 if (withCreatedBy && assessmentSummary.getCreatedBy() != null)
                         setCreatedBy(new UserDto(assessmentSummary.getCreatedBy(), false, false,
@@ -72,5 +77,10 @@ public class AssessmentSummaryDto {
                 if (withUpdatedBy && assessmentSummary.getUpdatedBy() != null)
                         setUpdatedBy(new UserDto(assessmentSummary.getUpdatedBy(), false, false,
                                         false));
+                if (withApprover && assessmentSummary.getApprover() != null)
+                        setApprover(new UserDto(assessmentSummary.getApprover(), false, false,
+                                        false));
+                setApprovalStatus(assessmentSummary.getApprovalStatus());
+                setApprovedAt(assessmentSummary.getApprovedAt());
         }
 }

@@ -27,7 +27,7 @@ public class AchievementSpecification {
         return (root, query, cb) -> {
             Join<Achievement, GroupAchievement> achievementGroupAchievementJoin =
                     root.join("groupAchievement", JoinType.LEFT);
-            return cb.like(cb.lower(achievementGroupAchievementJoin.get("groupName")),
+            return cb.like(cb.lower(achievementGroupAchievementJoin.get("name")),
                     "%" + substr.toLowerCase() + "%");
         };
     }

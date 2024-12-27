@@ -49,7 +49,6 @@ public class AssessmentSummaryReq {
         AssessmentSummary assessmentSummary = new AssessmentSummary();
         assessmentSummary.setYear(year);
         assessmentSummary.setScore(score);
-        assessmentSummary.setStatus(status);
         return assessmentSummary;
     }
 }

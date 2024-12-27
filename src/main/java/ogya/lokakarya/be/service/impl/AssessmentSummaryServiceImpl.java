@@ -2,6 +2,7 @@ package ogya.lokakarya.be.service.impl;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,9 +15,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryDto;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryFilter;
 import ogya.lokakarya.be.dto.assessmentsummary.AssessmentSummaryReq;
@@ -76,6 +79,9 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     @Autowired
     private GroupAttitudeSkillSpecification groupAttSkillSpec;
 
+    @Autowired
+    private SecurityUtil securityUtil;
+
     @Override
     public AssessmentSummaryDto create(AssessmentSummaryReq data) {
         log.info("Starting AssessmentSummaryServiceImpl.getAchievementsById");
@@ -87,7 +93,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         dataEntity.setUser(userOpt.get());
         dataEntity = assessmentSummaryRepository.save(dataEntity);
         log.info("Ending AssessmentSummaryServiceImpl.getAchievementsById");
-        return new AssessmentSummaryDto(dataEntity, true, false);
+        return new AssessmentSummaryDto(dataEntity, false, true, false);
     }
 
     @Override
@@ -124,7 +130,8 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         log.info("Ending AssessmentSummaryServiceImpl.getAllAssessmentSummaries");
         return assessmentSummaries
                 .map(assessmentSummary -> new AssessmentSummaryDto(assessmentSummary,
-                        filter.getWithCreatedBy(), filter.getWithUpdatedBy()));
+                        filter.getWithApprover(), filter.getWithCreatedBy(),
+                        filter.getWithUpdatedBy()));
     }
 
     @Override
@@ -135,7 +142,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             throw ResponseException.assessmentSummaryNotFound(id);
         }
         log.info("Ending AssessmentSummaryServiceImpl.getAssessmentSummaryById");
-        return new AssessmentSummaryDto(assessmentSummaryOpt.get(), true, true);
+        return new AssessmentSummaryDto(assessmentSummaryOpt.get(), true, true, true);
     }
 
     @Override
@@ -157,9 +164,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         if (assessmentSummaryReq.getScore() != null) {
             assessmentSummary.setScore(assessmentSummaryReq.getScore());
         }
-        if (assessmentSummaryReq.getStatus() != null) {
-            assessmentSummary.setStatus(assessmentSummaryReq.getStatus());
-        }
+
         if (assessmentSummaryReq.getYear() != null) {
             assessmentSummary.setYear(assessmentSummaryReq.getYear());
         }
@@ -181,7 +186,7 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
     }
 
     private AssessmentSummaryDto convertToDto(AssessmentSummary data) {
-        return new AssessmentSummaryDto(data, true, true);
+        return new AssessmentSummaryDto(data, true, true, true);
     }
 
     @Transactional
@@ -305,7 +310,6 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             }
             User user = userOpt.get();
             assessmentSummary.setUser(user);
-            assessmentSummary.setStatus(user.getEmployeeStatus());
         } else {
             assessmentSummary = assessmentSummaries.getFirst();
         }
@@ -313,7 +317,6 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         AssessmentSummaryDto assessmentSummaryDto = new AssessmentSummaryDto();
         assessmentSummaryDto.setId(assessmentSummary.getId());
         assessmentSummaryDto.setUser(new UserDto(assessmentSummary.getUser(), false, false, false));
-        assessmentSummaryDto.setStatus(assessmentSummary.getStatus());
 
         Double finalScore = 0d;
 
@@ -401,6 +404,31 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
         }
         assessmentSummaryRepository.saveAll(assessmentSummaries);
         log.info("Starting AssessmentSummaryServiceImpl.recalculateAllAssessmentSummaries");
+    }
+
+    @Override
+    public AssessmentSummaryDto approve(UUID id) {
+        log.info("Starting AssessmentSummaryServiceImpl.approve");
+
+        Optional<AssessmentSummary> assessmentSummaryOpt = assessmentSummaryRepository.findById(id);
+        if (assessmentSummaryOpt.isEmpty()) {
+            throw ResponseException.assessmentSummaryNotFound(id);
+        }
+        AssessmentSummary assessmentSummary = assessmentSummaryOpt.get();
+        if (assessmentSummary.getApprovalStatus() == 1) {
+            throw new ResponseException(
+                    String.format("Assessment summary with id %s is already approved!", id),
+                    HttpStatus.CONFLICT);
+        }
+        User currentUser = securityUtil.getCurrentUser();
+        assessmentSummary.setApprover(currentUser);
+        assessmentSummary.setApprovalStatus(1);
+        assessmentSummary.setApprovedAt(new Date());
+        assessmentSummary.setUpdatedBy(currentUser);
+        assessmentSummary = assessmentSummaryRepository.save(assessmentSummary);
+
+        log.info("Ending AssessmentSummaryServiceImpl.approve");
+        return new AssessmentSummaryDto(assessmentSummary, true, true, true);
     }
 
 }
