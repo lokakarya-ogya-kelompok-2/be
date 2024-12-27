@@ -60,6 +60,8 @@ public class AssessmentSummaryController {
                         @RequestParam(name = "division_ids",
                                         required = false) List<UUID> divisionIds,
                         @RequestParam(required = false) List<Integer> years,
+                        @RequestParam(name = "with_approver", required = false,
+                                        defaultValue = "false") Boolean withApprover,
                         @RequestParam(name = "with_created_by", required = false,
                                         defaultValue = "false") Boolean withCreatedBy,
                         @RequestParam(name = "with_updated_by", required = false,
@@ -73,6 +75,7 @@ public class AssessmentSummaryController {
                 filter.setAnyStringFieldContains(anyStringFieldContains);
                 filter.setDivisionIds(divisionIds);
                 filter.setYears(years);
+                filter.setWithApprover(withApprover);
                 filter.setWithCreatedBy(withCreatedBy);
                 filter.setWithUpdatedBy(withUpdatedBy);
                 filter.setPageSize(pageSize);

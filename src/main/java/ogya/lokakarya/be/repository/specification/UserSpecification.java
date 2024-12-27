@@ -34,7 +34,7 @@ public class UserSpecification {
     public Specification<User> divisionNameContains(String substr) {
         return (root, query, cb) -> {
             Join<User, Division> userDivisionJoin = root.join("division", JoinType.LEFT);
-            return cb.like(cb.lower(userDivisionJoin.get("divisionName")),
+            return cb.like(cb.lower(userDivisionJoin.get("name")),
                     "%" + substr.toLowerCase() + "%");
         };
     }

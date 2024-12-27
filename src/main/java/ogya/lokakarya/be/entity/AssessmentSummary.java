@@ -39,8 +39,16 @@ public class AssessmentSummary implements Serializable {
     @Column(name = "SCORE", nullable = false, precision = 5, scale = 2)
     private BigDecimal score;
 
-    @Column(name = "STATUS", nullable = false)
-    private Integer status;
+    @Column(name = "APPROVAL_STATUS")
+    private Integer approvalStatus = 0;
+
+    @Column(name = "APPROVAL_DATE")
+    private Date approvedAt;
+
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "APPROVER_ID")
+    private User approver;
 
     @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     private Date createdAt = new Date();
@@ -57,13 +65,6 @@ public class AssessmentSummary implements Serializable {
     @ManyToOne
     @JoinColumn(name = "UPDATED_BY")
     private User updatedBy;
-
-    private Integer approved = 0;
-
-    @OnDelete(action = OnDeleteAction.SET_NULL)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "APPROVER_ID")
-    private User approver;
 
     @PreUpdate
     private void fillUpdatedAt() {

@@ -27,7 +27,7 @@ public class AttitudeSkillSpecification {
         return (root, query, cb) -> {
             Join<AttitudeSkill, GroupAttitudeSkill> achievementGroupAttitudeSkillJoin =
                     root.join("groupAttitudeSkill", JoinType.LEFT);
-            return cb.like(cb.lower(achievementGroupAttitudeSkillJoin.get("groupName")),
+            return cb.like(cb.lower(achievementGroupAttitudeSkillJoin.get("name")),
                     "%" + substr.toLowerCase() + "%");
         };
     }

@@ -11,7 +11,7 @@ public class DevPlanSpecification {
     SpecificationFactory<DevPlan> spec;
 
     public Specification<DevPlan> nameContains(String substr) {
-        return spec.fieldContains("plan", substr);
+        return spec.fieldContains("name", substr);
     }
 
     public Specification<DevPlan> enabledEquals(Boolean value) {

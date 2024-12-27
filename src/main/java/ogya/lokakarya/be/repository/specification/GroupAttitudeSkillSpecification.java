@@ -13,7 +13,7 @@ public class GroupAttitudeSkillSpecification {
     private SpecificationFactory<GroupAttitudeSkill> spec;
 
     public Specification<GroupAttitudeSkill> nameContains(String substr) {
-        return spec.fieldContains("groupName", substr);
+        return spec.fieldContains("name", substr);
     }
 
     public Specification<GroupAttitudeSkill> weightLte(Integer hi) {

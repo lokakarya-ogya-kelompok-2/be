@@ -24,4 +24,6 @@ public interface AssessmentSummaryService {
 
         AssessmentSummaryDto calculateAssessmentSummaryButValidateTheUserIdFirstBeforeCalculating(
                         UUID userId, Integer year);
+
+        AssessmentSummaryDto approve(UUID id);
 }

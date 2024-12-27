@@ -12,7 +12,7 @@ public class GroupAchievementSpecification {
     private SpecificationFactory<GroupAchievement> spec;
 
     public Specification<GroupAchievement> nameContains(String substr) {
-        return spec.fieldContains("groupName", substr);
+        return spec.fieldContains("name", substr);
     }
 
     public Specification<GroupAchievement> weightLte(Integer hi) {

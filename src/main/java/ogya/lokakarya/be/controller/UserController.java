@@ -2,6 +2,7 @@ package ogya.lokakarya.be.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -55,6 +56,7 @@ public class UserController {
         public ResponseEntity<ResponseDto<List<UserDto>>> list(
                         @RequestParam(name = "any_contains",
                                         required = false) String anyStringFieldsContains,
+                        @RequestParam(name = "search_by", required = false) Set<String> searchBy,
                         @RequestParam(name = "username_contains",
                                         required = false) String usernameContains,
                         @RequestParam(name = "name_contains", required = false) String nameContains,
@@ -89,8 +91,7 @@ public class UserController {
                 log.info("Starting UserController.list");
                 UserFilter filter = new UserFilter();
                 filter.setAnyStringFieldsContains(anyStringFieldsContains);
-                filter.setPageNumber(pageNumber);
-                filter.setPageSize(pageSize);
+                filter.setSearchBy(searchBy);
                 filter.setUsernameContains(usernameContains);
                 filter.setNameContains(nameContains);
                 filter.setPositionContains(positionContains);
@@ -103,6 +104,8 @@ public class UserController {
                 filter.setWithRoles(withRoles);
                 filter.setWithCreatedBy(withCreatedBy);
                 filter.setWithUpdatedBy(withUpdatedBy);
+                filter.setPageNumber(pageNumber);
+                filter.setPageSize(pageSize);
                 filter.setSortField(sortField);
                 filter.setSortDirection(sortDirection);
 

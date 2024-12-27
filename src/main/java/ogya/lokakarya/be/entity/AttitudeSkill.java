@@ -1,12 +1,11 @@
 package ogya.lokakarya.be.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,10 +24,10 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "TBL_ATTITUDE_SKILL", uniqueConstraints = {
-        @UniqueConstraint(name = "UK_ATTITUDE_SKILL_GROUP_NAME", columnNames = { "ATTITUDE_SKILL", "GROUP_ID" })
-})
-public class AttitudeSkill {
+@Table(name = "TBL_ATTITUDE_SKILL",
+        uniqueConstraints = {@UniqueConstraint(name = "UK_ATTITUDE_SKILL_GROUP_NAME",
+                columnNames = {"ATTITUDE_SKILL", "GROUP_ID"})})
+public class AttitudeSkill implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ID", nullable = false)
@@ -38,7 +37,8 @@ public class AttitudeSkill {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "GROUP_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_ATTITUDE_SKILL_GROUP_ATTITUDE_SKILL"))
+    @JoinColumn(name = "GROUP_ID", nullable = false,
+            foreignKey = @ForeignKey(name = "FK_ATTITUDE_SKILL_GROUP_ATTITUDE_SKILL"))
     private GroupAttitudeSkill groupAttitudeSkill;
 
     @Column(name = "ENABLED")

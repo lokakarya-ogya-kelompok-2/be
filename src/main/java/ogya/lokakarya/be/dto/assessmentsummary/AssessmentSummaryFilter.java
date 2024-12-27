@@ -14,4 +14,5 @@ public class AssessmentSummaryFilter extends Filter {
     private List<UUID> userIds;
     private List<Integer> years;
     private List<UUID> divisionIds;
+    private Boolean withApprover = false;
 }
