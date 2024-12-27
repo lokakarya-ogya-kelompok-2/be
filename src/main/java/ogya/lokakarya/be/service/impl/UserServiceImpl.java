@@ -108,7 +108,8 @@ public class UserServiceImpl implements UserService {
         return new UserDto(userEntity, true, false, true);
     }
 
-    @SuppressWarnings("java:S3776")
+    @SuppressWarnings({"java:S3776", "java:S6541"})
+
     @Override
     public Page<UserDto> list(UserFilter filter) {
         log.info("Starting UserServiceImpl.list");
@@ -117,12 +118,36 @@ public class UserServiceImpl implements UserService {
         Specification<User> specification = Specification.where(null);
         if (filter.getAnyStringFieldsContains() != null
                 && !filter.getAnyStringFieldsContains().isEmpty()) {
-            specification = specification.and(
-                    Specification.anyOf(spec.usernameContains(filter.getAnyStringFieldsContains()),
-                            spec.fullNameContains(filter.getAnyStringFieldsContains()),
-                            spec.positionContains(filter.getAnyStringFieldsContains()),
-                            spec.emailContains(filter.getAnyStringFieldsContains()),
-                            spec.divisionNameContains(filter.getAnyStringFieldsContains())));
+            if (filter.getSearchBy() != null && !filter.getSearchBy().isEmpty()) {
+                System.out.println(filter.getSearchBy() + " << INI SEARCH BY");
+                if (filter.getSearchBy().contains("username")) {
+                    specification = specification
+                            .or(spec.usernameContains(filter.getAnyStringFieldsContains()));
+                }
+                if (filter.getSearchBy().contains("fullName")) {
+                    specification = specification
+                            .or(spec.fullNameContains(filter.getAnyStringFieldsContains()));
+                }
+                if (filter.getSearchBy().contains("position")) {
+                    specification = specification
+                            .or(spec.positionContains(filter.getAnyStringFieldsContains()));
+                }
+                if (filter.getSearchBy().contains("email")) {
+                    specification = specification
+                            .or(spec.emailContains(filter.getAnyStringFieldsContains()));
+                }
+                if (filter.getSearchBy().contains("division.name")) {
+                    specification = specification
+                            .or(spec.divisionNameContains(filter.getAnyStringFieldsContains()));
+                }
+            } else {
+                specification = specification.and(Specification.anyOf(
+                        spec.usernameContains(filter.getAnyStringFieldsContains()),
+                        spec.fullNameContains(filter.getAnyStringFieldsContains()),
+                        spec.positionContains(filter.getAnyStringFieldsContains()),
+                        spec.emailContains(filter.getAnyStringFieldsContains()),
+                        spec.divisionNameContains(filter.getAnyStringFieldsContains())));
+            }
         } else {
             if (filter.getUsernameContains() != null && !filter.getUsernameContains().isEmpty()) {
                 specification =

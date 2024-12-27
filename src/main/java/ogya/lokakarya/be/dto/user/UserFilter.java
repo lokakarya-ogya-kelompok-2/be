@@ -1,6 +1,7 @@
 package ogya.lokakarya.be.dto.user;
 
 import java.time.LocalDate;
+import java.util.Set;
 import org.springframework.http.HttpStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,6 +14,7 @@ public class UserFilter extends Filter {
     // ini kaya gabungan OR antara username, name, position, email, divisionName. males mikir, gini
     // aja wkwk
     private String anyStringFieldsContains;
+    private Set<String> searchBy;
     private String usernameContains;
     private String nameContains;
     private String positionContains;
