@@ -1,5 +1,10 @@
 package ogya.lokakarya.be.entity;
 
+import java.io.Serializable;
+import java.util.Date;
+import java.util.UUID;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,24 +16,19 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
-import java.util.Date;
-import java.util.UUID;
 
 @Entity
 @Data
 @Table(name = "TBL_DIVISION", uniqueConstraints = {
-        @UniqueConstraint(name = "UK_DIVISION_DIVISION_NAME", columnNames = { "DIVISION_NAME" }) })
-public class Division {
+        @UniqueConstraint(name = "UK_DIVISION_DIVISION_NAME", columnNames = {"DIVISION_NAME"})})
+public class Division implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ID", nullable = false)
     private UUID id;
 
     @Column(name = "DIVISION_NAME", length = 50, nullable = false)
-    private String divisionName;
+    private String name;
 
     @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     private Date createdAt = new Date();

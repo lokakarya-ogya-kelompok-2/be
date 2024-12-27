@@ -96,7 +96,7 @@ public class DevPlanServiceImpl implements DevPlanService {
         User currentUser = securityUtil.getCurrentUser();
         DevPlan devPlan = devPlanOpt.get();
         if (devPlanReq.getPlan() != null) {
-            devPlan.setPlan(devPlanReq.getPlan());
+            devPlan.setName(devPlanReq.getPlan());
         }
         if (devPlanReq.getEnabled() != null) {
             devPlan.setEnabled(devPlanReq.getEnabled());

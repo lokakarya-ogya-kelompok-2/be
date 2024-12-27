@@ -34,10 +34,10 @@ public class GroupAchievementReq {
     @JsonProperty("enabled")
     private Boolean enabled;
 
-    public GroupAchievement toEntity(){
+    public GroupAchievement toEntity() {
         GroupAchievement groupAchievement = new GroupAchievement();
-        groupAchievement.setGroupName(groupName);
-        groupAchievement.setPercentage(percentage);
+        groupAchievement.setName(groupName);
+        groupAchievement.setWeight(percentage);
         groupAchievement.setEnabled(enabled);
         return groupAchievement;
     }

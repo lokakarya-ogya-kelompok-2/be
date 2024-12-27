@@ -52,7 +52,7 @@ public class GroupAttitudeSkillServiceImpl implements GroupAttitudeSkillService 
         User currentUser = securityUtil.getCurrentUser();
         groupAttitudeSkillEntity.setCreatedBy(currentUser);
         groupAttitudeSkillEntity = groupAttitudeSkillRepository.save(groupAttitudeSkillEntity);
-        if (groupAttitudeSkillEntity.getPercentage() > 0) {
+        if (groupAttitudeSkillEntity.getWeight() > 0) {
             entityManager.flush();
             assessmentSummarySvc.recalculateAllAssessmentSummaries();
         }
@@ -125,15 +125,15 @@ public class GroupAttitudeSkillServiceImpl implements GroupAttitudeSkillService 
         boolean shouldUpdateAssSum = false;
         GroupAttitudeSkill groupAttitudeSkill = groupAttitudeSkillOpt.get();
         if (groupAttitudeSkillReq.getGroupName() != null) {
-            groupAttitudeSkill.setGroupName(groupAttitudeSkillReq.getGroupName());
+            groupAttitudeSkill.setName(groupAttitudeSkillReq.getGroupName());
         }
         if (groupAttitudeSkillReq.getEnabled() != null) {
             groupAttitudeSkill.setEnabled(groupAttitudeSkillReq.getEnabled());
         }
         if (groupAttitudeSkillReq.getPercentage() != null) {
-            shouldUpdateAssSum = groupAttitudeSkillReq.getPercentage()
-                    .equals(groupAttitudeSkill.getPercentage());
-            groupAttitudeSkill.setPercentage(groupAttitudeSkillReq.getPercentage());
+            shouldUpdateAssSum =
+                    groupAttitudeSkillReq.getPercentage().equals(groupAttitudeSkill.getWeight());
+            groupAttitudeSkill.setWeight(groupAttitudeSkillReq.getPercentage());
         }
         User currentUser = securityUtil.getCurrentUser();
         groupAttitudeSkill.setUpdatedBy(currentUser);

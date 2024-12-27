@@ -34,10 +34,10 @@ public class GroupAttitudeSkillReq {
     @JsonProperty("enabled")
     private Boolean enabled;
 
-    public GroupAttitudeSkill toEntity(){
+    public GroupAttitudeSkill toEntity() {
         GroupAttitudeSkill groupAttitudeSkill = new GroupAttitudeSkill();
-        groupAttitudeSkill.setGroupName(groupName);
-        groupAttitudeSkill.setPercentage(percentage);
+        groupAttitudeSkill.setName(groupName);
+        groupAttitudeSkill.setWeight(percentage);
         groupAttitudeSkill.setEnabled(enabled);
         return groupAttitudeSkill;
     }

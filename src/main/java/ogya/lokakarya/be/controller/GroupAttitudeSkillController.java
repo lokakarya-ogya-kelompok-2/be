@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import ogya.lokakarya.be.dto.FilterInfo;
+import ogya.lokakarya.be.dto.PageInfo;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillDto;
 import ogya.lokakarya.be.dto.groupattitudeskill.GroupAttitudeSkillFilter;
@@ -84,10 +86,12 @@ public class GroupAttitudeSkillController {
                                 groupAttitudeSkillService.getAllGroupAttitudeSkills(filter);
                 return ResponseDto.<List<GroupAttitudeSkillDto>>builder()
                                 .content(groupAttitudeSkills.toList())
-                                .totalRecords(groupAttitudeSkills.getTotalElements())
-                                .totalPages(groupAttitudeSkills.getTotalPages())
-                                .pageNumber(groupAttitudeSkills.getNumber() + 1)
-                                .pageSize(groupAttitudeSkills.getSize())
+                                .pageInfo(new PageInfo(groupAttitudeSkills.getNumber() + 1,
+                                                groupAttitudeSkills.getSize(),
+                                                groupAttitudeSkills.getTotalPages(),
+                                                groupAttitudeSkills.getTotalElements()))
+                                .filterInfo(new FilterInfo("id", "name", "weight", "createdAt",
+                                                "createdBy", "updatedAt", "updatedBy"))
                                 .message("Get all group attitude skill successful!").success(true)
                                 .build().toResponse(HttpStatus.OK);
         }

@@ -21,9 +21,9 @@ public class DivisionReq {
     @JsonProperty("division_name")
     private String divisionName;
 
-    public Division toEntity(){
-        Division division  = new Division();
-        division.setDivisionName(divisionName);
+    public Division toEntity() {
+        Division division = new Division();
+        division.setName(divisionName);
         return division;
     }
 }

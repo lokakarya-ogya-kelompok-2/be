@@ -26,9 +26,9 @@ public class DevPlanReq {
     @JsonProperty("enabled")
     private Boolean enabled;
 
-    public DevPlan toEntity(){
+    public DevPlan toEntity() {
         DevPlan devPlan = new DevPlan();
-        devPlan.setPlan(plan);
+        devPlan.setName(plan);
         devPlan.setEnabled(enabled);
         return devPlan;
     }

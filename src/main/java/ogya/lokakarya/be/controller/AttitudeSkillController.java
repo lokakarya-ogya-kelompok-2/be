@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import ogya.lokakarya.be.dto.FilterInfo;
+import ogya.lokakarya.be.dto.PageInfo;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillDto;
 import ogya.lokakarya.be.dto.attitudeskill.AttitudeSkillFilter;
@@ -85,10 +87,12 @@ public class AttitudeSkillController {
                 log.info("Ending AttitudeSkillController.list");
                 return ResponseDto.<List<AttitudeSkillDto>>builder().success(true)
                                 .content(attitudeSkills.toList())
-                                .totalRecords(attitudeSkills.getTotalElements())
-                                .totalPages(attitudeSkills.getTotalPages())
-                                .pageNumber(attitudeSkills.getNumber() + 1)
-                                .pageSize(attitudeSkills.getSize())
+                                .pageInfo(new PageInfo(attitudeSkills.getNumber() + 1,
+                                                attitudeSkills.getSize(),
+                                                attitudeSkills.getTotalPages(),
+                                                attitudeSkills.getTotalElements()))
+                                .filterInfo(new FilterInfo("id", "name", "groupAttitudeSkill",
+                                                "createdAt", "createdBy", "updatedAt", "updatedBy"))
                                 .message("List all attitude skill successful!").build()
                                 .toResponse(HttpStatus.OK);
         }

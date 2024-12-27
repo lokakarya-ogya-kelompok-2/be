@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import ogya.lokakarya.be.dto.FilterInfo;
+import ogya.lokakarya.be.dto.PageInfo;
 import ogya.lokakarya.be.dto.ResponseDto;
 import ogya.lokakarya.be.dto.groupachievement.GroupAchievementDto;
 import ogya.lokakarya.be.dto.groupachievement.GroupAchievementFilter;
@@ -87,10 +89,12 @@ public class GroupAchievementController {
                 log.info("Ending GroupAchievementController.list");
                 return ResponseDto.<List<GroupAchievementDto>>builder()
                                 .content(groupAchievements.toList())
-                                .totalRecords(groupAchievements.getTotalElements())
-                                .totalPages(groupAchievements.getTotalPages())
-                                .pageNumber(groupAchievements.getNumber() + 1)
-                                .pageSize(groupAchievements.getSize())
+                                .pageInfo(new PageInfo(groupAchievements.getNumber() + 1,
+                                                groupAchievements.getSize(),
+                                                groupAchievements.getTotalPages(),
+                                                groupAchievements.getTotalElements()))
+                                .filterInfo(new FilterInfo("id", "name", "weight", "createdAt",
+                                                "createdBy", "updatedAt", "updatedBy"))
                                 .message("Get all group achievements successful!").success(true)
                                 .build().toResponse(HttpStatus.OK);
         }

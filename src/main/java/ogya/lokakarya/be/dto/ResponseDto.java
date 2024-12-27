@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Builder;
@@ -13,11 +14,25 @@ import lombok.Data;
 @Data
 public class ResponseDto<T> {
     private boolean success;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("page_info")
+    private PageInfo pageInfo;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("filter_info")
+    private FilterInfo filterInfo;
+
     private T content;
 
     @Builder.Default
     @JsonProperty("time_taken")
     private String timeTaken = formatExecutionTime(getTimeTakenMs());
+
+    @Builder.Default
+    private long timestamp = System.currentTimeMillis();
+
+    private String message;
 
     @SuppressWarnings("null")
     private static Long getTimeTakenMs() {
@@ -41,25 +56,7 @@ public class ResponseDto<T> {
         return String.format("%02d:%02d:%02d.%03d", hours, minutes, seconds, milliseconds);
     }
 
-    @Builder.Default
-    private long timestamp = System.currentTimeMillis();
 
-    private String message;
-
-    @JsonProperty("total_records")
-    private Long totalRecords;
-
-    @Builder.Default
-    @JsonProperty("page_size")
-    private Integer pageSize = 0;
-
-    @Builder.Default
-    @JsonProperty("page_number")
-    private Integer pageNumber = 1;
-
-    @Builder.Default
-    @JsonProperty("total_pages")
-    private Integer totalPages = 1;
 
     public ResponseEntity<ResponseDto<T>> toResponse(HttpStatus httpStatus) {
         return new ResponseEntity<>(this, httpStatus);

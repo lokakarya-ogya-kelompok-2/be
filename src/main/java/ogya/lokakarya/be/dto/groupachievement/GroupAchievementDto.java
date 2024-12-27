@@ -49,8 +49,8 @@ public class GroupAchievementDto {
     public GroupAchievementDto(GroupAchievement groupAchievement, boolean withCreatedBy,
             boolean withUpdatedBy, boolean withAchievements, boolean withEnabledChildOnly) {
         setId(groupAchievement.getId());
-        setGroupName(groupAchievement.getGroupName());
-        setPercentage(groupAchievement.getPercentage());
+        setGroupName(groupAchievement.getName());
+        setPercentage(groupAchievement.getWeight());
         setEnabled(groupAchievement.getEnabled());
         setCreatedAt(groupAchievement.getCreatedAt());
         if (withCreatedBy && groupAchievement.getCreatedBy() != null)

@@ -1,7 +1,7 @@
 package ogya.lokakarya.be.entity;
 
+import java.io.Serializable;
 import java.util.UUID;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,8 +16,10 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "TBL_APP_USER_ROLE", uniqueConstraints = { @UniqueConstraint(columnNames = { "ROLE_ID", "USER_ID" }) })
-public class UserRole {
+@Table(name = "TBL_APP_USER_ROLE",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"ROLE_ID", "USER_ID"})})
+public class UserRole implements Serializable {
+
     @GeneratedValue(strategy = GenerationType.UUID)
     @Id
     @Column(name = "id", nullable = false)

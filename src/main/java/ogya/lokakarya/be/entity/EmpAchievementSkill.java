@@ -1,11 +1,10 @@
 package ogya.lokakarya.be.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
-
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -22,9 +21,8 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "TBL_EMP_ACHIEVEMENT_SKill", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "USER_ID", "ACHIEVEMENT_ID", "ASSESSMENT_YEAR" })
-})
-public class EmpAchievementSkill {
+        @UniqueConstraint(columnNames = {"USER_ID", "ACHIEVEMENT_ID", "ASSESSMENT_YEAR"})})
+public class EmpAchievementSkill implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ID", nullable = false)

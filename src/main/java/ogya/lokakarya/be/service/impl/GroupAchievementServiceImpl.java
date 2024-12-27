@@ -51,7 +51,7 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
         GroupAchievement groupAchievementEntity = data.toEntity();
         groupAchievementEntity.setCreatedBy(currentUser);
         groupAchievementEntity = groupAchievementRepository.save(groupAchievementEntity);
-        if (groupAchievementEntity.getPercentage() > 0) {
+        if (groupAchievementEntity.getWeight() > 0) {
             entityManager.flush();
             assessmentSummarySvc.recalculateAllAssessmentSummaries();
         }
@@ -122,16 +122,16 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
         GroupAchievement groupAchievement = groupAchievementOpt.get();
         boolean shouldUpdateAssSum = false;
         if (groupAchievementReq.getGroupName() != null) {
-            groupAchievement.setGroupName(groupAchievementReq.getGroupName());
+            groupAchievement.setName(groupAchievementReq.getGroupName());
             groupAchievement.setEnabled(groupAchievementReq.getEnabled());
-            groupAchievement.setPercentage(groupAchievementReq.getPercentage());
+            groupAchievement.setWeight(groupAchievementReq.getPercentage());
         }
         if (groupAchievementReq.getEnabled() != null) {
             groupAchievement.setEnabled(groupAchievementReq.getEnabled());
         }
         if (groupAchievementReq.getPercentage() != null) {
             shouldUpdateAssSum =
-                    groupAchievementReq.getPercentage().equals(groupAchievement.getPercentage());
+                    groupAchievementReq.getPercentage().equals(groupAchievement.getWeight());
             groupAchievementReq.setPercentage(groupAchievementReq.getPercentage());
         }
         User currentUser = securityUtil.getCurrentUser();
