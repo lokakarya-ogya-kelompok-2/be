@@ -60,7 +60,7 @@ public class UserUpdateDto {
         user.setFullName(fullName);
         user.setPosition(position);
         user.setEmployeeStatus(employeeStatus);
-        user.setEmailAddress(email);
+        user.setEmail(email);
         user.setEnabled(enabled);
         user.setJoinDate(Date.valueOf(joinDate));
         return user;

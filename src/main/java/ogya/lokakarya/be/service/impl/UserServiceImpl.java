@@ -240,7 +240,7 @@ public class UserServiceImpl implements UserService {
             user.setEmployeeStatus(data.getEmployeeStatus());
         }
         if (data.getEmail() != null) {
-            user.setEmailAddress(data.getEmail());
+            user.setEmail(data.getEmail());
         }
         if (data.getJoinDate() != null) {
             user.setJoinDate(Date.valueOf(data.getJoinDate()));
