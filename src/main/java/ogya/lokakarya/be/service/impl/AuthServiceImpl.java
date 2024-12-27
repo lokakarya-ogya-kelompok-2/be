@@ -22,7 +22,7 @@ public class AuthServiceImpl implements AuthService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("Starting AuthServiceImpl.loadUserByUsername");
         Optional<User> userOpt = userRepo.findByUsernameIgnoreCase(username)
-                .or(() -> userRepo.findByEmailAddressIgnoreCase(username));
+                .or(() -> userRepo.findByEmailIgnoreCase(username));
         UserDetails user = userOpt
                 .orElseThrow(() -> new UsernameNotFoundException("user could not be found!"));
         if (!user.isEnabled()) {
