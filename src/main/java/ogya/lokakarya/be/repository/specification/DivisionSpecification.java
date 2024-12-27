@@ -11,6 +11,6 @@ public class DivisionSpecification {
     private SpecificationFactory<Division> spec;
 
     public Specification<Division> nameContains(String substr) {
-        return spec.fieldContains("divisionName", substr);
+        return spec.fieldContains("name", substr);
     }
 }
