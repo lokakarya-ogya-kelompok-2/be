@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -26,6 +27,7 @@ import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.AssessmentSummaryRepository;
 import ogya.lokakarya.be.repository.AttitudeSkillRepository;
 import ogya.lokakarya.be.repository.EmpAttitudeSkillRepository;
+import ogya.lokakarya.be.repository.specification.AssessmentSummarySpecification;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import ogya.lokakarya.be.service.EmpAttitudeSkillService;
 
@@ -48,12 +50,16 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
     @Autowired
     private AssessmentSummaryRepository assessmentSummaryRepo;
 
+    @Autowired
+    private AssessmentSummarySpecification assSpec;
+
     @Transactional
     @Override
     public List<EmpAttitudeSkillDto> createBulkEmpAttitudeSkill(List<EmpAttitudeSkillReq> data) {
         log.info("Starting EmpAttitudeSkillServiceImpl.createBulkEmpAttitudeSkill");
-        Set<Integer> years = new HashSet<>();
+
         User currentUser = securityUtil.getCurrentUser();
+        Set<Integer> years = new HashSet<>();
         List<EmpAttitudeSkill> empAttitudeSkillsEntities = new ArrayList<>(data.size());
         Map<UUID, AttitudeSkill> attitudeSkillIds = new HashMap<>();
         for (EmpAttitudeSkillReq d : data) {
@@ -98,17 +104,19 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
     @Override
     public EmpAttitudeSkillDto create(EmpAttitudeSkillReq data) {
         log.info("Starting EmpAttitudeSkillServiceImpl.create");
-        Optional<AttitudeSkill> findAttitudeSkill =
+
+        Optional<AttitudeSkill> attitudeSkillOpt =
                 attitudeSkillRepository.findById(data.getAttitudeSkillId());
-        User currentUser = securityUtil.getCurrentUser();
-        if (findAttitudeSkill.isEmpty()) {
+        if (attitudeSkillOpt.isEmpty()) {
             throw ResponseException.attitudeSkillNotFound(data.getAttitudeSkillId());
         }
-        EmpAttitudeSkill dataEntity = data.toEntity();
-        dataEntity.setUser(currentUser);
-        dataEntity.setCreatedBy(currentUser);
-        dataEntity.setAttitudeSkill(findAttitudeSkill.get());
-        EmpAttitudeSkill createData = empAttitudeSkillRepository.save(dataEntity);
+        User currentUser = securityUtil.getCurrentUser();
+        EmpAttitudeSkill empAttitudeSkillEntity = data.toEntity();
+        empAttitudeSkillEntity.setUser(currentUser);
+        empAttitudeSkillEntity.setCreatedBy(currentUser);
+        empAttitudeSkillEntity.setAttitudeSkill(attitudeSkillOpt.get());
+        EmpAttitudeSkill createData = empAttitudeSkillRepository.save(empAttitudeSkillEntity);
+
         log.info("Starting EmpAttitudeSkillServiceImpl.create");
         return new EmpAttitudeSkillDto(createData, true, false);
     }
@@ -141,15 +149,43 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
     public EmpAttitudeSkillDto updateEmpAttitudeSkillById(UUID id,
             EmpAttitudeSkillReq empAttitudeSkillReq) {
         log.info("Starting EmpAttitudeSkillServiceImpl.updateEmpAttitudeSkillById");
+
         Optional<EmpAttitudeSkill> empAttitudeSkillOpt = empAttitudeSkillRepository.findById(id);
         if (empAttitudeSkillOpt.isEmpty()) {
             throw ResponseException.empAttitudeSkillNotFound(id);
         }
         EmpAttitudeSkill empAttitudeSkill = empAttitudeSkillOpt.get();
         User currentUser = securityUtil.getCurrentUser();
-        if (empAttitudeSkill.getCreatedBy() != null
-                && !empAttitudeSkill.getCreatedBy().equals(currentUser)) {
+        boolean isOwner = currentUser.equals(empAttitudeSkill.getUser());
+        boolean isSVPOfSameDivision = currentUser.getUserRoles().stream()
+                .anyMatch(userRole -> userRole.getRole().getRoleName().equalsIgnoreCase("svp"))
+                && empAttitudeSkill.getUser().getDivision().equals(currentUser.getDivision());
+        if (!(isOwner || isSVPOfSameDivision)) {
             throw ResponseException.unauthorized();
+        }
+        Optional<AssessmentSummary> assessmentSummaryOpt = assessmentSummaryRepo
+                .findOne(assSpec.userIdIn(List.of(empAttitudeSkill.getUser().getId()))
+                        .and(assSpec.yearIn(List.of(empAttitudeSkill.getAssessmentYear()))));
+        if (assessmentSummaryOpt.isEmpty()) {
+            throw new ResponseException(String.format(
+                    "Assessment summary for user with id %s and year %d could not be found!",
+                    empAttitudeSkill.getUser().getId(), empAttitudeSkill.getAssessmentYear()),
+                    HttpStatus.NOT_FOUND);
+        }
+        AssessmentSummary assessmentSummary = assessmentSummaryOpt.get();
+        if (assessmentSummary.getApprovalStatus() == 1) {
+            throw new ResponseException("You're not allowed to perform this action!",
+                    HttpStatus.FORBIDDEN);
+        }
+        if (empAttitudeSkillReq.getAttitudeSkillId() != null && !empAttitudeSkillReq
+                .getAttitudeSkillId().equals(empAttitudeSkill.getAttitudeSkill().getId())) {
+            Optional<AttitudeSkill> attitudeSkillOpt =
+                    attitudeSkillRepository.findById(empAttitudeSkillReq.getAttitudeSkillId());
+            if (attitudeSkillOpt.isEmpty()) {
+                throw ResponseException
+                        .attitudeSkillNotFound(empAttitudeSkillReq.getAttitudeSkillId());
+            }
+            empAttitudeSkill.setAttitudeSkill(attitudeSkillOpt.get());
         }
         if (empAttitudeSkillReq.getScore() != null) {
             empAttitudeSkill.setScore(empAttitudeSkillReq.getScore());
@@ -159,6 +195,7 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
         }
         empAttitudeSkill.setUpdatedBy(currentUser);
         empAttitudeSkill = empAttitudeSkillRepository.save(empAttitudeSkill);
+
         log.info("Ending EmpAttitudeSkillServiceImpl.updateEmpAttitudeSkillById");
         return convertToDto(empAttitudeSkill);
 
@@ -167,17 +204,22 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
     @Override
     public boolean deleteEmpAttitudeSkillById(UUID id) {
         log.info("Starting EmpAttitudeSkillServiceImpl.deleteEmpAttitudeSkillById");
+
         Optional<EmpAttitudeSkill> empAttitudeSkillOpt = empAttitudeSkillRepository.findById(id);
         if (empAttitudeSkillOpt.isEmpty()) {
             throw ResponseException.empAttitudeSkillNotFound(id);
         }
         EmpAttitudeSkill empAttitudeSkill = empAttitudeSkillOpt.get();
         User currentUser = securityUtil.getCurrentUser();
-        if (empAttitudeSkill.getCreatedBy() != null
-                && !empAttitudeSkill.getCreatedBy().equals(currentUser)) {
+        boolean isOwner = currentUser.equals(empAttitudeSkill.getUser());
+        boolean isSVPOfSameDivision = currentUser.getUserRoles().stream()
+                .anyMatch(userRole -> userRole.getRole().getRoleName().equalsIgnoreCase("svp"))
+                && empAttitudeSkill.getUser().getDivision().equals(currentUser.getDivision());
+        if (!(isOwner || isSVPOfSameDivision)) {
             throw ResponseException.unauthorized();
         }
         empAttitudeSkillRepository.delete(empAttitudeSkill);
+
         log.info("Ending EmpAttitudeSkillServiceImpl.deleteEmpAttitudeSkillById");
         return true;
     }

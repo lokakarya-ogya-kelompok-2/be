@@ -161,4 +161,15 @@ public class AssessmentSummaryController {
                                 .content(assessmentSummary).build().toResponse(HttpStatus.OK);
         }
 
+        @PutMapping("/{id}/approve")
+        public ResponseEntity<ResponseDto<AssessmentSummaryDto>> approveAssessmentSummary(
+                        @PathVariable UUID id) {
+                log.info("Starting AssessmentSummaryController.calculate for id = {}", id);
+                var assessmentSummary = assessmentSummaryService.approve(id);
+                log.info("Ending AssessmentSummaryController.calculate for id = {}", id);
+                return ResponseDto.<AssessmentSummaryDto>builder().success(true).message(String
+                                .format("Assessment summary with id %s approved successfuly!", id))
+                                .content(assessmentSummary).build().toResponse(HttpStatus.OK);
+        }
+
 }
