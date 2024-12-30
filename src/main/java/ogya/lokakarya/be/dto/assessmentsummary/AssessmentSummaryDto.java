@@ -59,8 +59,6 @@ public class AssessmentSummaryDto {
         @JsonProperty("updated_by")
         private UserDto updatedBy;
 
-
-
         public AssessmentSummaryDto(AssessmentSummary assessmentSummary, boolean withApprover,
                         boolean withCreatedBy, boolean withUpdatedBy) {
                 setId(assessmentSummary.getId());

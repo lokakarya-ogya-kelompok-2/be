@@ -28,7 +28,6 @@ import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillDto;
 import ogya.lokakarya.be.dto.empachievementskill.EmpAchievementSkillFilter;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillDto;
 import ogya.lokakarya.be.dto.empattitudeskill.EmpAttitudeSkillFilter;
-import ogya.lokakarya.be.dto.user.UserDto;
 import ogya.lokakarya.be.entity.Achievement;
 import ogya.lokakarya.be.entity.AssessmentSummary;
 import ogya.lokakarya.be.entity.AttitudeSkill;
@@ -314,9 +313,8 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             assessmentSummary = assessmentSummaries.getFirst();
         }
 
-        AssessmentSummaryDto assessmentSummaryDto = new AssessmentSummaryDto();
-        assessmentSummaryDto.setId(assessmentSummary.getId());
-        assessmentSummaryDto.setUser(new UserDto(assessmentSummary.getUser(), false, false, false));
+        AssessmentSummaryDto assessmentSummaryDto =
+                new AssessmentSummaryDto(assessmentSummary, false, false, false);
 
         Double finalScore = 0d;
 
@@ -415,7 +413,8 @@ public class AssessmentSummaryServiceImpl implements AssessmentSummaryService {
             throw ResponseException.assessmentSummaryNotFound(id);
         }
         AssessmentSummary assessmentSummary = assessmentSummaryOpt.get();
-        if (assessmentSummary.getApprovalStatus() == 1) {
+        if (assessmentSummary.getApprovalStatus() != null
+                && assessmentSummary.getApprovalStatus() == 1) {
             throw new ResponseException(
                     String.format("Assessment summary with id %s is already approved!", id),
                     HttpStatus.CONFLICT);
