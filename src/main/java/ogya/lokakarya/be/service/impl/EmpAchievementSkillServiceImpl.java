@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -27,6 +28,7 @@ import ogya.lokakarya.be.repository.AchievementRepository;
 import ogya.lokakarya.be.repository.AssessmentSummaryRepository;
 import ogya.lokakarya.be.repository.EmpAchievementSkillRepository;
 import ogya.lokakarya.be.repository.UserRepository;
+import ogya.lokakarya.be.repository.specification.AssessmentSummarySpecification;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import ogya.lokakarya.be.service.EmpAchievementSkillService;
 
@@ -53,6 +55,9 @@ public class EmpAchievementSkillServiceImpl implements EmpAchievementSkillServic
 
     @Autowired
     private AssessmentSummaryRepository assessmentSummaryRepo;
+
+    @Autowired
+    private AssessmentSummarySpecification assSpec;
 
     @Override
     public EmpAchievementSkillDto create(EmpAchievementSkillReq data) {
@@ -105,27 +110,49 @@ public class EmpAchievementSkillServiceImpl implements EmpAchievementSkillServic
     public EmpAchievementSkillDto updateAchievementSkillById(UUID id,
             EmpAchievementSkillReq empAchievementSkillReq) {
         log.info("Starting EmpAchievementSkillServiceImpl.updateAchievementSkillById");
+
         Optional<EmpAchievementSkill> empAchievementOpt =
                 empAchievementSkillRepository.findById(id);
         if (empAchievementOpt.isEmpty()) {
             throw ResponseException.empAchievementNotFound(id);
         }
-        EmpAchievementSkill empAchievementSkill = empAchievementOpt.get();
-        if (empAchievementSkillReq.getNotes() != null) {
-            empAchievementSkill.setNotes(empAchievementSkillReq.getNotes());
+        EmpAchievementSkill empAchievement = empAchievementOpt.get();
+        User currentUser = securityUtil.getCurrentUser();
+        boolean isHR = currentUser.getUserRoles().stream()
+                .anyMatch(userRole -> userRole.getRole().getRoleName().equalsIgnoreCase("hr"));
+        boolean isSPVOfSameDivision = currentUser.getUserRoles().stream()
+                .anyMatch(userRole -> userRole.getRole().getRoleName().equalsIgnoreCase("svp"))
+                && empAchievement.getUser() != null
+                && empAchievement.getUser().getDivision().equals(currentUser.getDivision());
+        if (!(isHR || isSPVOfSameDivision)) {
+            throw ResponseException.unauthorized();
+        }
+        Optional<AssessmentSummary> assessmentSummaryOpt = assessmentSummaryRepo
+                .findOne(assSpec.userIdIn(List.of(empAchievement.getUser().getId()))
+                        .and(assSpec.yearIn(List.of(empAchievement.getAssessmentYear()))));
+        if (assessmentSummaryOpt.isEmpty()) {
+            throw new ResponseException(String.format(
+                    "Assessment summary for user with id %s and year %d could not be found!",
+                    empAchievement.getUser().getId(), empAchievement.getAssessmentYear()),
+                    HttpStatus.NOT_FOUND);
+        }
+        AssessmentSummary assessmentSummary = assessmentSummaryOpt.get();
+        if (assessmentSummary.getApprovalStatus() == 1) {
+            throw new ResponseException("You're not allowed to perform this action!",
+                    HttpStatus.FORBIDDEN);
         }
         if (empAchievementSkillReq.getScore() != null) {
-            empAchievementSkill.setScore(empAchievementSkillReq.getScore());
+            empAchievement.setScore(empAchievementSkillReq.getScore());
         }
         if (empAchievementSkillReq.getAssessmentYear() != null) {
-            empAchievementSkill.setAssessmentYear(empAchievementSkillReq.getAssessmentYear());
+            empAchievement.setAssessmentYear(empAchievementSkillReq.getAssessmentYear());
         }
         if (empAchievementSkillReq.getUserId() != null) {
             Optional<User> userOpt = userRepository.findById(empAchievementSkillReq.getUserId());
             if (userOpt.isEmpty()) {
                 throw ResponseException.userNotFound(empAchievementSkillReq.getUserId());
             }
-            empAchievementSkill.setUser(userOpt.get());
+            empAchievement.setUser(userOpt.get());
         }
         if (empAchievementSkillReq.getAchievementId() != null) {
             Optional<Achievement> achievementOpt =
@@ -134,25 +161,37 @@ public class EmpAchievementSkillServiceImpl implements EmpAchievementSkillServic
                 throw ResponseException
                         .achievementNotFound(empAchievementSkillReq.getAchievementId());
             }
-            empAchievementSkill.setAchievement(achievementOpt.get());
+            empAchievement.setAchievement(achievementOpt.get());
         }
-        User currentUser = securityUtil.getCurrentUser();
-        empAchievementSkill.setUpdatedBy(currentUser);
+        empAchievement.setUpdatedBy(currentUser);
+        empAchievement = empAchievementSkillRepository.save(empAchievement);
 
-        empAchievementSkill = empAchievementSkillRepository.save(empAchievementSkill);
         log.info("Starting EmpAchievementSkillServiceImpl.updateAchievementSkillById");
-        return convertToDto(empAchievementSkill);
+        return convertToDto(empAchievement);
     }
 
     @Override
     public boolean deleteAchievementSkillById(UUID id) {
         log.info("Starting EmpAchievementSkillServiceImpl.deleteAchievementSkillById");
+
         Optional<EmpAchievementSkill> empAchievementOpt =
                 empAchievementSkillRepository.findById(id);
         if (empAchievementOpt.isEmpty()) {
             throw ResponseException.empAchievementNotFound(id);
         }
-        empAchievementSkillRepository.delete(empAchievementOpt.get());
+        EmpAchievementSkill empAchievement = empAchievementOpt.get();
+        User currentUser = securityUtil.getCurrentUser();
+        boolean isHR = currentUser.getUserRoles().stream()
+                .anyMatch(userRole -> userRole.getRole().getRoleName().equalsIgnoreCase("hr"));
+        boolean isSPVOfSameDivision = currentUser.getUserRoles().stream()
+                .anyMatch(userRole -> userRole.getRole().getRoleName().equalsIgnoreCase("svp"))
+                && empAchievement.getUser() != null
+                && empAchievement.getUser().getDivision().equals(currentUser.getDivision());
+        if (!(isHR || isSPVOfSameDivision)) {
+            throw ResponseException.unauthorized();
+        }
+        empAchievementSkillRepository.delete(empAchievement);
+
         log.info("Ending EmpAchievementSkillServiceImpl.deleteAchievementSkillById");
         return true;
     }
