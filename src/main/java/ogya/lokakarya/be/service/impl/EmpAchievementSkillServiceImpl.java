@@ -59,26 +59,39 @@ public class EmpAchievementSkillServiceImpl implements EmpAchievementSkillServic
     @Autowired
     private AssessmentSummarySpecification assSpec;
 
+    @Transactional
     @Override
     public EmpAchievementSkillDto create(EmpAchievementSkillReq data) {
         log.info("Starting EmpAchievementSkillServiceImpl.create");
+
         Optional<Achievement> findAchievement =
                 achievementRepository.findById(data.getAchievementId());
         if (findAchievement.isEmpty()) {
             throw ResponseException.achievementNotFound(data.getAchievementId());
         }
-        EmpAchievementSkill dataEntity = data.toEntity();
+        EmpAchievementSkill empAcEntity = data.toEntity();
         if (data.getUserId() != null) {
             Optional<User> userOpt = userRepository.findById(data.getUserId());
             if (userOpt.isEmpty()) {
                 throw ResponseException.userNotFound(data.getUserId());
             }
-            dataEntity.setUser(userOpt.get());
+            empAcEntity.setUser(userOpt.get());
         }
-        dataEntity.setAchievement(findAchievement.get());
+        empAcEntity.setAchievement(findAchievement.get());
         User currentUser = securityUtil.getCurrentUser();
-        dataEntity.setCreatedBy(currentUser);
-        EmpAchievementSkill createdData = empAchievementSkillRepository.save(dataEntity);
+        empAcEntity.setCreatedBy(currentUser);
+        EmpAchievementSkill createdData = empAchievementSkillRepository.save(empAcEntity);
+        entityManager.flush();
+        AssessmentSummaryDto assessmentSummary =
+                assessmentSummaryService.calculateAssessmentSummary(empAcEntity.getUser().getId(),
+                        empAcEntity.getAssessmentYear());
+        AssessmentSummary assessmentSummaryEntity = new AssessmentSummary();
+        assessmentSummaryEntity.setScore(assessmentSummary.getScore());
+        assessmentSummaryEntity.setId(assessmentSummary.getId());
+        assessmentSummaryEntity.setUser(empAcEntity.getUser());
+        assessmentSummaryEntity.setYear(assessmentSummary.getYear());
+        assessmentSummaryRepo.save(assessmentSummaryEntity);
+
         log.info("Starting EmpAchievementSkillServiceImpl.create");
         return new EmpAchievementSkillDto(createdData, true, false);
     }
@@ -106,6 +119,7 @@ public class EmpAchievementSkillServiceImpl implements EmpAchievementSkillServic
         return convertToDto(data);
     }
 
+    @Transactional
     @Override
     public EmpAchievementSkillDto updateAchievementSkillById(UUID id,
             EmpAchievementSkillReq empAchievementSkillReq) {
@@ -165,11 +179,18 @@ public class EmpAchievementSkillServiceImpl implements EmpAchievementSkillServic
         }
         empAchievement.setUpdatedBy(currentUser);
         empAchievement = empAchievementSkillRepository.save(empAchievement);
+        entityManager.flush();
+        AssessmentSummaryDto assessmentSummaryDto =
+                assessmentSummaryService.calculateAssessmentSummary(
+                        empAchievement.getUser().getId(), empAchievement.getAssessmentYear());
+        assessmentSummary.setScore(assessmentSummaryDto.getScore());
+        assessmentSummaryRepo.save(assessmentSummary);
 
-        log.info("Starting EmpAchievementSkillServiceImpl.updateAchievementSkillById");
+        log.info("Ending EmpAchievementSkillServiceImpl.updateAchievementSkillById");
         return convertToDto(empAchievement);
     }
 
+    @Transactional
     @Override
     public boolean deleteAchievementSkillById(UUID id) {
         log.info("Starting EmpAchievementSkillServiceImpl.deleteAchievementSkillById");
@@ -190,7 +211,27 @@ public class EmpAchievementSkillServiceImpl implements EmpAchievementSkillServic
         if (!(isHR || isSPVOfSameDivision)) {
             throw ResponseException.unauthorized();
         }
+        Optional<AssessmentSummary> assessmentSummaryOpt = assessmentSummaryRepo
+                .findOne(assSpec.userIdIn(List.of(empAchievement.getUser().getId()))
+                        .and(assSpec.yearIn(List.of(empAchievement.getAssessmentYear()))));
+        if (assessmentSummaryOpt.isEmpty()) {
+            throw new ResponseException(String.format(
+                    "Assessment summary for user with id %s and year %d could not be found!",
+                    empAchievement.getUser().getId(), empAchievement.getAssessmentYear()),
+                    HttpStatus.NOT_FOUND);
+        }
+        AssessmentSummary assessmentSummary = assessmentSummaryOpt.get();
+        if (assessmentSummary.getApprovalStatus() == 1) {
+            throw new ResponseException("You're not allowed to perform this action!",
+                    HttpStatus.FORBIDDEN);
+        }
         empAchievementSkillRepository.delete(empAchievement);
+        entityManager.flush();
+        AssessmentSummaryDto assessmentSummaryDto =
+                assessmentSummaryService.calculateAssessmentSummary(
+                        empAchievement.getUser().getId(), empAchievement.getAssessmentYear());
+        assessmentSummary.setScore(assessmentSummaryDto.getScore());
+        assessmentSummaryRepo.save(assessmentSummary);
 
         log.info("Ending EmpAchievementSkillServiceImpl.deleteAchievementSkillById");
         return true;
