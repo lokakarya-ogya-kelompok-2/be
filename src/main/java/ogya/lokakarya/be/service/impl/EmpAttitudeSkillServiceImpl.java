@@ -146,6 +146,7 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
         return new EmpAttitudeSkillDto(data, true, true);
     }
 
+    @Transactional
     @Override
     public EmpAttitudeSkillDto updateEmpAttitudeSkillById(UUID id,
             EmpAttitudeSkillReq empAttitudeSkillReq) {
@@ -196,12 +197,18 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
         }
         empAttitudeSkill.setUpdatedBy(currentUser);
         empAttitudeSkill = empAttitudeSkillRepository.save(empAttitudeSkill);
+        entityManager.flush();
+        AssessmentSummaryDto assessmentSummaryDto = assessmentSummarySvc.calculateAssessmentSummary(
+                empAttitudeSkill.getUser().getId(), empAttitudeSkill.getAssessmentYear());
+        assessmentSummary.setScore(assessmentSummaryDto.getScore());
+        assessmentSummaryRepo.save(assessmentSummary);
 
         log.info("Ending EmpAttitudeSkillServiceImpl.updateEmpAttitudeSkillById");
         return convertToDto(empAttitudeSkill);
 
     }
 
+    @Transactional
     @Override
     public boolean deleteEmpAttitudeSkillById(UUID id) {
         log.info("Starting EmpAttitudeSkillServiceImpl.deleteEmpAttitudeSkillById");
@@ -219,7 +226,26 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
         if (!(isOwner || isSVPOfSameDivision)) {
             throw ResponseException.unauthorized();
         }
+        Optional<AssessmentSummary> assessmentSummaryOpt = assessmentSummaryRepo
+                .findOne(assSpec.userIdIn(List.of(empAttitudeSkill.getUser().getId()))
+                        .and(assSpec.yearIn(List.of(empAttitudeSkill.getAssessmentYear()))));
+        if (assessmentSummaryOpt.isEmpty()) {
+            throw new ResponseException(String.format(
+                    "Assessment summary for user with id %s and year %d could not be found!",
+                    empAttitudeSkill.getUser().getId(), empAttitudeSkill.getAssessmentYear()),
+                    HttpStatus.NOT_FOUND);
+        }
+        AssessmentSummary assessmentSummary = assessmentSummaryOpt.get();
+        if (assessmentSummary.getApprovalStatus() == 1) {
+            throw new ResponseException("You're not allowed to perform this action!",
+                    HttpStatus.FORBIDDEN);
+        }
         empAttitudeSkillRepository.delete(empAttitudeSkill);
+        entityManager.flush();
+        AssessmentSummaryDto assessmentSummaryDto = assessmentSummarySvc.calculateAssessmentSummary(
+                empAttitudeSkill.getUser().getId(), empAttitudeSkill.getAssessmentYear());
+        assessmentSummary.setScore(assessmentSummaryDto.getScore());
+        assessmentSummaryRepo.save(assessmentSummary);
 
         log.info("Ending EmpAttitudeSkillServiceImpl.deleteEmpAttitudeSkillById");
         return true;
