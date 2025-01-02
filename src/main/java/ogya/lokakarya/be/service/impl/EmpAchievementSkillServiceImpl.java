@@ -1,14 +1,5 @@
 package ogya.lokakarya.be.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -31,6 +22,16 @@ import ogya.lokakarya.be.repository.UserRepository;
 import ogya.lokakarya.be.repository.specification.AssessmentSummarySpecification;
 import ogya.lokakarya.be.service.AssessmentSummaryService;
 import ogya.lokakarya.be.service.EmpAchievementSkillService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -157,6 +158,9 @@ public class EmpAchievementSkillServiceImpl implements EmpAchievementSkillServic
         }
         if (empAchievementSkillReq.getScore() != null) {
             empAchievement.setScore(empAchievementSkillReq.getScore());
+        }
+        if(empAchievementSkillReq.getNotes() != null) {
+            empAchievement.setNotes(empAchievementSkillReq.getNotes());
         }
         if (empAchievementSkillReq.getAssessmentYear() != null) {
             empAchievement.setAssessmentYear(empAchievementSkillReq.getAssessmentYear());
