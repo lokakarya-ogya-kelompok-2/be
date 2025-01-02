@@ -2,7 +2,6 @@ package ogya.lokakarya.be.controller;
 
 import java.util.List;
 import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort.Direction;
@@ -10,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -51,18 +50,27 @@ public class AssessmentSummaryController {
 
         @GetMapping
         public ResponseEntity<ResponseDto<List<AssessmentSummaryDto>>> getAllAssessmentSummaries(
-                        @RequestParam(name = "sort_field", required = false, defaultValue = "createdAt") String sortField,
-                        @RequestParam(name = "sort_direction", required = false, defaultValue = "DESC") Direction sortDirection,
-                        @RequestParam(name = "any_contains", required = false) String anyStringFieldContains,
+                        @RequestParam(name = "sort_field", required = false,
+                                        defaultValue = "createdAt") String sortField,
+                        @RequestParam(name = "sort_direction", required = false,
+                                        defaultValue = "DESC") Direction sortDirection,
+                        @RequestParam(name = "any_contains",
+                                        required = false) String anyStringFieldContains,
                         @RequestParam(name = "user_ids", required = false) List<UUID> userIds,
-                        @RequestParam(name = "division_ids", required = false) List<UUID> divisionIds,
+                        @RequestParam(name = "division_ids",
+                                        required = false) List<UUID> divisionIds,
                         @RequestParam(required = false) List<Integer> years,
-                        @RequestParam(name = "approval_status", required = false) Integer approvalStatus,
-                        @RequestParam(name = "with_approver", required = false, defaultValue = "false") Boolean withApprover,
-                        @RequestParam(name = "with_created_by", required = false, defaultValue = "false") Boolean withCreatedBy,
-                        @RequestParam(name = "with_updated_by", required = false, defaultValue = "false") Boolean withUpdatedBy,
+                        @RequestParam(name = "approval_status",
+                                        required = false) Integer approvalStatus,
+                        @RequestParam(name = "with_approver", required = false,
+                                        defaultValue = "false") Boolean withApprover,
+                        @RequestParam(name = "with_created_by", required = false,
+                                        defaultValue = "false") Boolean withCreatedBy,
+                        @RequestParam(name = "with_updated_by", required = false,
+                                        defaultValue = "false") Boolean withUpdatedBy,
                         @RequestParam(name = "page_number", required = false) Integer pageNumber,
-                        @RequestParam(name = "page_size", required = false, defaultValue = "5") Integer pageSize) {
+                        @RequestParam(name = "page_size", required = false,
+                                        defaultValue = "5") Integer pageSize) {
                 log.info("Starting AssessmentSummaryController.list");
                 AssessmentSummaryFilter filter = new AssessmentSummaryFilter();
                 filter.setUserIds(userIds);
@@ -78,8 +86,8 @@ public class AssessmentSummaryController {
                 filter.setSortField(sortField);
                 filter.setSortDirection(sortDirection);
 
-                Page<AssessmentSummaryDto> assessmentSummaries = assessmentSummaryService
-                                .getAllAssessmentSummaries(filter);
+                Page<AssessmentSummaryDto> assessmentSummaries =
+                                assessmentSummaryService.getAllAssessmentSummaries(filter);
                 log.info("Ending AssessmentSummaryController.list");
                 return ResponseDto.<List<AssessmentSummaryDto>>builder().success(true)
                                 .content(assessmentSummaries.toList())
@@ -98,7 +106,8 @@ public class AssessmentSummaryController {
         public ResponseEntity<ResponseDto<AssessmentSummaryDto>> getAssessmentSummaryById(
                         @PathVariable UUID id) {
                 log.info("Starting AssessmentSummaryController.get for id = {}", id);
-                AssessmentSummaryDto assessmentSummary = assessmentSummaryService.getAssessmentSummaryById(id);
+                AssessmentSummaryDto assessmentSummary =
+                                assessmentSummaryService.getAssessmentSummaryById(id);
                 log.info("Ending AssessmentSummaryController.get for id = {}", id);
                 return ResponseDto.<AssessmentSummaryDto>builder().success(true)
                                 .content(assessmentSummary)
@@ -155,7 +164,7 @@ public class AssessmentSummaryController {
                                 .content(assessmentSummary).build().toResponse(HttpStatus.OK);
         }
 
-        @PutMapping("/{id}/approve")
+        @PatchMapping("/{id}/approve")
         public ResponseEntity<ResponseDto<AssessmentSummaryDto>> approveAssessmentSummary(
                         @PathVariable UUID id) {
                 log.info("Starting AssessmentSummaryController.calculate for id = {}", id);
@@ -165,5 +174,4 @@ public class AssessmentSummaryController {
                                 .format("Assessment summary with id %s approved successfuly!", id))
                                 .content(assessmentSummary).build().toResponse(HttpStatus.OK);
         }
-
 }
