@@ -4,12 +4,15 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,10 +31,9 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "TBL_APP_USER",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "UK_USER_USERNAME", columnNames = {"USERNAME"}),
-                @UniqueConstraint(name = "UK_USER_EMAIL", columnNames = {"EMAIL_ADDRESS"})})
+@Table(name = "TBL_APP_USER", uniqueConstraints = {
+        @UniqueConstraint(name = "UK_USER_USERNAME", columnNames = { "USERNAME" }),
+        @UniqueConstraint(name = "UK_USER_EMAIL", columnNames = { "EMAIL_ADDRESS" }) })
 public class User implements UserDetails {
 
     @Id
@@ -98,8 +100,7 @@ public class User implements UserDetails {
     private List<EmpSuggestion> empSuggestions;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "DIVISION_ID", nullable = false,
-            foreignKey = @ForeignKey(name = "FK_USER_DIVISION"))
+    @JoinColumn(name = "DIVISION_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_USER_DIVISION"))
     private Division division;
 
     @Override
@@ -118,5 +119,20 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof User))
+            return false;
+        User user = (User) o;
+        return Objects.equals(getId(), user.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }
