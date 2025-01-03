@@ -4,10 +4,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
-
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -23,7 +21,9 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "TBL_ASSESSMENT_SUMMARY", uniqueConstraints = { @UniqueConstraint(columnNames = { "USER_ID", "YEAR" }) })
+@Table(name = "TBL_ASSESSMENT_SUMMARY",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"USER_ID", "YEAR"},
+                name = "UK_ASSESSMENT_SUMMARY_USER_YEAR")})
 public class AssessmentSummary implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -40,7 +40,7 @@ public class AssessmentSummary implements Serializable {
     @Column(name = "SCORE", nullable = false, precision = 5, scale = 2)
     private BigDecimal score;
 
-    @Column(name = "APPROVAL_STATUS", columnDefinition = "INT DEFAULT 0")
+    @Column(name = "APPROVAL_STATUS", nullable = false, columnDefinition = "INT DEFAULT 0")
     private Integer approvalStatus = 0;
 
     @Column(name = "APPROVAL_DATE")
