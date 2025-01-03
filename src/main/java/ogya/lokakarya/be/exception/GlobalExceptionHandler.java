@@ -44,6 +44,7 @@ public class GlobalExceptionHandler {
                 .toResponse(HttpStatus.UNAUTHORIZED);
     }
 
+    @SuppressWarnings({"java:S1192", "java:S3776"})
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ResponseDto<Void>> handleDataIntegrityViolationException(
             DataIntegrityViolationException ex, WebRequest req) {
@@ -86,6 +87,9 @@ public class GlobalExceptionHandler {
                 message = "Group achievement with given name already exists!";
             } else if (exceptionMsg.contains("UK_DEV_PLAN_NAME")) {
                 message = "Development plan with given name already exists!";
+            } else if (exceptionMsg.contains("UK_ASSESSMENT_SUMMARY_USER_YEAR")) {
+                message =
+                        "An assessment summary already exists for this user in the specified year.";
             }
 
             return ResponseDto.<Void>builder().success(false).message(message).build()
@@ -95,6 +99,7 @@ public class GlobalExceptionHandler {
                 .toResponse(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @SuppressWarnings("java:S3776")
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ResponseDto<Void>> handleConstraintViolationException(
             ConstraintViolationException ex, WebRequest req) {
@@ -134,6 +139,8 @@ public class GlobalExceptionHandler {
             message = "Group achievement with given name already exists!";
         } else if (exceptionMsg.contains("UK_DEV_PLAN_NAME")) {
             message = "Development plan with given name already exists!";
+        } else if (exceptionMsg.contains("UK_ASSESSMENT_SUMMARY_USER_YEAR")) {
+            message = "An assessment summary already exists for this user in the specified year.";
         } else {
             httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         }
