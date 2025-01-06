@@ -85,7 +85,6 @@ public class GroupAchievementController {
 
                 Page<GroupAchievementDto> groupAchievements =
                                 groupAchievementService.getAllGroupAchievements(filter);
-                System.out.println(groupAchievements);
                 log.info("Ending GroupAchievementController.list");
                 return ResponseDto.<List<GroupAchievementDto>>builder()
                                 .content(groupAchievements.toList())

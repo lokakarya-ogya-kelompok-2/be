@@ -67,7 +67,6 @@ public class GroupAttitudeSkillController {
                         @RequestParam(name = "sort_direction", required = false,
                                         defaultValue = "DESC") Direction sortDirection) {
 
-                System.out.println("Get All Group Attitude Skills");
                 GroupAttitudeSkillFilter filter = new GroupAttitudeSkillFilter();
                 filter.setNameContains(nameContains);
                 filter.setMinWeight(minWeight);

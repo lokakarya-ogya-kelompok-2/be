@@ -88,8 +88,6 @@ public class AttitudeSkillServiceImpl implements AttitudeSkillService {
         if (filter.getEnabledOnly().booleanValue()) {
             specification = specification.and(spec.enabledEquals(true));
         }
-        System.out
-                .println(filter.getSortDirection() + "<DIRECTION | FIELD>" + filter.getSortField());
         Sort sortBy = Sort.by(filter.getSortDirection(), filter.getSortField());
 
         Page<AttitudeSkill> attitudeSkills;
