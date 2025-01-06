@@ -1,5 +1,6 @@
 package ogya.lokakarya.be.service.impl;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,11 +9,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -69,7 +68,8 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
             empAttitudeSkillEntity.setUser(currentUser);
             empAttitudeSkillEntity.setCreatedBy(currentUser);
             if (!attitudeSkillIds.containsKey(d.getAttitudeSkillId())) {
-                Optional<AttitudeSkill> attitudeSkillOpt = attitudeSkillRepository.findById(d.getAttitudeSkillId());
+                Optional<AttitudeSkill> attitudeSkillOpt =
+                        attitudeSkillRepository.findById(d.getAttitudeSkillId());
                 if (attitudeSkillOpt.isEmpty()) {
                     throw ResponseException.empAttitudeSkillNotFound(d.getAttitudeSkillId());
                 }
@@ -85,8 +85,8 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
 
         List<AssessmentSummary> assessmentSummaries = new ArrayList<>();
         years.forEach(year -> {
-            AssessmentSummaryDto assessmentSummary = assessmentSummarySvc
-                    .calculateAssessmentSummary(currentUser.getId(), year);
+            AssessmentSummaryDto assessmentSummary =
+                    assessmentSummarySvc.calculateAssessmentSummary(currentUser.getId(), year);
             AssessmentSummary assessmentSummaryEntity = new AssessmentSummary();
             assessmentSummaryEntity.setScore(assessmentSummary.getScore());
             User user = new User();
@@ -106,7 +106,8 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
     public EmpAttitudeSkillDto create(EmpAttitudeSkillReq data) {
         log.info("Starting EmpAttitudeSkillServiceImpl.create");
 
-        Optional<AttitudeSkill> attitudeSkillOpt = attitudeSkillRepository.findById(data.getAttitudeSkillId());
+        Optional<AttitudeSkill> attitudeSkillOpt =
+                attitudeSkillRepository.findById(data.getAttitudeSkillId());
         if (attitudeSkillOpt.isEmpty()) {
             throw ResponseException.attitudeSkillNotFound(data.getAttitudeSkillId());
         }
@@ -124,7 +125,8 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
     @Override
     public List<EmpAttitudeSkillDto> getAllEmpAttitudeSkills(EmpAttitudeSkillFilter filter) {
         log.info("Starting EmpAttitudeSkillServiceImpl.getAllEmpAttitudeSkills");
-        List<EmpAttitudeSkill> empAttitudeSkillEntities = empAttitudeSkillRepository.findAllByFilter(filter);
+        List<EmpAttitudeSkill> empAttitudeSkillEntities =
+                empAttitudeSkillRepository.findAllByFilter(filter);
         log.info("Ending EmpAttitudeSkillServiceImpl.getAllEmpAttitudeSkills");
         return empAttitudeSkillEntities.stream()
                 .map(empAttSkill -> new EmpAttitudeSkillDto(empAttSkill, filter.getWithCreatedBy(),
@@ -155,6 +157,10 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
             throw ResponseException.empAttitudeSkillNotFound(id);
         }
         EmpAttitudeSkill empAttitudeSkill = empAttitudeSkillOpt.get();
+        Integer currentYear = LocalDate.now().getYear();
+        if (!currentYear.equals(empAttitudeSkill.getAssessmentYear())) {
+            throw ResponseException.unauthorized();
+        }
         User currentUser = securityUtil.getCurrentUser();
         boolean isOwner = currentUser.equals(empAttitudeSkill.getUser());
         boolean isSVPOfSameDivision = currentUser.getUserRoles().stream()
@@ -173,13 +179,14 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
                     HttpStatus.NOT_FOUND);
         }
         AssessmentSummary assessmentSummary = assessmentSummaryOpt.get();
-        if (assessmentSummary.getApprovalStatus() != null && assessmentSummary.getApprovalStatus() == 1) {
+        if (assessmentSummary.getApprovalStatus() != null
+                && assessmentSummary.getApprovalStatus() == 1) {
             throw ResponseException.unauthorized();
         }
         if (empAttitudeSkillReq.getAttitudeSkillId() != null && !empAttitudeSkillReq
                 .getAttitudeSkillId().equals(empAttitudeSkill.getAttitudeSkill().getId())) {
-            Optional<AttitudeSkill> attitudeSkillOpt = attitudeSkillRepository
-                    .findById(empAttitudeSkillReq.getAttitudeSkillId());
+            Optional<AttitudeSkill> attitudeSkillOpt =
+                    attitudeSkillRepository.findById(empAttitudeSkillReq.getAttitudeSkillId());
             if (attitudeSkillOpt.isEmpty()) {
                 throw ResponseException
                         .attitudeSkillNotFound(empAttitudeSkillReq.getAttitudeSkillId());
@@ -215,6 +222,10 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
             throw ResponseException.empAttitudeSkillNotFound(id);
         }
         EmpAttitudeSkill empAttitudeSkill = empAttitudeSkillOpt.get();
+        Integer currentYear = LocalDate.now().getYear();
+        if (!currentYear.equals(empAttitudeSkill.getAssessmentYear())) {
+            throw ResponseException.unauthorized();
+        }
         User currentUser = securityUtil.getCurrentUser();
         boolean isOwner = currentUser.equals(empAttitudeSkill.getUser());
         boolean isSVPOfSameDivision = currentUser.getUserRoles().stream()
@@ -233,7 +244,8 @@ public class EmpAttitudeSkillServiceImpl implements EmpAttitudeSkillService {
                     HttpStatus.NOT_FOUND);
         }
         AssessmentSummary assessmentSummary = assessmentSummaryOpt.get();
-        if (assessmentSummary.getApprovalStatus() != null && assessmentSummary.getApprovalStatus() == 1) {
+        if (assessmentSummary.getApprovalStatus() != null
+                && assessmentSummary.getApprovalStatus() == 1) {
             throw ResponseException.unauthorized();
         }
         empAttitudeSkillRepository.delete(empAttitudeSkill);
