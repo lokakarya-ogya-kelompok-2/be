@@ -1,5 +1,14 @@
 package ogya.lokakarya.be.service.impl;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.emptechnicalskill.EmpTechnicalSkillDto;
@@ -12,15 +21,7 @@ import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.EmpTechnicalSkillRepository;
 import ogya.lokakarya.be.repository.TechnicalSkillRepository;
 import ogya.lokakarya.be.service.EmpTechnicalSkillService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 @Slf4j
 @Service
 public class EmpTechnicalSkillServiceImpl implements EmpTechnicalSkillService {
@@ -120,8 +121,11 @@ public class EmpTechnicalSkillServiceImpl implements EmpTechnicalSkillService {
         }
         User currentUser = securityUtil.getCurrentUser();
         EmpTechnicalSkill empTechnicalSkill = empTechnicalSkillOpt.get();
-        if (empTechnicalSkill.getCreatedBy() != null
-                && !empTechnicalSkill.getCreatedBy().equals(currentUser)) {
+        if (!currentUser.equals(empTechnicalSkill.getUser())) {
+            throw ResponseException.unauthorized();
+        }
+        Integer currentYear = LocalDate.now().getYear();
+        if (!currentYear.equals(empTechnicalSkill.getAssessmentYear())) {
             throw ResponseException.unauthorized();
         }
 
@@ -147,8 +151,11 @@ public class EmpTechnicalSkillServiceImpl implements EmpTechnicalSkillService {
         }
         User currentUser = securityUtil.getCurrentUser();
         EmpTechnicalSkill empTechnicalSkill = empTechnicalSkillOpt.get();
-        if (empTechnicalSkill.getCreatedBy() != null
-                && !empTechnicalSkill.getCreatedBy().equals(currentUser)) {
+        if (!currentUser.equals(empTechnicalSkill.getUser())) {
+            throw ResponseException.unauthorized();
+        }
+        Integer currentYear = LocalDate.now().getYear();
+        if (!currentYear.equals(empTechnicalSkill.getAssessmentYear())) {
             throw ResponseException.unauthorized();
         }
         empTechnicalSkillRepository.delete(empTechnicalSkill);

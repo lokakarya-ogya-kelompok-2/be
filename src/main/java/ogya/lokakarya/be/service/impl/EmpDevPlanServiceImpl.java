@@ -1,5 +1,14 @@
 package ogya.lokakarya.be.service.impl;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.config.security.SecurityUtil;
 import ogya.lokakarya.be.dto.empdevplan.EmpDevPlanDto;
@@ -12,15 +21,7 @@ import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.DevPlanRepository;
 import ogya.lokakarya.be.repository.EmpDevPlanRepository;
 import ogya.lokakarya.be.service.EmpDevPlanService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 @Slf4j
 @Service
 public class EmpDevPlanServiceImpl implements EmpDevPlanService {
@@ -108,8 +109,12 @@ public class EmpDevPlanServiceImpl implements EmpDevPlanService {
             throw ResponseException.empDevPlanNotFound(id);
         }
         EmpDevPlan empDevPlan = empDevPlanOpt.get();
+        Integer currentYear = LocalDate.now().getYear();
+        if (!currentYear.equals(empDevPlan.getAssessmentYear())) {
+            throw ResponseException.unauthorized();
+        }
         User currentUser = securityUtil.getCurrentUser();
-        if (empDevPlan.getCreatedBy() != null && !empDevPlan.getCreatedBy().equals(currentUser)) {
+        if (!currentUser.equals(empDevPlan.getUser())) {
             throw ResponseException.unauthorized();
         }
         if (empDevPlanReq.getAssessmentYear() != null) {
@@ -139,7 +144,11 @@ public class EmpDevPlanServiceImpl implements EmpDevPlanService {
         }
         User currentUser = securityUtil.getCurrentUser();
         EmpDevPlan empDevPlan = empDevPlanOpt.get();
-        if (empDevPlan.getCreatedBy() != null && !empDevPlan.getCreatedBy().equals(currentUser)) {
+        Integer currentYear = LocalDate.now().getYear();
+        if (!currentYear.equals(empDevPlan.getAssessmentYear())) {
+            throw ResponseException.unauthorized();
+        }
+        if (!currentUser.equals(empDevPlan.getUser())) {
             throw ResponseException.unauthorized();
         }
         empDevPlanRepository.delete(empDevPlan);

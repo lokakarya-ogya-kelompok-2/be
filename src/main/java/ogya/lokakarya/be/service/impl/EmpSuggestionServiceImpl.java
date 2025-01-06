@@ -1,5 +1,12 @@
 package ogya.lokakarya.be.service.impl;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import ogya.lokakarya.be.config.security.SecurityUtil;
@@ -11,13 +18,7 @@ import ogya.lokakarya.be.entity.User;
 import ogya.lokakarya.be.exception.ResponseException;
 import ogya.lokakarya.be.repository.EmpSuggestionRepository;
 import ogya.lokakarya.be.service.EmpSuggestionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 @Slf4j
 @Service
 public class EmpSuggestionServiceImpl implements EmpSuggestionService {
@@ -89,13 +90,20 @@ public class EmpSuggestionServiceImpl implements EmpSuggestionService {
             throw ResponseException.empSuggestionNotFound(id);
         }
         EmpSuggestion empSuggestion = empSuggestionOpt.get();
+        Integer currentYear = LocalDate.now().getYear();
+        if (!currentYear.equals(empSuggestion.getAssessmentYear())) {
+            throw ResponseException.unauthorized();
+        }
+        User currentUser = securityUtil.getCurrentUser();
+        if (!currentUser.equals(empSuggestion.getUser())) {
+            throw ResponseException.unauthorized();
+        }
         if (empSuggestionReq.getSuggestion() != null) {
             empSuggestion.setSuggestion(empSuggestionReq.getSuggestion());
         }
         if (empSuggestion.getAssessmentYear() != null) {
             empSuggestion.setAssessmentYear(empSuggestionReq.getAssessmentYear());
         }
-        User currentUser = securityUtil.getCurrentUser();
         empSuggestion.setUpdatedBy(currentUser);
 
         empSuggestion = empSuggestionRepository.save(empSuggestion);
@@ -111,7 +119,16 @@ public class EmpSuggestionServiceImpl implements EmpSuggestionService {
         if (empSuggestionOpt.isEmpty()) {
             throw ResponseException.empSuggestionNotFound(id);
         }
-        empSuggestionRepository.delete(empSuggestionOpt.get());
+        EmpSuggestion empSuggestion = empSuggestionOpt.get();
+        Integer currentYear = LocalDate.now().getYear();
+        if (!currentYear.equals(empSuggestion.getAssessmentYear())) {
+            throw ResponseException.unauthorized();
+        }
+        User currentUser = securityUtil.getCurrentUser();
+        if (!currentUser.equals(empSuggestion.getUser())) {
+            throw ResponseException.unauthorized();
+        }
+        empSuggestionRepository.delete(empSuggestion);
         log.info("Ending EmpSuggestionServiceImpl.deleteEmpSuggestionById");
         return true;
     }
