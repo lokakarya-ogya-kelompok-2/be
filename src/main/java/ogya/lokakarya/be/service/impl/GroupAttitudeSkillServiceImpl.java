@@ -128,11 +128,13 @@ public class GroupAttitudeSkillServiceImpl implements GroupAttitudeSkillService 
             groupAttitudeSkill.setName(groupAttitudeSkillReq.getGroupName());
         }
         if (groupAttitudeSkillReq.getEnabled() != null) {
+            shouldUpdateAssSum =
+                    !groupAttitudeSkillReq.getEnabled().equals(groupAttitudeSkill.getEnabled());
             groupAttitudeSkill.setEnabled(groupAttitudeSkillReq.getEnabled());
         }
         if (groupAttitudeSkillReq.getPercentage() != null) {
-            shouldUpdateAssSum =
-                    groupAttitudeSkillReq.getPercentage().equals(groupAttitudeSkill.getWeight());
+            shouldUpdateAssSum = shouldUpdateAssSum || !groupAttitudeSkillReq.getPercentage()
+                    .equals(groupAttitudeSkill.getWeight());
             groupAttitudeSkill.setWeight(groupAttitudeSkillReq.getPercentage());
         }
         User currentUser = securityUtil.getCurrentUser();
@@ -156,10 +158,13 @@ public class GroupAttitudeSkillServiceImpl implements GroupAttitudeSkillService 
         if (groupAttitudeSkillOpt.isEmpty()) {
             throw ResponseException.groupAttitudeSkillNotFound(id);
         }
-        groupAttitudeSkillRepository.delete(groupAttitudeSkillOpt.get());
+        GroupAttitudeSkill groupAttitudeSkill = groupAttitudeSkillOpt.get();
+        groupAttitudeSkillRepository.delete(groupAttitudeSkill);
 
-        entityManager.flush();
-        assessmentSummarySvc.recalculateAllAssessmentSummaries();
+        if (groupAttitudeSkill.getWeight() != null && groupAttitudeSkill.getWeight() > 0) {
+            entityManager.flush();
+            assessmentSummarySvc.recalculateAllAssessmentSummaries();
+        }
         log.info("Ending GroupAttitudeSkillServiceImpl.deleteGroupAttitudeSkillById");
         return ResponseEntity.ok().build().hasBody();
 

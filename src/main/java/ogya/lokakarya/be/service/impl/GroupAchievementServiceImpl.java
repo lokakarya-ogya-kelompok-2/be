@@ -123,16 +123,16 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
         boolean shouldUpdateAssSum = false;
         if (groupAchievementReq.getGroupName() != null) {
             groupAchievement.setName(groupAchievementReq.getGroupName());
-            groupAchievement.setEnabled(groupAchievementReq.getEnabled());
-            groupAchievement.setWeight(groupAchievementReq.getPercentage());
         }
         if (groupAchievementReq.getEnabled() != null) {
+            shouldUpdateAssSum =
+                    !groupAchievementReq.getEnabled().equals(groupAchievement.getEnabled());
             groupAchievement.setEnabled(groupAchievementReq.getEnabled());
         }
         if (groupAchievementReq.getPercentage() != null) {
-            shouldUpdateAssSum =
-                    groupAchievementReq.getPercentage().equals(groupAchievement.getWeight());
-            groupAchievementReq.setPercentage(groupAchievementReq.getPercentage());
+            shouldUpdateAssSum = shouldUpdateAssSum
+                    || !groupAchievementReq.getPercentage().equals(groupAchievement.getWeight());
+            groupAchievement.setWeight(groupAchievementReq.getPercentage());
         }
         User currentUser = securityUtil.getCurrentUser();
         groupAchievement.setUpdatedBy(currentUser);
@@ -154,9 +154,12 @@ public class GroupAchievementServiceImpl implements GroupAchievementService {
         if (groupAchievementOpt.isEmpty()) {
             throw ResponseException.groupAchievementNotFound(id);
         }
-        groupAchievementRepository.delete(groupAchievementOpt.get());
-        entityManager.flush();
-        assessmentSummarySvc.recalculateAllAssessmentSummaries();
+        GroupAchievement groupAchievement = groupAchievementOpt.get();
+        groupAchievementRepository.delete(groupAchievement);
+        if (groupAchievement.getWeight() != null && groupAchievement.getWeight() > 0) {
+            entityManager.flush();
+            assessmentSummarySvc.recalculateAllAssessmentSummaries();
+        }
         log.info("Ending GroupAchievementServiceImpl.deleteGroupAchievementById");
         return true;
     }
