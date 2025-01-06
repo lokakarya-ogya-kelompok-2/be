@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
         return new UserDto(userEntity, true, false, true);
     }
 
-    @SuppressWarnings({"java:S3776", "java:S6541"})
+    @SuppressWarnings({ "java:S3776", "java:S6541" })
 
     @Override
     public Page<UserDto> list(UserFilter filter) {
@@ -119,7 +119,6 @@ public class UserServiceImpl implements UserService {
         if (filter.getAnyStringFieldsContains() != null
                 && !filter.getAnyStringFieldsContains().isEmpty()) {
             if (filter.getSearchBy() != null && !filter.getSearchBy().isEmpty()) {
-                System.out.println(filter.getSearchBy() + " << INI SEARCH BY");
                 if (filter.getSearchBy().contains("username")) {
                     specification = specification
                             .or(spec.usernameContains(filter.getAnyStringFieldsContains()));
@@ -150,15 +149,13 @@ public class UserServiceImpl implements UserService {
             }
         } else {
             if (filter.getUsernameContains() != null && !filter.getUsernameContains().isEmpty()) {
-                specification =
-                        specification.and(spec.usernameContains(filter.getUsernameContains()));
+                specification = specification.and(spec.usernameContains(filter.getUsernameContains()));
             }
             if (filter.getNameContains() != null && !filter.getNameContains().isEmpty()) {
                 specification = specification.and(spec.fullNameContains(filter.getNameContains()));
             }
             if (filter.getPositionContains() != null && !filter.getPositionContains().isEmpty()) {
-                specification =
-                        specification.and(spec.positionContains(filter.getPositionContains()));
+                specification = specification.and(spec.positionContains(filter.getPositionContains()));
             }
             if (filter.getEmailContains() != null && !filter.getEmailContains().isEmpty()) {
                 specification = specification.and(spec.emailContains(filter.getEmailContains()));
@@ -170,19 +167,15 @@ public class UserServiceImpl implements UserService {
             }
         }
         if (filter.getMinJoinDate() != null && filter.getMaxJoinDate() != null) {
-            specification =
-                    specification.and(spec.joinDateBetween(Date.valueOf(filter.getMinJoinDate()),
-                            Date.valueOf(filter.getMaxJoinDate())));
+            specification = specification.and(spec.joinDateBetween(Date.valueOf(filter.getMinJoinDate()),
+                    Date.valueOf(filter.getMaxJoinDate())));
         } else if (filter.getMinJoinDate() != null) {
-            specification =
-                    specification.and(spec.joinDateGte(Date.valueOf(filter.getMinJoinDate())));
+            specification = specification.and(spec.joinDateGte(Date.valueOf(filter.getMinJoinDate())));
         } else if (filter.getMaxJoinDate() != null) {
-            specification =
-                    specification.and(spec.joinDateLte(Date.valueOf(filter.getMaxJoinDate())));
+            specification = specification.and(spec.joinDateLte(Date.valueOf(filter.getMaxJoinDate())));
         }
         if (filter.getEmployeeStatus() != null) {
-            specification =
-                    specification.and(spec.employeeStatusEquals(filter.getEmployeeStatus()));
+            specification = specification.and(spec.employeeStatusEquals(filter.getEmployeeStatus()));
         }
         if (filter.getEnabledOnly().booleanValue()) {
             specification = specification.and(spec.enabledEquals(true));

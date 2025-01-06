@@ -28,7 +28,6 @@ public class AuthServiceImpl implements AuthService {
         if (!user.isEnabled()) {
             throw new UsernameNotFoundException("user could not be found!");
         }
-        System.out.println("IS USER ENABLED? (ATAS) => " + user.isEnabled());
         log.info("Ending AuthServiceImpl.loadUserByUsername");
         return user;
     }
@@ -42,7 +41,6 @@ public class AuthServiceImpl implements AuthService {
         if (!user.isEnabled()) {
             throw new UsernameNotFoundException("user could not be found!");
         }
-        System.out.println("IS USER ENABLED? (BAWAH) => " + user.isEnabled());
         log.info("Ending AuthServiceImpl.loadByUserId");
         return user;
     }
