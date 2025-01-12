@@ -1,5 +1,6 @@
 package ogya.lokakarya.be.entity;
 
+import java.io.Serializable;
 import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,7 +17,7 @@ import lombok.Data;
 @Data
 @Table(name = "TBL_APP_ROLE_MENU",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"ROLE_ID", "MENU_ID"})})
-public class RoleMenu {
+public class RoleMenu implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ID")

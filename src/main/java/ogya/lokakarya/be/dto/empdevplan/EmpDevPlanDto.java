@@ -53,7 +53,7 @@ public class EmpDevPlanDto {
         if (empDevPlan.getDevPlan() != null) {
             setDevPlan(new DevPlanDto(empDevPlan.getDevPlan(), false, false));
         }
-        setTooBright(empDevPlan.getTooBright());
+        setTooBright(empDevPlan.getPlan());
         setAssessmentYear(empDevPlan.getAssessmentYear());
         setCreatedAt(empDevPlan.getCreatedAt());
         if (withCreatedBy && empDevPlan.getCreatedBy() != null) {

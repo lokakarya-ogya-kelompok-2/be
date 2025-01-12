@@ -1,28 +1,26 @@
 package ogya.lokakarya.be.entity;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.UUID;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import ogya.lokakarya.be.entity.common.AuditMetadata;
 
 @Entity
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Table(name = "TBL_EMP_ACHIEVEMENT_SKill", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"USER_ID", "ACHIEVEMENT_ID", "ASSESSMENT_YEAR"})})
-public class EmpAchievementSkill implements Serializable {
+public class EmpAchievementSkill extends AuditMetadata implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ID", nullable = false)
@@ -44,25 +42,4 @@ public class EmpAchievementSkill implements Serializable {
 
     @Column(name = "ASSESSMENT_YEAR", nullable = false)
     private Integer assessmentYear;
-
-    @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
-    private Date createdAt = new Date();
-
-    @OnDelete(action = OnDeleteAction.SET_NULL)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CREATED_BY")
-    private User createdBy;
-
-    @Column(name = "UPDATED_AT")
-    private Date updatedAt;
-
-    @OnDelete(action = OnDeleteAction.SET_NULL)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "UPDATED_BY")
-    private User updatedBy;
-
-    @PreUpdate
-    private void fillUpdatedAt() {
-        updatedAt = new Date();
-    }
 }

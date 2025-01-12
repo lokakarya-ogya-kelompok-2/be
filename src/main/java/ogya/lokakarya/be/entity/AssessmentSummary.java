@@ -14,17 +14,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import ogya.lokakarya.be.entity.common.AuditMetadata;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "TBL_ASSESSMENT_SUMMARY",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"USER_ID", "YEAR"},
                 name = "UK_ASSESSMENT_SUMMARY_USER_YEAR")})
-public class AssessmentSummary implements Serializable {
+public class AssessmentSummary extends AuditMetadata implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false)
@@ -50,25 +52,4 @@ public class AssessmentSummary implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "APPROVER_ID")
     private User approver;
-
-    @Column(name = "CREATED_AT", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
-    private Date createdAt = new Date();
-
-    @OnDelete(action = OnDeleteAction.SET_NULL)
-    @ManyToOne
-    @JoinColumn(name = "CREATED_BY")
-    private User createdBy;
-
-    @Column(name = "UPDATED_AT")
-    private Date updatedAt;
-
-    @OnDelete(action = OnDeleteAction.SET_NULL)
-    @ManyToOne
-    @JoinColumn(name = "UPDATED_BY")
-    private User updatedBy;
-
-    @PreUpdate
-    private void fillUpdatedAt() {
-        updatedAt = new Date();
-    }
 }
