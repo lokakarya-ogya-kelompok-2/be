@@ -1,5 +1,6 @@
 package ogya.lokakarya.be.dto.empdevplan;
 
+import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -11,17 +12,15 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ogya.lokakarya.be.entity.EmpDevPlan;
 
-import java.util.UUID;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Data
 @ToString
 public class EmpDevPlanReq {
-//    @NotNull(message = "User ID cannot be null")
-//    @JsonProperty("user_id")
-//    private UUID userId;
+    // @NotNull(message = "User ID cannot be null")
+    // @JsonProperty("user_id")
+    // private UUID userId;
 
     @NotNull(message = "Development plan ID cannot be null")
     @JsonProperty("dev_plan_id")
@@ -37,10 +36,10 @@ public class EmpDevPlanReq {
     @JsonProperty("assessment_year")
     private Integer assessmentYear;
 
-    public EmpDevPlan toEntity(){
+    public EmpDevPlan toEntity() {
         EmpDevPlan empDevPlan = new EmpDevPlan();
         empDevPlan.setAssessmentYear(assessmentYear);
-        empDevPlan.setTooBright(detail);
+        empDevPlan.setPlan(detail);
         return empDevPlan;
     }
 }
